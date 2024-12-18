@@ -1,0 +1,10 @@
+export const EVENT = {
+    SOCIAL_ICON: "SOCIAL ICON",
+    TOGGLE_LOCALE: "LOCALE TOGGLE",
+    TOGGLE_COLOR_MODE: "COLOR MODE TOGGLE",
+    LOGIN_TOPNAV: "TOPNAV LOGIN CLICKED",
+};
+
+export const CATEGORY = {
+    UI_UX: "UI / UX",
+};
