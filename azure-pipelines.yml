@@ -21,7 +21,7 @@ steps:
   
 
   - script: npm run build:dev
-    displayName: 'building the Dev Env.'
+    displayName: 'building the Dev Env'
 
   - task: ArchiveFiles@2
     inputs:
