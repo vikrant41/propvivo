@@ -10,6 +10,21 @@ const Navbar = () => {
   const router = useRouter();
 
   useEffect(() => {
+    const body = document.body;
+
+    if (isMenuOpen) {
+      body.classList.add('overflow-hidden');
+    } else {
+      body.classList.remove('overflow-hidden');
+    }
+
+    // Cleanup to ensure no class remains on unmount
+    return () => {
+      body.classList.remove('overflow-hidden');
+    };
+  }, [isMenuOpen]);
+  
+  useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
         setIsScrolled(true);
@@ -45,7 +60,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-full">
           <Link href="/" passHref>
             <a>
-              <img src="./PropVIVO.png" className="propvivoLogo" />
+              <img src="/PropVIVO.png" className="propvivoLogo" />
             </a>
           </Link>
 
@@ -150,7 +165,7 @@ const Navbar = () => {
 
           <div
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`toggleMenu transition-all bg-maroon hover:bg-maroonLight w-11 h-11 flex justify-center items-center rounded-tl-md rounded-bl-md cursor-pointer absolute right-0 lg:hidden ${
+            className={`toggleMenu transition-all bg-maroon hover:bg-maroonLight w-11 h-11 flex justify-center items-center rounded-tl-md rounded-bl-md cursor-pointer overflow-hidden absolute right-1 lg:hidden ${
               isMenuOpen ? "active" : ""
             }`}
           >

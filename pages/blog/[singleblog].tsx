@@ -25,7 +25,7 @@ const SingleBlog = ({ post }: BlogProps) => {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 singleContent">
       <button onClick={() => router.push("/blog")} className="text-pvBlack mb-5 flex items-center gap-3">
         <ArrowBlueIcon className="rotate-180" /> Back to Blogs
       </button>
@@ -44,9 +44,9 @@ const SingleBlog = ({ post }: BlogProps) => {
             />
           )}
         </div>
-        <h1 className="lg:text-5xl mb-4">{post.title}</h1>
-        <p>{post.date}</p>
-        <p>{post.description}</p>
+        <h1 className="lg:text-4xl mb-4">{post.title}</h1>
+        <p className="text-blue-o-600">{post.date}</p>
+        {/* <p>{post.description}</p> */}
 
         <div
           className="text-gray-700 mb-6"
@@ -60,7 +60,7 @@ const SingleBlog = ({ post }: BlogProps) => {
 export const getStaticPaths: GetStaticPaths = async () => {
   // Generate paths for each blog post
   const paths = allPosts.map((post) => ({
-    params: { singleblog: post.id },
+    params: { singleblog: post.title },
   }));
 
   return {
@@ -70,8 +70,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const { singleblog } = context.params!;
-  const post = allPosts.find((p) => p.id === singleblog);
+  const { singleblog } = context.params;
+  const post = allPosts.find((p) => p.title === singleblog);
 
   if (!post) {
     return { notFound: true };

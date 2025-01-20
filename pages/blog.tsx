@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { ArrowBlueIcon, ArrowIcon, SearchIcon } from "../components/shared/Icons";
+import {
+  ArrowBlueIcon,
+  ArrowIcon,
+  SearchIcon,
+} from "../components/shared/Icons";
 import { useRouter } from "next/router";
 import { allPosts } from "./api/posts";
-
 
 const blog = () => {
   const router = useRouter();
@@ -58,7 +61,7 @@ const blog = () => {
           <div
             className="flex flex-col p-7 bg-pvLightBlue rounded-2xl"
             style={{
-              width: isMobile ? "100%" : "360px"
+              width: isMobile ? "100%" : "360px",
             }}
           >
             <div className="mb-10">
@@ -104,9 +107,9 @@ const blog = () => {
             {/* Tag Filter */}
             <div className="">
               <h5 className="font-medium">Tags</h5>
-              <ul className="space-x-2 space-y-2">
+              <ul className="">
                 <li
-                  className={`cursor-pointer font-normal px-3 py-1 inline-block transition-all duration-300 bg-accent1 hover:bg-accent text-white rounded-md ${
+                  className={`cursor-pointer font-normal px-3 py-1 inline-block transition-all duration-300 bg-accent1 hover:bg-accent text-white rounded-md mr-2 mb-2 ${
                     !tag ? "bg-accent" : ""
                   }`}
                   onClick={() => setTag(null)}
@@ -116,7 +119,7 @@ const blog = () => {
                 {visibleTags.map((t) => (
                   <li
                     key={t}
-                    className={`cursor-pointer font-normal px-3 py-1 inline-block transition-all duration-300 bg-accent1 hover:bg-accent text-white rounded-md ${
+                    className={`cursor-pointer font-normal px-3 py-1 inline-block transition-all duration-300 bg-accent1 hover:bg-accent text-white rounded-md mr-2 mb-2 ${
                       tag === t ? "bg-accent" : ""
                     }`}
                     onClick={() => setTag(t)}
@@ -160,12 +163,39 @@ const blog = () => {
                       </p>
                     </div>
                     <div className="my-5">
-                      <h5 className="mb-3 font-medium">{post.title}</h5>
-                      <p>{post.description}</p>
+                      <h5
+                        onClick={() =>
+                          router.push({
+                            pathname: `/blog/${post.title}`,
+                            // query:{
+                            //   title:post.title
+                            // }
+                          })
+                        }
+                        className="mb-3 font-medium cursor-pointer hover:text-accent1 transition-all duration-500"
+                      >
+                        {post.title}
+                      </h5>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: post.content
+                            ? post.content.length > 50
+                              ? `${post.content.substring(0, 50)} ...`
+                              : post.content
+                            : "",
+                        }}
+                      ></div>
                     </div>
 
                     <div
-                      onClick={() => router.push(`/blog/${post.id}`)}
+                      onClick={() =>
+                        router.push({
+                          pathname: `/blog/${post.title}`,
+                          // query:{
+                          //   title:post.title
+                          // }
+                        })
+                      }
                       className="group flex items-center gap-2 uppercase underline text-accent1 cursor-pointer"
                     >
                       Read More{" "}

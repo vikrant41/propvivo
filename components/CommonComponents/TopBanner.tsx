@@ -16,7 +16,7 @@ const TopBanner: React.FC<BannerProps> = ({ backgroundImage, title }) => {
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className="text-center relative z-10">
-        <h1 className="text-6xl text-white">{title}</h1>
+        <h1 className="text-4xl md:text-6xl text-white">{title}</h1>
         <nav className="">
           {breadcrumbs.map((breadcrumb, index) => (
             <span key={index} className="text-white">

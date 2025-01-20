@@ -46,7 +46,7 @@ const ContactSection = () => {
       <section className="relative">
         <div className="py-12 md:py-16 relative">
           <div className="container">
-            <div className="grid grid-cols-2 items-end gap-x-14">
+            <div className="grid lg:grid-cols-2 items-end gap-y-8 lg:gap-x-14">
               <div className="relative space-y-7">
                 <div>
                   <h2>Contact Us</h2>
@@ -57,7 +57,7 @@ const ContactSection = () => {
                     help.
                   </p>
                 </div>
-                <div className="grid grid-cols-2 gap-x-10">
+                <div className="grid md:grid-cols-2 space-y-4 md:space-y-0 gap-x-10">
                   <div className="flex flex-col">
                     <h5 className="font-medium">Contact</h5>
                     <ul
@@ -80,7 +80,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h5 className="font-medium">Our Office Address</h5>
-                  <div className="grid grid-cols-2 items-center gap-x-10">
+                  <div className="grid md:grid-cols-2 items-center gap-5 md:gap-10">
                     <div>
                       <div className="text-lg text-pvBlack mb-1">USA</div>
                       <div className="flex items-start gap-1">
