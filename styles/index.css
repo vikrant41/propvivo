@@ -76,13 +76,14 @@ h6 {
   max-width: 128px;
   width: 100%;
 }
-.navbar_link a {
+.navbar_link a, .navbar_link .hasSubmenu {
   color: rgba(255, 255, 255, 0.75);
   font-size: 16px;
   transition: all 0.5s;
 }
 .navbar_link a:hover,
-.navbar_link a.active {
+.navbar_link a.active,
+.navbar_link .hasSubmenu:hover {
   color: rgba(255, 255, 255);
 }
 .navbar_link a::before {
@@ -252,6 +253,54 @@ h6 {
     opacity: 1;
   }
 }
+
+
+/*Marketplace css*/
+.swiper-button-prev,
+.swiper-button-next {
+  background-color: #f9fafb;
+  /* Light background */
+  border: 1px solid #e5e7eb;
+  /* Light gray border */
+  border-radius: 50%;
+  /* Circular shape */
+  width: 30px !important;
+  height: 30px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow */
+  color: #1f2937;
+  /* Icon color (dark gray) */
+  opacity: 1;
+  /* Ensure visibility */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  position: absolute !important;
+  top: auto !important;
+  bottom: 20px !important;
+}
+.swiper-button-next:after, .swiper-button-prev:after {
+  font-size: 10px !important;
+  color: #000;
+  font-weight: 900;
+}
+.mySwiper .swiper-slide-thumb-active {
+  opacity: 1 !important;
+}
+.swiper-button-prev {
+  left: auto;
+  right: 50px;
+}
+.adsDetails .mySwiper .swiper-slide {
+  min-width: 100%;
+  height: 75px;
+ }
+
+ .adsDetails .swiper-thumbs .swiper-wrapper{
+  flex-direction: column;
+  gap: 10px;
+ }
 
 /* Media Queries */
 @media (min-width: 1200px) {

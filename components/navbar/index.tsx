@@ -1,29 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { LogoMain } from "../shared/Icons";
+import { LogoMain, MenuArrow } from "../shared/Icons";
 import { Button } from "../CommonComponents/Button";
 
 const Navbar = () => {
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const body = document.body;
 
     if (isMenuOpen) {
-      body.classList.add('overflow-hidden');
+      body.classList.add("overflow-hidden");
     } else {
-      body.classList.remove('overflow-hidden');
+      body.classList.remove("overflow-hidden");
     }
 
     // Cleanup to ensure no class remains on unmount
     return () => {
-      body.classList.remove('overflow-hidden');
+      body.classList.remove("overflow-hidden");
     };
   }, [isMenuOpen]);
-  
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -50,6 +52,21 @@ const Navbar = () => {
     }
   };
 
+  const toggleDropdown = (menu: string) => {
+    setOpenDropdown(openDropdown === menu ? null : menu);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div
       className={`w-full py-3 lg:py-5 z-50 transition-all duration-500 bg-accent shadow-menuShadow relative ${
@@ -70,7 +87,9 @@ const Navbar = () => {
             } lg:block fixed lg:static top-0 left-0 w-full h-screen lg:h-auto bg-accent lg:bg-transparent p-5 lg:p-0 z-40 lg:z-auto`}
             style={{ transitionProperty: "opacity, max-height, transform" }}
           >
-            <ul className={`flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-7`}>
+            <ul
+              className={`flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-7`}
+            >
               <li className="cursor-pointer relative navbar_link font-outfit font-medium">
                 <Link href="/" passHref>
                   <a
@@ -113,34 +132,105 @@ const Navbar = () => {
                   </a>
                 </Link>
               </li>
-              <li className="cursor-pointer relative navbar_link font-outfit font-medium">
-                <Link href="/blog" passHref>
-                  <a
-                    className={router.pathname === "/blog" ? "active" : ""}
-                    onClick={handleLinkClick}
-                  >
-                    Blog
-                  </a>
-                </Link>
+              <li className="relative group navbar_link font-outfit font-medium">
+                <div className="flex gap-x-1 hasSubmenu cursor-pointer">Documents <span className="rotate-90"><MenuArrow /> </span></div>
+
+                <ul className="absolute left-0 mt-3 w-52 bg-accent shadow-lg rounded-md border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 invisible group-hover:visible -translate-y-4 group-hover:translate-y-0 transition-all duration-200 p-2">
+                  <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                    <Link href="/ResaleCertificate">
+                      <a
+                        className={`block px-4 py-2 text-sm ${
+                          router.pathname === "/ResaleCertificate"
+                            ? "font-bold text-primary"
+                            : ""
+                        }`}
+                      >
+                        Resale Certificate
+                      </a>
+                    </Link>
+                  </li>
+                  <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                    <Link href="/MarketPlace">
+                      <a
+                        className={`block px-4 py-2 text-sm ${
+                          router.pathname === "/MarketPlace"
+                            ? "font-bold text-primary"
+                            : ""
+                        }`}
+                      >
+                        Demand Request
+                      </a>
+                    </Link>
+                  </li>
+                  <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                    <Link href="/MarketPlace">
+                      <a
+                        className={`block px-4 py-2 text-sm ${
+                          router.pathname === "/MarketPlace"
+                            ? "font-bold text-primary"
+                            : ""
+                        }`}
+                      >
+                        Condo Questionnaire
+                      </a>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              <li className="relative group navbar_link font-outfit font-medium">
+                <div className="flex gap-x-1 hasSubmenu cursor-pointer">Socials <span className="rotate-90"><MenuArrow /> </span></div>
+
+                <ul className="absolute left-0 mt-3 w-52 bg-accent shadow-lg rounded-md border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 invisible group-hover:visible -translate-y-4 group-hover:translate-y-0 transition-all duration-200 p-2">
+                  <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                    <Link href="/blog">
+                      <a
+                        className={`block px-4 py-2 text-sm ${
+                          router.pathname === "/blog"
+                            ? "font-bold text-primary"
+                            : ""
+                        }`}
+                      >
+                        Blog
+                      </a>
+                    </Link>
+                  </li>
+                  <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                    <Link href="/MarketPlace">
+                      <a
+                        className={`block px-4 py-2 text-sm ${
+                          router.pathname === "/MarketPlace"
+                            ? "font-bold text-primary"
+                            : ""
+                        }`}
+                      >
+                        Marketplace
+                      </a>
+                    </Link>
+                  </li>
+                </ul>
               </li>
               <li className="cursor-pointer relative navbar_link font-outfit font-medium">
                 <Link href="/contact" passHref>
-                <a
+                  <a
                     className={router.pathname === "/contact" ? "active" : ""}
                     onClick={handleLinkClick}
                   >
-                    Contact Us
+                    Contact
                   </a>
                 </Link>
               </li>
             </ul>
 
-            <ul className={`flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-7 text-white`}>
+            <ul
+              className={`flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-7 text-white`}
+            >
               <li className="cursor-pointer relative navbar_link font-outfit font-medium">
                 <Link href="http://login.devpropvivo.co/login" passHref>
                   <a
                     className={
-                      router.pathname === "http://login.devpropvivo.co/login" ? "active" : "text-white"
+                      router.pathname === "http://login.devpropvivo.co/login"
+                        ? "active"
+                        : "text-white"
                     }
                     onClick={handleLinkClick}
                     target="_blank"
@@ -152,7 +242,11 @@ const Navbar = () => {
               <li className="cursor-pointer relative font-outfit font-medium">
                 <Link href="http://login.devpropvivo.co/login" passHref>
                   <a
-                    className={router.pathname === "http://login.devpropvivo.co/login" ? "active" : ""}
+                    className={
+                      router.pathname === "http://login.devpropvivo.co/login"
+                        ? "active"
+                        : ""
+                    }
                     onClick={handleLinkClick}
                     target="_blank"
                   >
