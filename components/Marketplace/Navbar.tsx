@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { ArrowIcon } from "../icons/icons";
+import { ArrowIcon } from "../shared/Icons";
+
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);

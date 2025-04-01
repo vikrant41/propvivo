@@ -938,7 +938,7 @@ export const LogoMain = (props) => (
   </svg>
 );
 
-export const ArrowIcon = (props) => (
+export const ArrowIcon = (props : any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={17}

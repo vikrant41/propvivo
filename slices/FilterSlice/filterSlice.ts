@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "@reduxjs/toolkit/query";
+import { RootState } from "../../stores";
+
 
 interface Filter {
     filterData?:any
@@ -22,7 +23,7 @@ export const filterDataSlice = createSlice({
     },
 });
 
-export const getFilterData = (state: RootState) => state.filterData;
+export const getFilterData = (state: RootState) => state.filterData; 
 
 export const { setFilterData } = filterDataSlice.actions;
 

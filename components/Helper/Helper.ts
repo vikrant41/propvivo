@@ -1,4 +1,3 @@
-import { ServiceRequest } from "@/slices/ServiceRequest";
 export const requestSubType = {
   Add: "Add",
   Update: "Update",
