@@ -19,8 +19,8 @@ const blog = () => {
     const matchesTag = tag ? post.tags.includes(tag) : true;
     const matchesSearch =
       searchTerm === "" ||
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.description.toLowerCase().includes(searchTerm.toLowerCase());
+      post?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post?.description?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesTag && matchesSearch;
   });
 
