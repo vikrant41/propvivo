@@ -70,7 +70,9 @@ export const requestType = {
   MyProfile:"MyProfile",
   UserRole:"UserRole",
   UnitOccupantDocuments:"UnitOccupantDocuments",
-  UnitDocument:"UnitDocument"
+  UnitDocument:"UnitDocument",
+  CondoQuestionnaire:"CondoQuestionnaire",
+  OneTimePayment:"OneTimePayment",
 };
 
 export const containerName = {
