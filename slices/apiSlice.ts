@@ -290,7 +290,8 @@ export const newApislice = createApi({
     "UnitOccupantDocuments",
     "UnitDocument",
     "Feature",
-    "unitDocumnetDownload"
+    "unitDocumnetDownload",
+    "OneTimePayment",
 
   ],
   endpoints: (builder) => ({}),

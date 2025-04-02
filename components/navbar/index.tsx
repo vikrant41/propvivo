@@ -150,10 +150,10 @@ const Navbar = () => {
                     </Link>
                   </li>
                   <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
-                    <Link href="/MarketPlace">
+                    <Link href="/DemandStatement">
                       <a
                         className={`block px-4 py-2 text-sm ${
-                          router.pathname === "/MarketPlace"
+                          router.pathname === "/DemandStatement"
                             ? "font-bold text-primary"
                             : ""
                         }`}
@@ -163,10 +163,10 @@ const Navbar = () => {
                     </Link>
                   </li>
                   <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
-                    <Link href="/MarketPlace">
+                    <Link href="/CondoQuestionnaire">
                       <a
                         className={`block px-4 py-2 text-sm ${
-                          router.pathname === "/MarketPlace"
+                          router.pathname === "/CondoQuestionnaire"
                             ? "font-bold text-primary"
                             : ""
                         }`}
