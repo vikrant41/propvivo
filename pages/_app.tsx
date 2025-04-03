@@ -8,16 +8,20 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Provider } from "react-redux";
 import { store } from "../stores";
+import { ApolloProvider } from "@apollo/client";
+import apiClient from "../apollo/apiClient";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <Provider store={store}>
-      <Layout>
-        <BreadcrumbProvider>
-          <Component {...pageProps} />
-        </BreadcrumbProvider>
-      </Layout>
-    </Provider>
+    <ApolloProvider client={apiClient}>
+      <Provider store={store}>
+        <Layout>
+          <BreadcrumbProvider>
+            <Component {...pageProps} />
+          </BreadcrumbProvider>
+        </Layout>
+      </Provider>
+    </ApolloProvider>
   );
 }
 

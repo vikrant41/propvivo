@@ -118,7 +118,8 @@ export default function PaymentCardForm(formData) {
       const encryptedPayload = encrypt(payLoad);
 
       // Send the encrypted payload to the backend API
-      await AddOneTimePaymentRequest({ paymentInformation: encryptedPayload });
+      const response = await AddOneTimePaymentRequest({ paymentInformation: encryptedPayload });
+      console.log("response",response)
       setPaymentStatus("success");
       console.log("encryptedPayload", encryptedPayload);
       // Set loading state
