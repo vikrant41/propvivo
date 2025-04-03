@@ -7,30 +7,36 @@ import { AttchmentIcon, CloseIcon, FaDollar } from "../components/shared/Icons";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "../components/CommonComponents/Button";
 import PaymentCardForm from "../components/Condo/PaymentCardForm";
+import PaymentSuccessCard from "../components/Condo/PaymentSuccessCard";
+import PaymentFailed from "../components/Condo/PaymentFailed";
+import PaymentLoader from "../components/Condo/PaymentLoader";
+
 
 const validationSchema = Yup.object({
-  requestorType: Yup.string().required("Required"),
-  associationName: Yup.string().required("Required"),
-  propertyAddress: Yup.string().required("Required"),
-  requesterFirstName: Yup.string().required("Required"),
-  requesterLastName: Yup.string().required("Required"),
-  requesterCompany: Yup.string().required("Required"),
-  escrowNumber: Yup.string().required("Required"),
-  requesterEmail: Yup.string().email("Invalid email").required("Required"),
-  requesterPhone: Yup.string().required("Required"),
-  buyerFirstName: Yup.string().required("Required"),
-  buyerLastName: Yup.string().required("Required"),
-  buyerEmail: Yup.string().email("Invalid email").required("Required"),
-  buyerPhone: Yup.string().required("Required"),
-  closingDate: Yup.string().required("Required"),
-  orderType: Yup.string().required("Required"),
-  attachments: Yup.array().min(1, "At least one file is required"),
+  requestorType: Yup.string().required("Request Type is Required"),
+  associationName: Yup.string().required("Name is Required"),
+  propertyAddress: Yup.string().required("Address is Required"),
+  requesterFirstName: Yup.string().required("First Name is Required"),
+  requesterLastName: Yup.string().required("Last Name is Required"),
+  requesterCompany: Yup.string().required("Company Name is Required"),
+  escrowNumber: Yup.string().required("Escrow Number is Required"),
+  requesterEmail: Yup.string()
+    .email("Invalid email")
+    .required("Email is Required"),
+  requesterPhone: Yup.string().required("Phone Number is Required"),
+  buyerFirstName: Yup.string().required("First Name is Required"),
+  buyerLastName: Yup.string().required("Last Name is Required"),
+  buyerEmail: Yup.string().email("Invalid email").required("Email is Required"),
+  buyerPhone: Yup.string().required("Phone Number is Required"),
+  closingDate: Yup.string().required("Closing Date is Required"),
+  orderType: Yup.string().required("Order Type is Required"),
 });
 
 function CondoQuestionnaire() {
   const { setBreadcrumbs } = useBreadcrumbs();
   const [files, setFiles] = useState<File[]>([]);
   const [isPayment, setIsPayment] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
   const formik = useFormik({
     initialValues: {
       requestorType: "",
@@ -49,9 +55,11 @@ function CondoQuestionnaire() {
       closingDate: "",
       orderType: "Normal",
       attachments: [],
+      price: "",
     },
     validationSchema,
     onSubmit: (values) => {
+      setFormData(values);
       console.log("Form Submitted", values);
     },
   });
@@ -60,7 +68,7 @@ function CondoQuestionnaire() {
     setBreadcrumbs([
       { name: "PropVivo", href: "/" },
       { name: "Request Document" },
-      { name: "Resale Certificate" },
+      { name: "Condo Questionnaire" },
     ]);
   }, [setBreadcrumbs]);
 
@@ -82,15 +90,28 @@ function CondoQuestionnaire() {
   };
 
   //Change status isPayment
-  const handleProceedToPay = () => {
-    setIsPayment(true);
+  const handleProceedToPay = async () => {
+    const isValid = await formik.validateForm();
+    if (Object.keys(isValid).length === 0) {
+      setFormData(formik.values);
+      setIsPayment(true);
+    } else {
+      console.log("Form is invalid");
+    }
   };
+
+  useEffect(() => {
+    const demandStatementFee = formik.values.orderType === "Rush" ? 200 : 100;
+    const transferFee = 10;
+    const totalAmount = (demandStatementFee + transferFee).toFixed(2);
+    formik.setFieldValue("price", totalAmount);
+  }, [formik.values.orderType]);
 
   return (
     <>
       <TopBanner
         backgroundImage="./img/Banner.jpg"
-        title="Condo Questionnaire"
+        title="Resale Certificate"
       />
       {!isPayment ? (
         <div className="max-w-3xl mx-auto my-14">
@@ -114,9 +135,9 @@ function CondoQuestionnaire() {
                       </Field>
                     </div>
                     <ErrorMessage
-                      name="name"
+                      name="requestorType"
                       component="div"
-                      className="text-red-500 absolute"
+                      className="text-red-500 absolute text-sm"
                     />
                   </div>
                 </div>
@@ -140,7 +161,7 @@ function CondoQuestionnaire() {
                       <ErrorMessage
                         name="associationName"
                         component="div"
-                        className="text-red-500 absolute"
+                        className="text-red-500 absolute text-sm"
                       />
                     </div>
                     <div>
@@ -156,7 +177,7 @@ function CondoQuestionnaire() {
                       <ErrorMessage
                         name="propertyAddress"
                         component="div"
-                        className="text-red-500 absolute"
+                        className="text-red-500 absolute text-xs"
                       />
                     </div>
                   </div>
@@ -360,7 +381,7 @@ function CondoQuestionnaire() {
 
                 <div className="relative grid grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
-                    Attachments <span className="text-red-500">*</span>
+                    Attachments 
                   </label>
                   <div className="col-span-4">
                     <div className="cursor-pointer text-accent1 flex items-center gap-2 relative">
@@ -439,23 +460,28 @@ function CondoQuestionnaire() {
                           type="text"
                           id="price"
                           name="price"
-                          value="110.00"
+                          value={formik.values.price}
+                          disabled
                           placeholder="Enter Price"
                           className="w-full bg-transparent pl-2 py-3 outline-none text-22 placeholder:text-accent2 text-pvBlack flex-1"
                         />
                       </div>
                       <div className="mt-2">
+                        {/* Show the breakdown for the pricing */}
                         <div className="flex items-center justify-between text-sm">
                           <div className="text-accent2 font-karla">
                             Demand Statement Fees
-                          </div>{" "}
-                          <div>$100</div>
+                          </div>
+                          <div>
+                            {formik.values.orderType === "Rush"
+                              ? "$200"
+                              : "$100"}
+                          </div>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <div className="text-accent2 font-karla">
-                            {" "}
                             + Transfer Fees
-                          </div>{" "}
+                          </div>
                           <div>$10</div>
                         </div>
                       </div>
@@ -484,7 +510,7 @@ function CondoQuestionnaire() {
           </FormikProvider>
         </div>
       ) : (
-        <PaymentCardForm />
+        <PaymentCardForm formData={formData} />
       )}
     </>
   );

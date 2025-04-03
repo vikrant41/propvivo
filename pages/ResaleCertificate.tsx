@@ -57,7 +57,7 @@ function ResaleCertificate() {
       attachments: [],
       price: "",
     },
-    validationSchema,
+    // validationSchema,
     onSubmit: (values) => {
       setFormData(values);
       console.log("Form Submitted", values);
