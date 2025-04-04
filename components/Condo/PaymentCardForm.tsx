@@ -227,11 +227,11 @@ export default function PaymentCardForm(formData) {
             {/* Formik Form */}
             <Formik
               initialValues={initialValues}
-              // validationSchema={
-              //   paymentMethod === "card"
-              //     ? cardValidationSchema
-              //     : bankValidationSchema
-              // }
+              validationSchema={
+                paymentMethod === "card"
+                  ? cardValidationSchema
+                  : bankValidationSchema
+              }
               onSubmit={handleSubmit}
             >
               {({ errors, touched, handleChange, handleBlur, values }) => {

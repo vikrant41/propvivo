@@ -7,9 +7,7 @@ import { AttchmentIcon, CloseIcon, FaDollar } from "../components/shared/Icons";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "../components/CommonComponents/Button";
 import PaymentCardForm from "../components/Condo/PaymentCardForm";
-import PaymentSuccessCard from "../components/Condo/PaymentSuccessCard";
-import PaymentFailed from "../components/Condo/PaymentFailed";
-import PaymentLoader from "../components/Condo/PaymentLoader";
+
 
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Request Type is Required"),
