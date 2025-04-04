@@ -89,7 +89,7 @@ const SearchTextBox = ({
           } text-sm disabled:text-gray-p-250 disabled:bg-gray-p-150`}
         />
         {errors && (
-          <p className="text-status-danger-800 font-medium">{errors}</p>
+          <p className="text-red-500 text-sm">{errors}</p>
         )}
       </div>
       {showData && text.length >= searchAfterChar && (

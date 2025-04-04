@@ -28,3 +28,17 @@ export function formatDateWithMonth(dateString, withTime = true) {
     }
     return text.slice(0, maxLength) + "...";
   };
+
+
+  export const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getUTCFullYear();
+    const month = ("0" + (date.getUTCMonth() + 1)).slice(-2);
+    const day = ("0" + date.getUTCDate()).slice(-2);
+    const hours = ("0" + date.getUTCHours()).slice(-2);
+    const minutes = ("0" + date.getUTCMinutes()).slice(-2);
+    const seconds = ("0" + date.getUTCSeconds()).slice(-2);
+    const milliseconds = ("00" + date.getUTCMilliseconds()).slice(-3);
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+    return formattedDate;
+  };
