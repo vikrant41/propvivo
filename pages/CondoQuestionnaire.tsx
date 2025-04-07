@@ -48,7 +48,6 @@ function CondoQuestionnaire() {
   const [paymentData, setPaymentData] = useState(null);
 
   // Condo InitialValues
-  console.log("paymentData", paymentData);
   const formik = useFormik({
     initialValues: {
       requestorType: "",

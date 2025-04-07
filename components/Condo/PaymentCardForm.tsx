@@ -57,9 +57,9 @@ export default function PaymentCardForm({
     confirmRoutingNumber: Yup.string()
       .oneOf([Yup.ref("routingNumber")], "Routing numbers must match")
       .required("Confirm routing number is required"),
-    // bankAccountNumber: Yup.string()
-    //   // .matches(/^[0-9]{10}$/, "Invalid account number")
-    //   .required("Bank account number is required"),
+    bankAccountNumber: Yup.string()
+      .matches(/^[0-9]{9}$/, "Invalid account number")
+      .required("Bank account number is required"),
     confirmBankAccountNumber: Yup.string()
       .oneOf([Yup.ref("bankAccountNumber")], "Account numbers must match")
       .required("Confirm bank account number is required"),
@@ -248,7 +248,6 @@ export default function PaymentCardForm({
               onSubmit={handleSubmit}
             >
               {({ errors, touched, handleChange, handleBlur, values }) => {
-                console.log("value", values);
                 return (
                   <Form>
                     {paymentMethod === "card" && (
