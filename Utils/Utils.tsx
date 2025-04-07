@@ -42,3 +42,20 @@ export function formatDateWithMonth(dateString, withTime = true) {
     const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
     return formattedDate;
   };
+
+  // Input  -> "2025-04-09T00:00:00" 
+  // OutPut -> 04/09/2025 12:00 AM
+  export const formatDateWithTime = (dateString) => {
+    const date = new Date(dateString);
+    
+    const options : any = {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // To get 12-hour format
+    };
+    
+    return date.toLocaleString('en-US', options).replace(',', '');
+  };

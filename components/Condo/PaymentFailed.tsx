@@ -1,7 +1,8 @@
 import React from "react";
 import { FailedIcon } from "./Icons";
 
-const PaymentFailed = () => {
+const PaymentFailed = ({ handleRetryPayment }) => {
+
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 max-w-lg mx-auto h-[400px] flex flex-col justify-center">
       {/* Success Icon */}
@@ -47,7 +48,8 @@ const PaymentFailed = () => {
 
       {/* Download Receipt Button */}
       <div className="mt-6">
-        <button className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition duration-300">
+        <button className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition duration-300"
+        onClick={handleRetryPayment}>
           Retry
         </button>
       </div>

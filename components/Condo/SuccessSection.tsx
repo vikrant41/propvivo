@@ -16,9 +16,6 @@ const SuccessSection = () => {
         </h3>
 
         <p className="text-gray-600 text-sm mb-6 text-center">
-          {/* Your request for a Resale Certificate has been submitted successfully. A
-        confirmation for both your request and payment will be sent to the email
-        provided. */}
           Your Request for Demand Request has been submitted successfully. A
           confirmation for both your request will be sent to the email provided.
         </p>

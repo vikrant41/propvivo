@@ -311,6 +311,8 @@ function ResaleCertificate() {
   //   formik.setFieldValue("price", totalAmount);
   // }, [formik.values.orderType]);
 
+
+// UI/UX display Code
   return (
     <>
       <TopBanner
