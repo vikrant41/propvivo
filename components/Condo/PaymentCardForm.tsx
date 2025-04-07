@@ -8,7 +8,11 @@ import PaymentLoader from "./PaymentLoader";
 import PaymentSuccessCard from "./PaymentSuccessCard";
 import PaymentFailed from "./PaymentFailed";
 
-export default function PaymentCardForm(formData) {
+export default function PaymentCardForm({
+  formData,
+  setRequestStatus,
+  setPaymentData,
+}) {
   // ALL HOOKS
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [paymentStatus, setPaymentStatus] = useState("idle");
@@ -93,38 +97,47 @@ export default function PaymentCardForm(formData) {
 
   // The submit handler function
   const handleSubmit = async (values) => {
-    // const payLoad = {
-    //   AccountHolderName: values.cardHolderName,
-    //   BankRoutingNumber: values.routingNumber,
-    //   ConfirmBankRoutingNumber: values.confirmRoutingNumber,
-    //   AccountNumber: values.bankAccountNumber,
-    //   ConfirmAccountNumber: values.confirmBankAccountNumber,
-    //   AccountType:"Checking",
-    //   Amount:"10.00"
-    // };
-    setPaymentStatus("loading");
     const payLoad = {
-      AccountHolderName: "Sam Leo",
-      BankRoutingNumber: "124000025",
-      ConfirmBankRoutingNumber: "124000025",
-      AccountNumber: "987654321",
-      ConfirmAccountNumber: "987654321",
+      AccountHolderName: values.cardHolderName,
+      BankRoutingNumber: values.routingNumber,
+      ConfirmBankRoutingNumber: values.confirmRoutingNumber,
+      AccountNumber: values.bankAccountNumber,
+      ConfirmAccountNumber: values.confirmBankAccountNumber,
       AccountType: "Checking",
-      Amount: 10.0,
+      Amount: "10.00",
     };
-    console.log("hehe", payLoad);
+    setPaymentStatus("loading");
+    // const payLoad = {
+    //   AccountHolderName: "Sam Leo",
+    //   BankRoutingNumber: "124000025",
+    //   ConfirmBankRoutingNumber: "124000025",
+    //   AccountNumber: "987654321",
+    //   ConfirmAccountNumber: "987654321",
+    //   AccountType: "Checking",
+    //   Amount: 10.0,
+    // };
+
     try {
       // Encrypt the payload before sending it
       const encryptedPayload = encrypt(payLoad);
 
       // Send the encrypted payload to the backend API
-      const response = await AddOneTimePaymentRequest({ paymentInformation: encryptedPayload });
-      console.log("response",response)
-      setPaymentStatus("success");
-      console.log("encryptedPayload", encryptedPayload);
-      // Set loading state
+      const response = await AddOneTimePaymentRequest({
+        paymentInformation: encryptedPayload,
+      });
+      if ("data" in response) {
+        // Access the nested data
+        if (response.data && response.data.data) {
+          setPaymentData(response.data.data);
+          setRequestStatus(true);
+          setPaymentStatus("success");
+        } else {
+          setPaymentStatus("error");
+        }
+      } else {
+        setPaymentStatus("error");
+      }
     } catch (error) {
-      // If there's an error, stop the loading state
       setPaymentStatus("error");
       console.error("Payment failed: ", error);
     }
@@ -139,51 +152,51 @@ export default function PaymentCardForm(formData) {
           </div>
           <div className="my-1">
             <span>Requester Type : </span>
-            <span>{formData.formData.requestorType}</span>
+            <span>{formData?.requestorType}</span>
           </div>
           <div className="my-1">
             <span>Association Name : </span>
-            <span>{formData.formData.associationName}</span>
+            <span>{formData?.associationName}</span>
           </div>
           <div className="my-1">
             <span>Property Address : </span>
-            <span>{formData.formData.propertyAddress}</span>
+            <span>{formData?.propertyAddress}</span>
           </div>
           <div className="my-1">
             <span>Requester First Name : </span>
-            <span>{formData.formData.requesterFirstName}</span>
+            <span>{formData?.requesterFirstName}</span>
           </div>
           <div className="my-1">
             <span>Requester Last Name : </span>
-            <span>{formData.formData.requesterLastName}</span>
+            <span>{formData?.requesterLastName}</span>
           </div>
           <div className="my-1">
             <span>Requester Company : </span>
-            <span>{formData.formData.requesterCompany}</span>
+            <span>{formData?.requesterCompany}</span>
           </div>
           <div className="my-1">
             <span>Requester Email Address : </span>
-            <span>{formData.formData.requesterEmail}</span>
+            <span>{formData?.requesterEmail}</span>
           </div>
           <div className="my-1">
             <span>Requester Phone Number : </span>
-            <span>{formData.formData.requesterPhone}</span>
+            <span>{formData?.requesterPhone}</span>
           </div>
           <div className="my-1">
             <span>Estimated Closing Date : </span>
-            <span>{formData.formData.closingDate}</span>
+            <span>{formData?.closingDate}</span>
           </div>
           <div className="my-1">
             <span>Order Type : </span>
-            <span>{formData.formData.orderType}</span>
+            <span>{formData?.orderType}</span>
           </div>
           <div className="my-1">
             <span>Escrow Number : </span>
-            <span>{formData.formData.escrowNumber}</span>
+            <span>{formData?.escrowNumber}</span>
           </div>
           <div className="my-1">
             <span>Amount Charged : </span>
-            <span>{formData.formData?.price}</span>
+            <span>{formData?.price}</span>
           </div>
         </div>
         {/* Payment Card */}
@@ -398,7 +411,7 @@ export default function PaymentCardForm(formData) {
                         type="submit"
                         className="w-full bg-[#4790CD] text-white py-2 rounded-full"
                       >
-                        Pay | ${formData.formData.price || "0.00"}
+                        Pay | ${formData?.formData?.price || "0.00"}
                       </button>
                     </div>
                   </Form>

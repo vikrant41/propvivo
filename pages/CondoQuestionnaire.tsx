@@ -10,7 +10,13 @@ import PaymentCardForm from "../components/Condo/PaymentCardForm";
 import PaymentSuccessCard from "../components/Condo/PaymentSuccessCard";
 import PaymentFailed from "../components/Condo/PaymentFailed";
 import PaymentLoader from "../components/Condo/PaymentLoader";
-
+import { useMutation, useQuery } from "@apollo/client";
+import { CREATE_CONDO_REQUEST } from "../graphql/mutations/CondoMutations";
+import { formatDate } from "../Utils/Utils";
+import SearchTextBox from "../components/Condo/SearchTextBox";
+import apiClient from "../apollo/apiClient";
+import { GET_ALL_LEGALENTITY } from "../graphql/queries/LegalEntityQueries";
+import { GET_ALL_LEGALENTITY_ADDRESS_MAPPING } from "../graphql/queries/LegalEntityAddressMappingQueries";
 
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Request Type is Required"),
@@ -33,14 +39,25 @@ const validationSchema = Yup.object({
 });
 
 function CondoQuestionnaire() {
+  // ALL HOOKS
   const { setBreadcrumbs } = useBreadcrumbs();
   const [files, setFiles] = useState<File[]>([]);
   const [isPayment, setIsPayment] = useState(false);
   const [formData, setFormData] = useState<any>(null);
+  const [requestStatus, setRequestStatus] = useState(false);
+  const [paymentData, setPaymentData] = useState(null);
+
+  // Condo InitialValues
+  console.log("paymentData", paymentData);
   const formik = useFormik({
     initialValues: {
       requestorType: "",
       associationName: "",
+      association: {
+        id: "",
+        name: "",
+        code: "",
+      },
       propertyAddress: "",
       requesterFirstName: "",
       requesterLastName: "",
@@ -56,10 +73,30 @@ function CondoQuestionnaire() {
       orderType: "Normal",
       attachments: [],
       price: "",
+      country: {
+        id: "",
+        name: "",
+        icon: "",
+      },
+      state: {
+        id: "",
+        name: "",
+      },
+      city: {
+        id: "",
+        name: "",
+      },
+      zip: {
+        id: "",
+        name: "",
+      },
+      address1: "",
+      address2: "",
     },
     validationSchema,
     onSubmit: (values) => {
       setFormData(values);
+      handleSubmit();
       console.log("Form Submitted", values);
     },
   });
@@ -94,9 +131,144 @@ function CondoQuestionnaire() {
     const isValid = await formik.validateForm();
     if (Object.keys(isValid).length === 0) {
       setFormData(formik.values);
+      formik.submitForm();
       setIsPayment(true);
     } else {
-      console.log("Form is invalid");
+      console.log("Form is invalid", isValid);
+    }
+  };
+
+  //GQL Query Calling for legalEntity
+  const { data: getAllLegalEntityData, loading: loadinglegalEntityList } =
+    useQuery(GET_ALL_LEGALENTITY, {
+      variables: {
+        request: {
+          pageCriteria: {
+            enablePage: false,
+            pageSize: 10,
+            skip: 0,
+          },
+          requestParam: {},
+          requestSubType: "List",
+          requestType: "LegalEntity",
+        },
+      },
+      client: apiClient,
+      fetchPolicy: "cache-first",
+      nextFetchPolicy: "cache-and-network",
+    });
+  const legalEntityList =
+    getAllLegalEntityData?.legalEntityQueries?.getAllLegalEntity;
+
+  //Get All LEGALENTITYAddressMapping GQL Calling
+  const {
+    data: getAllData,
+    loading: LegalEntityAddressMappingLoading,
+    error: isError,
+    refetch,
+  } = useQuery(GET_ALL_LEGALENTITY_ADDRESS_MAPPING, {
+    variables: {
+      request: {
+        requestParam: {
+          legalEntityId: formik?.values?.association?.id,
+        },
+        requestSubType: "List",
+        requestType: "LegalEntityAddressMapping",
+      },
+    },
+    client: apiClient,
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-and-network",
+    skip: !formik?.values?.association?.id,
+  });
+
+  const LegalEntityAddressMappingList =
+    getAllData?.legalEntityAddressMappingQueries?.legalEntityAddressMapping;
+
+  /* GQL mutation calling for POST */
+  const [
+    PostCondoQuestionnaireRequest,
+    { data: addData, loading: demandStatementLoading, error },
+  ] = useMutation(CREATE_CONDO_REQUEST, {
+    onCompleted: () => {},
+  });
+
+  const handleSubmit = async () => {
+    // Formulate payload for the GraphQL request
+    const payload = {
+      amountCharged: parseFloat(formik?.values?.price),
+      attachments:
+        formik?.values?.attachments?.map((file) => ({
+          fileName: file.name,
+          fileUrl: file.url || "",
+          fileType: file.type,
+        })) || [],
+      buyer: {
+        firstName: formik?.values?.buyerFirstName,
+        lastName: formik?.values?.buyerLastName,
+        email: formik?.values?.buyerEmail,
+        phone: {
+          number: formik?.values?.buyerPhone,
+        },
+      },
+      closingDate: formik?.values?.closingDate
+        ? formatDate(formik?.values?.closingDate)
+        : null,
+      condoRequestorType: "Escrow",
+      escrowNumber: formik?.values?.escrowNumber,
+      legalEntityCode: formik?.values?.association.code || "",
+      legalEntityId: formik?.values?.association.id || "",
+      legalEntityName: formik?.values?.association.name,
+      orderType: formik?.values?.orderType || "Normal",
+      paymentStatus: "Pending",
+      propertyAddress: {
+        city: formik?.values?.city?.name || "",
+        cityId: formik?.values?.city?.name || "",
+        country: formik?.values?.country?.name || "",
+        countryId: formik?.values?.country?.id || "",
+        state: formik?.values?.state?.name || "",
+        stateId: formik?.values?.state?.id || "",
+        zipCode: formik?.values?.zip?.name || "",
+        zipCodeId: formik?.values?.zip?.id || "",
+      },
+      requestor: {
+        firstName: formik?.values?.requesterFirstName,
+        lastName: formik?.values?.requesterLastName,
+        companyName: formik?.values?.requesterCompany,
+        email: formik?.values?.requesterEmail,
+        phone: {
+          number: formik?.values?.requesterPhone,
+        },
+      },
+      paymentData: {
+        accountName: paymentData?.accountName,
+        accountNumber: paymentData?.accountNumber,
+        accountType: paymentData?.accountType,
+        amount: paymentData?.amount,
+        amountCurrency: paymentData?.amountCurrency,
+        bankName: paymentData?.bankName,
+        bankRoutingNumber: paymentData?.bankRoutingNumber,
+        effectiveDate: paymentData?.effectiveDate,
+        transactionDesc: paymentData?.transactionDesc,
+        transactionId: paymentData?.transactionId,
+      },
+    };
+    console.log("payload", payload);
+    try {
+      // Await the GraphQL mutation request
+      const response = await PostCondoQuestionnaireRequest({
+        variables: {
+          request: {
+            requestParam: payload,
+            requestSubType: "Add",
+            requestType: "CondoRequest",
+          },
+        },
+      });
+    } catch (error) {
+      console.log(
+        error?.graphQLErrors?.[0]?.extensions?.message || error?.message
+      );
     }
   };
 
@@ -148,38 +320,115 @@ function CondoQuestionnaire() {
                     <span className="text-red-500">*</span>
                   </label>
                   <div className="col-span-4 space-y-6">
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
-                          id="name"
-                          name="associationName"
-                          placeholder="Association Name"
-                          className="w-full bg-transparent py-1 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
-                      </div>
-                      <ErrorMessage
-                        name="associationName"
-                        component="div"
-                        className="text-red-500 absolute text-sm"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
-                          id="name"
-                          name="propertyAddress"
-                          placeholder="Property Address"
-                          className="w-full bg-transparent py-1 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
-                      </div>
-                      <ErrorMessage
-                        name="propertyAddress"
-                        component="div"
-                        className="text-red-500 absolute text-xs"
-                      />
-                    </div>
+                    <SearchTextBox
+                      name={"associationName"}
+                      placeholder={"Association Name"}
+                      maxLength={50}
+                      errors={
+                        formik.errors.associationName &&
+                        formik.touched.associationName &&
+                        formik.errors.associationName
+                      }
+                      searchAfterChar={3}
+                      data={legalEntityList?.data?.legalEntities?.map((res) => {
+                        return {
+                          code: res?.companyCode || "",
+                          name: res?.legalEntityName || "",
+                          id: res?.legalEntityId || "",
+                          coutryId: res?.address?.countryId || "",
+                          countryName: res?.address?.country || "",
+                          stateId: res?.address?.stateId || "",
+                          stateName: res?.address?.state || "",
+                          cityId: res?.address?.cityId || "",
+                          cityName: res?.address?.city || "",
+                          address1: res?.address?.address1 || "",
+                          address2: res?.address?.address2 || "",
+                          addressId: res?.address?.addressId || "",
+                          contactNo: res?.address?.phone || "",
+                          email: res?.address?.email || "",
+                          zipCode: res?.address?.zipCode || "",
+                          zipCodeId: res?.address?.zipCodeId || "",
+                        };
+                      })}
+                      selectionAllow={true}
+                      onChangeValue={(values) => {
+                        formik.setFieldValue("associationName", values);
+                      }}
+                      handleSetValue={(x) => {
+                        formik.setFieldValue("association", {
+                          id: x?.id,
+                          name: x?.name,
+                          code: x?.code,
+                        });
+                      }}
+                      selectedValue={
+                        formik?.values?.associationName
+                          ? formik?.values?.associationName
+                          : ""
+                      }
+                    />
+
+                    <SearchTextBox
+                      name={"propertyAddress"}
+                      placeholder={"Property Address"}
+                      maxLength={50}
+                      errors={
+                        formik.errors.propertyAddress &&
+                        formik.touched.propertyAddress &&
+                        formik.errors.propertyAddress
+                      }
+                      searchAfterChar={3}
+                      data={LegalEntityAddressMappingList?.data?.legalEntityPropertyAddresses?.map(
+                        (res) => {
+                          return {
+                            id: res?.propertyAddress?.addressId,
+                            name: res?.propertyAddress?.address1,
+                            coutryId: res?.propertyAddress?.countryId || "",
+                            countryName: res?.propertyAddress?.country || "",
+                            stateId: res?.propertyAddress?.stateId || "",
+                            stateName: res?.propertyAddress?.state || "",
+                            cityId: res?.propertyAddress?.cityId || "",
+                            cityName: res?.propertyAddress?.city || "",
+                            address1: res?.propertyAddress?.address1 || "",
+                            address2: res?.propertyAddress?.address2 || "",
+                            addressId: res?.propertyAddress?.addressId || "",
+                            contactNo: res?.propertyAddress?.phone || "",
+                            email: res?.propertyAddress?.email || "",
+                            zipCode: res?.propertyAddress?.zipCode || "",
+                            zipCodeId: res?.propertyAddress?.zipCodeId || "",
+                          };
+                        }
+                      )}
+                      selectionAllow={true}
+                      onChangeValue={(values) => {
+                        formik.setFieldValue("propertyAddress", values);
+                      }}
+                      handleSetValue={(x) => {
+                        formik.setFieldValue("country", {
+                          id: x?.coutryId,
+                          name: x?.countryName,
+                        });
+                        formik.setFieldValue("state", {
+                          id: x?.stateId,
+                          name: x?.stateName,
+                        });
+                        formik.setFieldValue("city", {
+                          id: x?.cityId,
+                          name: x?.cityName,
+                        });
+                        formik.setFieldValue("zip", {
+                          id: x?.zipCodeId,
+                          name: x?.zipCode,
+                        });
+                        formik.setFieldValue("address1", x?.address1);
+                        formik.setFieldValue("address2", x?.address2);
+                      }}
+                      selectedValue={
+                        formik?.values?.associationName
+                          ? formik?.values?.associationName
+                          : ""
+                      }
+                    />
                   </div>
                 </div>
 
@@ -381,7 +630,7 @@ function CondoQuestionnaire() {
 
                 <div className="relative grid grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
-                    Attachments 
+                    Attachments
                   </label>
                   <div className="col-span-4">
                     <div className="cursor-pointer text-accent1 flex items-center gap-2 relative">
@@ -510,7 +759,11 @@ function CondoQuestionnaire() {
           </FormikProvider>
         </div>
       ) : (
-        <PaymentCardForm formData={formData} />
+        <PaymentCardForm
+          formData={formData}
+          setRequestStatus={setRequestStatus}
+          setPaymentData={setPaymentData}
+        />
       )}
     </>
   );
