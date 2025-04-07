@@ -2,14 +2,7 @@ import React, { useEffect, useState } from "react";
 import TopBanner from "../components/CommonComponents/TopBanner";
 import { useBreadcrumbs } from "../contexts/BreadCrumbContext";
 import * as Yup from "yup";
-import {
-  ErrorMessage,
-  Field,
-  Form,
-  Formik,
-  FormikProvider,
-  useFormik,
-} from "formik";
+import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import { AttchmentIcon, CloseIcon, FaDollar } from "../components/shared/Icons";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "../components/CommonComponents/Button";
@@ -140,7 +133,7 @@ function ResaleCertificate() {
       legalEntityId: formik?.values?.association.id || "",
       legalEntityName: formik?.values?.association.name,
       orderType: formik?.values?.orderType || "Normal",
-      paymentStatus: "Pending",
+      paymentStatus: "Completed",
       propertyAddress: {
         city: formik?.values?.city?.name || "",
         cityId: formik?.values?.city?.name || "",
@@ -170,12 +163,13 @@ function ResaleCertificate() {
         amountCurrency: paymentData?.amountCurrency,
         bankName: paymentData?.bankName,
         bankRoutingNumber: paymentData?.bankRoutingNumber,
-        effectiveDate: paymentData?.effectiveDate,
+        effectiveDate: paymentData?.effectiveDate
+          ? `${paymentData?.effectiveDate}Z`
+          : "",
         transactionDesc: paymentData?.transactionDesc,
         transactionId: paymentData?.transactionId,
       },
     };
-    console.log("payload", payload);
     try {
       // Await the GraphQL mutation request
       const response = await PostResaleCertificationRequest({
@@ -287,7 +281,7 @@ function ResaleCertificate() {
     const isValid = await formik.validateForm();
     if (Object.keys(isValid).length === 0) {
       setFormData(formik.values);
-      formik.submitForm();
+      // formik.submitForm();
       setIsPayment(true);
     } else {
       console.log("Form is invalid");
@@ -305,6 +299,10 @@ function ResaleCertificate() {
       formik.setFieldValue("price", totalAmount);
     }
   }, [orderTypeList]);
+
+  const handlePaymentSuccess = () => {
+    formik.submitForm();
+  };
 
   // useEffect(() => {
   //   const demandStatementFee = formik.values.orderType === "Rush" ? 200 : 100;
@@ -807,6 +805,7 @@ function ResaleCertificate() {
           formData={formData}
           setRequestStatus={setRequestStatus}
           setPaymentData={setPaymentData}
+          onPaymentSuccess={handlePaymentSuccess}
         />
       )}
     </>

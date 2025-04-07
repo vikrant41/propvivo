@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
 interface SearchTextBoxProps {
-//   title: string;
   name: string;
   placeholder: string;
   required?: boolean;
@@ -65,32 +64,32 @@ const SearchTextBox = ({
         {/* <span className=" text-black-b-300">{title}</span> */}
         {required && <span className="text-status-danger-800">*</span>}
       </div>
-      <div>
-        <input
-          name={name}
-          type="text"
-          placeholder={placeholder}
-          onClick={() => setShowData(true)}
-          value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-          }}
-          onFocus={() => setShowData(true)}
-          onBlur={() => !selectionAllow && setShowData(false)}
-          disabled={disable}
-          maxLength={maxLength}
-          autoComplete="off"
-          className={`p-2 border border-gray-p-350 rounded-md w-full outline-none focus-within:shadow-input-ring  ${
-            errors ? " border-status-danger-800" : " border-gray-o-400"
-          } focus:ring-0 ${
-            errors
-              ? " focus:border-status-danger-800"
-              : "focus:border-primary-o-600"
-          } text-sm disabled:text-gray-p-250 disabled:bg-gray-p-150`}
-        />
-        {errors && (
-          <p className="text-red-500 text-sm">{errors}</p>
-        )}
+      <div className="-mb-4">
+        <div className="flex items-center border-b border-gray-o-60">
+          <input
+            name={name}
+            type="text"
+            placeholder={placeholder}
+            onClick={() => setShowData(true)}
+            value={text}
+            onChange={(e) => {
+              setText(e.target.value);
+            }}
+            onFocus={() => setShowData(true)}
+            onBlur={() => !selectionAllow && setShowData(false)}
+            disabled={disable}
+            maxLength={maxLength}
+            autoComplete="off"
+            className={`w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack  ${
+              errors ? " border-status-danger-800" : " border-gray-o-400"
+            } focus:ring-0 ${
+              errors
+                ? " focus:border-status-danger-800"
+                : "focus:border-primary-o-600"
+            } text-17 disabled:text-gray-p-250 disabled:bg-gray-p-150 text-pvBlack `}
+          />
+        </div>
+        <div>{errors && <p className="text-red-500 text-sm">{errors}</p>}</div>
       </div>
       {showData && text.length >= searchAfterChar && (
         <div

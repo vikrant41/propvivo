@@ -46,6 +46,7 @@ const validationSchema = Yup.object({
 });
 
 function DemandStatement() {
+  // ALL HOOKS
   const { setBreadcrumbs } = useBreadcrumbs();
   const [files, setFiles] = useState<File[]>([]);
   const [isPayment, setIsPayment] = useState(false);
@@ -291,14 +292,14 @@ function DemandStatement() {
                         className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                       >
                         <option value="">Select</option>
-                        <option value="Escrow Company">Escrow Company</option>
+                        <option value="Escrow">Escrow Company</option>
                         <option value="Title Company">Title Company</option>
                       </Field>
                     </div>
                     <ErrorMessage
-                      name="name"
+                      name="requestorType"
                       component="div"
-                      className="text-red-500 absolute"
+                      className="text-red-500 absolute text-sm"
                     />
                   </div>
                 </div>
@@ -309,23 +310,6 @@ function DemandStatement() {
                     <span className="text-red-500">*</span>
                   </label>
                   <div className="col-span-4 space-y-6">
-                    {/* <div>
-                    <div className="flex items-center border-b border-gray-o-60">
-                      <Field
-                        type="text"
-                        id="name"
-                        name="associationName"
-                        placeholder="Association Name"
-                        className="w-full bg-transparent py-1 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                      />
-                    </div>
-                    <ErrorMessage
-                      name="associationName"
-                      component="div"
-                      className="text-red-500 absolute"
-                    />
-                  </div> */}
-
                     <SearchTextBox
                       name={"associationName"}
                       placeholder={"Association Name"}
@@ -366,24 +350,6 @@ function DemandStatement() {
                           name: x?.name,
                           code: x?.code,
                         });
-                        // formik.setFieldValue("country", {
-                        //   id: x?.coutryId,
-                        //   name: x?.countryName,
-                        // });
-                        // formik.setFieldValue("state", {
-                        //   id: x?.stateId,
-                        //   name: x?.stateName,
-                        // });
-                        // formik.setFieldValue("city", {
-                        //   id: x?.cityId,
-                        //   name: x?.cityName,
-                        // });
-                        // formik.setFieldValue("zip", {
-                        //   id: x?.zipCodeId,
-                        //   name: x?.zipCode,
-                        // });
-                        // formik.setFieldValue("address1", x?.address1);
-                        // formik.setFieldValue("address2", x?.address2);
                       }}
                       selectedValue={
                         formik?.values?.associationName
@@ -391,23 +357,6 @@ function DemandStatement() {
                           : ""
                       }
                     />
-
-                    <div>
-                      {/* <div className="flex items-center border-b border-gray-o-60">
-                      <Field
-                        type="text"
-                        id="name"
-                        name="propertyAddress"
-                        placeholder="Property Address"
-                        className="w-full bg-transparent py-1 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                      />
-                    </div>
-                    <ErrorMessage
-                      name="propertyAddress"
-                      component="div"
-                      className="text-red-500 absolute"
-                    /> */}
-                    </div>
 
                     <SearchTextBox
                       name={"propertyAddress"}
@@ -445,11 +394,6 @@ function DemandStatement() {
                         formik.setFieldValue("propertyAddress", values);
                       }}
                       handleSetValue={(x) => {
-                        // formik.setFieldValue("association", {
-                        //   id: x?.id,
-                        //   name: x?.name,
-                        //   code: x?.code,
-                        // });
                         formik.setFieldValue("country", {
                           id: x?.coutryId,
                           name: x?.countryName,
