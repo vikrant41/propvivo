@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import TopBanner from "../components/CommonComponents/TopBanner";
 import { useBreadcrumbs } from "../contexts/BreadCrumbContext";
 import * as Yup from "yup";
-import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
+import {
+  ErrorMessage,
+  Field,
+  Form,
+  Formik,
+  FormikProvider,
+  useFormik,
+} from "formik";
 import { AttchmentIcon, CloseIcon, FaDollar } from "../components/shared/Icons";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "../components/CommonComponents/Button";
@@ -14,7 +21,9 @@ import { GET_ALL_LEGALENTITY } from "../graphql/queries/LegalEntityQueries";
 import apiClient from "../apollo/apiClient";
 import { GET_ALL_LEGALENTITY_ADDRESS_MAPPING } from "../graphql/queries/LegalEntityAddressMappingQueries";
 import { CREATE_RESALE_CERTIFICATION_REQUEST } from "../graphql/mutations/ResaleCertificationMutations";
+import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 
+// Resale Certification Validation
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Request Type is Required"),
   associationName: Yup.string().required("Name is Required"),
@@ -33,10 +42,10 @@ const validationSchema = Yup.object({
   buyerPhone: Yup.string().required("Phone Number is Required"),
   closingDate: Yup.string().required("Closing Date is Required"),
   orderType: Yup.string().required("Order Type is Required"),
-  attachments: Yup.array().min(1, "At least one file is required"),
 });
 
 function ResaleCertificate() {
+  // ALL HOOKS
   const { setBreadcrumbs } = useBreadcrumbs();
   const [files, setFiles] = useState<File[]>([]);
   const [isPayment, setIsPayment] = useState(false);
@@ -44,6 +53,7 @@ function ResaleCertificate() {
   const [requestStatus, setRequestStatus] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
 
+  // Resale Initial Values
   const formik = useFormik({
     initialValues: {
       requestorType: "",
@@ -85,14 +95,13 @@ function ResaleCertificate() {
         id: "",
         name: "",
       },
-      address1: "",
+      address: { id: "", name: "" },
       address2: "",
     },
     validationSchema,
     onSubmit: (values) => {
       setFormData(values);
       handleSubmit();
-      console.log("Form Submitted", values);
     },
   });
 
@@ -104,8 +113,8 @@ function ResaleCertificate() {
     onCompleted: () => {},
   });
 
+  // ResaleCertification submit logic
   const handleSubmit = async () => {
-    // Formulate payload for the GraphQL request
     const payload = {
       amountCharged: parseFloat(formik?.values?.price),
       attachments:
@@ -125,7 +134,7 @@ function ResaleCertificate() {
       closingDate: formik?.values?.closingDate
         ? formatDate(formik?.values?.closingDate)
         : null,
-      demandRequestorType: "Escrow",
+      resaleRequestorType: "Escrow",
       escrowNumber: formik?.values?.escrowNumber,
       legalEntityCode: formik?.values?.association.code || "",
       legalEntityId: formik?.values?.association.id || "",
@@ -141,6 +150,8 @@ function ResaleCertificate() {
         stateId: formik?.values?.state?.id || "",
         zipCode: formik?.values?.zip?.name || "",
         zipCodeId: formik?.values?.zip?.id || "",
+        address1: formik?.values?.address?.name || "",
+        addressId: formik?.values?.address?.id || "",
       },
       requestor: {
         firstName: formik?.values?.requesterFirstName,
@@ -255,11 +266,28 @@ function ResaleCertificate() {
   const LegalEntityAddressMappingList =
     getAllData?.legalEntityAddressMappingQueries?.legalEntityAddressMapping;
 
-  //Change status isPayment
+  //Get All LEGALENTITYAddressMapping GQL Calling
+  const { data: getAllOrderType } = useQuery(GET_ALL_ORDER_TYPE, {
+    variables: {
+      request: {
+        requestParam: {
+          orderType: formik?.values?.orderType,
+        },
+        requestSubType: "List",
+        requestType: "LegalEntityAddressMapping",
+      },
+    },
+    client: apiClient,
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-and-network",
+  });
+  const orderTypeList = getAllOrderType?.demandStatementQuery?.OrderType;
+
   const handleProceedToPay = async () => {
     const isValid = await formik.validateForm();
     if (Object.keys(isValid).length === 0) {
       setFormData(formik.values);
+      formik.submitForm();
       setIsPayment(true);
     } else {
       console.log("Form is invalid");
@@ -267,11 +295,23 @@ function ResaleCertificate() {
   };
 
   useEffect(() => {
-    const demandStatementFee = formik.values.orderType === "Rush" ? 200 : 100;
-    const transferFee = 10;
-    const totalAmount = (demandStatementFee + transferFee).toFixed(2);
-    formik.setFieldValue("price", totalAmount);
-  }, [formik.values.orderType]);
+    if (orderTypeList?.data?.orderTypesFees?.length > 0) {
+      const fees = orderTypeList.data.orderTypesFees[0];
+      const demandStatementFee = fees.demandFees || 0;
+      const transferFee = fees.transferFees || 0;
+
+      // Calculate the total price directly from the API data
+      const totalAmount = (demandStatementFee + transferFee).toFixed(2);
+      formik.setFieldValue("price", totalAmount);
+    }
+  }, [orderTypeList]);
+
+  // useEffect(() => {
+  //   const demandStatementFee = formik.values.orderType === "Rush" ? 200 : 100;
+  //   const transferFee = 10;
+  //   const totalAmount = (demandStatementFee + transferFee).toFixed(2);
+  //   formik.setFieldValue("price", totalAmount);
+  // }, [formik.values.orderType]);
 
   return (
     <>
@@ -296,7 +336,7 @@ function ResaleCertificate() {
                         className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                       >
                         <option value="">Select</option>
-                        <option value="Escrow Company">Escrow Company</option>
+                        <option value="Escrow">Escrow Company</option>
                         <option value="Title Company">Title Company</option>
                       </Field>
                     </div>
@@ -414,7 +454,10 @@ function ResaleCertificate() {
                           id: x?.zipCodeId,
                           name: x?.zipCode,
                         });
-                        formik.setFieldValue("address1", x?.address1);
+                        formik.setFieldValue("address", {
+                          id: x?.addressId,
+                          name: x?.address1,
+                        });
                         formik.setFieldValue("address2", x?.address2);
                       }}
                       selectedValue={
@@ -624,7 +667,7 @@ function ResaleCertificate() {
 
                 <div className="relative grid grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
-                    Attachments <span className="text-red-500">*</span>
+                    Attachments
                   </label>
                   <div className="col-span-4">
                     <div className="cursor-pointer text-accent1 flex items-center gap-2 relative">
@@ -716,16 +759,24 @@ function ResaleCertificate() {
                             Demand Statement Fees
                           </div>
                           <div>
-                            {formik.values.orderType === "Rush"
+                            {/* {formik.values.orderType === "Rush"
                               ? "$200"
-                              : "$100"}
+                              : "$100"} */}
+                            $
+                            {orderTypeList?.data?.orderTypesFees[0]?.demandFees}
                           </div>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <div className="text-accent2 font-karla">
                             + Transfer Fees
                           </div>
-                          <div>$10</div>
+                          <div>
+                            $
+                            {
+                              orderTypeList?.data?.orderTypesFees[0]
+                                ?.transferFees
+                            }
+                          </div>
                         </div>
                       </div>
                     </div>

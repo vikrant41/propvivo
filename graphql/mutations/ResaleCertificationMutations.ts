@@ -8,7 +8,7 @@ export const CREATE_RESALE_CERTIFICATION_REQUEST = gql`
         statusCode
         success
         data {
-          demandStatementId
+          resaleCertificateId
         }
       }
     }
