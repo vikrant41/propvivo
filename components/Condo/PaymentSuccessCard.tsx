@@ -1,9 +1,11 @@
 import React from "react";
 import { SuccessIcon } from "./Icons";
+import { formatDateWithTime } from "../../Utils/Utils";
 
-const PaymentSuccessCard = () => {
+const PaymentSuccessCard = ({paymentResponseData}) => {
+  console.log("paymentResponseData",paymentResponseData)
   return (
-    <div className="bg-white shadow-lg rounded-lg p-4 max-w-lg mx-auto">
+    <div className="bg-white shadow-lg rounded-lg p-6 max-w-lg mr-20">
       {/* Success Icon */}
       <div className="flex justify-center mb-2">
         <SuccessIcon />
@@ -21,33 +23,39 @@ const PaymentSuccessCard = () => {
       <hr />
       {/* Payment Details */}
       <div className="text-left space-y-2 text-sm mt-4">
-        <div className="flex justify-between font-semibold">
+        <div className="flex justify-between">
           <span>Invoice Number</span>
-          <span className="text-gray-700">8339266-932-2244</span>
+          <span className="font-bold text-pvBlack">
+            {paymentResponseData?.transactionId}
+          </span>
         </div>
         <div className="flex justify-between">
           <span>Invoice Amount</span>
-          <span>$110.00</span>
+          <span className="font-bold text-pvBlack">${paymentResponseData?.amount}</span>
         </div>
         <div className="flex justify-between">
           <span>Demand Statement Fees</span>
-          <span>$100.00</span>
+          <span className="font-bold text-pvBlack">$100.00</span>
         </div>
         <div className="flex justify-between">
           <span>Transfer Fee</span>
-          <span>$10.00</span>
+          <span className="font-bold text-pvBlack">$10.00</span>
         </div>
         <div className="flex justify-between">
           <span>Transaction Fee</span>
-          <span>$0.00</span>
+          <span className="font-bold text-pvBlack">$0.00</span>
         </div>
         <div className="flex justify-between font-semibold">
           <span>Total Paid Amount</span>
-          <span>$110.00</span>
+          <span className="font-bold text-pvBlack">${paymentResponseData?.amount}</span>
         </div>
         <div className="flex justify-between">
           <span>Paid On</span>
-          <span>02/12/2025 01:14 PM</span>
+          <span className="font-bold text-pvBlack">
+            {formatDateWithTime(
+              paymentResponseData?.paymentResponseData?.effectiveDate
+            )}
+          </span>
         </div>
         <div className="flex justify-between font-semibold">
           <span>Status</span>

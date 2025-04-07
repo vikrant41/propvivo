@@ -282,7 +282,7 @@ function CondoQuestionnaire() {
     <>
       <TopBanner
         backgroundImage="./img/Banner.jpg"
-        title="Resale Certificate"
+        title="Condo Questionnaire"
       />
       {!isPayment ? (
         <div className="max-w-3xl mx-auto my-14">

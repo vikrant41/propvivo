@@ -17,6 +17,7 @@ export default function PaymentCardForm({
   // ALL HOOKS
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [paymentStatus, setPaymentStatus] = useState("idle");
+  const [paymentResponseData, setPaymentResponseData] = useState(null);
 
   // Initial values for the form
   const initialValues = {
@@ -30,7 +31,7 @@ export default function PaymentCardForm({
     confirmRoutingNumber: "",
     bankAccountNumber: "",
     confirmBankAccountNumber: "",
-    accountType: "",
+    accountType: "Checking",
   };
 
   // Card Payment Schema
@@ -101,26 +102,16 @@ export default function PaymentCardForm({
 
   // The submit handler function
   const handleSubmit = async (values) => {
-    // const payLoad = {
-    //   AccountHolderName: values.cardHolderName,
-    //   BankRoutingNumber: values.routingNumber,
-    //   ConfirmBankRoutingNumber: values.confirmRoutingNumber,
-    //   AccountNumber: values.bankAccountNumber,
-    //   ConfirmAccountNumber: values.confirmBankAccountNumber,
-    //   AccountType: "Checking",
-    //   Amount: "10.00",
-    // };
-    setPaymentStatus("loading");
     const payLoad = {
-      AccountHolderName: "Sam Leo",
-      BankRoutingNumber: "124000025",
-      ConfirmBankRoutingNumber: "124000025",
-      AccountNumber: "987654321",
-      ConfirmAccountNumber: "987654321",
-      AccountType: "Checking",
-      Amount: 10.0,
+      AccountHolderName: values.cardHolderName,
+      BankRoutingNumber: values.routingNumber,
+      ConfirmBankRoutingNumber: values.confirmRoutingNumber,
+      AccountNumber: values.bankAccountNumber,
+      ConfirmAccountNumber: values.confirmBankAccountNumber,
+      AccountType: values?.accountType || "Checking",
+      Amount: Math.round(parseFloat(formData.price) * 100) / 100,
     };
-
+    setPaymentStatus("loading");
     try {
       // Encrypt the payload before sending it
       const encryptedPayload = encrypt(payLoad);
@@ -135,6 +126,7 @@ export default function PaymentCardForm({
           setPaymentData(response.data.data);
           setRequestStatus(true);
           setPaymentStatus("success");
+          setPaymentResponseData(response.data.data);
           if (onPaymentSuccess) {
             onPaymentSuccess();
           }
@@ -146,8 +138,11 @@ export default function PaymentCardForm({
       }
     } catch (error) {
       setPaymentStatus("error");
-      console.error("Payment failed: ", error);
     }
+  };
+
+  const handleRetryPayment = () => {
+    setPaymentStatus("idle");
   };
 
   return (
@@ -210,9 +205,9 @@ export default function PaymentCardForm({
         {paymentStatus === "loading" ? (
           <PaymentLoader />
         ) : paymentStatus === "success" ? (
-          <PaymentSuccessCard />
+          <PaymentSuccessCard paymentResponseData={paymentResponseData} />
         ) : paymentStatus === "error" ? (
-          <PaymentFailed />
+          <PaymentFailed handleRetryPayment={handleRetryPayment} />
         ) : (
           <div className="w-full max-w-md p-6 mr-20 bg-white rounded-md border">
             <h3 className="text-lg font-bold">Select Payment Option</h3>
