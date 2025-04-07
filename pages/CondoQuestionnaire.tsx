@@ -7,9 +7,6 @@ import { AttchmentIcon, CloseIcon, FaDollar } from "../components/shared/Icons";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "../components/CommonComponents/Button";
 import PaymentCardForm from "../components/Condo/PaymentCardForm";
-import PaymentSuccessCard from "../components/Condo/PaymentSuccessCard";
-import PaymentFailed from "../components/Condo/PaymentFailed";
-import PaymentLoader from "../components/Condo/PaymentLoader";
 import { useMutation, useQuery } from "@apollo/client";
 import { CREATE_CONDO_REQUEST } from "../graphql/mutations/CondoMutations";
 import { formatDate } from "../Utils/Utils";
@@ -219,7 +216,7 @@ function CondoQuestionnaire() {
       legalEntityId: formik?.values?.association.id || "",
       legalEntityName: formik?.values?.association.name,
       orderType: formik?.values?.orderType || "Normal",
-      paymentStatus: "Pending",
+      paymentStatus: "Completed",
       propertyAddress: {
         city: formik?.values?.city?.name || "",
         cityId: formik?.values?.city?.name || "",
@@ -247,12 +244,11 @@ function CondoQuestionnaire() {
         amountCurrency: paymentData?.amountCurrency,
         bankName: paymentData?.bankName,
         bankRoutingNumber: paymentData?.bankRoutingNumber,
-        effectiveDate: paymentData?.effectiveDate,
+        effectiveDate: paymentData?.effectiveDate ? `${paymentData?.effectiveDate}Z` : "", 
         transactionDesc: paymentData?.transactionDesc,
         transactionId: paymentData?.transactionId,
       },
     };
-    console.log("payload", payload);
     try {
       // Await the GraphQL mutation request
       const response = await PostCondoQuestionnaireRequest({
@@ -269,6 +265,10 @@ function CondoQuestionnaire() {
         error?.graphQLErrors?.[0]?.extensions?.message || error?.message
       );
     }
+  };
+
+  const handlePaymentSuccess = () => {
+    formik.submitForm();  
   };
 
   useEffect(() => {
@@ -301,7 +301,7 @@ function CondoQuestionnaire() {
                         className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                       >
                         <option value="">Select</option>
-                        <option value="Escrow Company">Escrow Company</option>
+                        <option value="Escrow">Escrow Company</option>
                         <option value="Title Company">Title Company</option>
                       </Field>
                     </div>
@@ -762,6 +762,7 @@ function CondoQuestionnaire() {
           formData={formData}
           setRequestStatus={setRequestStatus}
           setPaymentData={setPaymentData}
+          onPaymentSuccess={handlePaymentSuccess} 
         />
       )}
     </>

@@ -12,6 +12,7 @@ export default function PaymentCardForm({
   formData,
   setRequestStatus,
   setPaymentData,
+  onPaymentSuccess,
 }) {
   // ALL HOOKS
   const [paymentMethod, setPaymentMethod] = useState("card");
@@ -29,10 +30,12 @@ export default function PaymentCardForm({
     confirmRoutingNumber: "",
     bankAccountNumber: "",
     confirmBankAccountNumber: "",
+    accountType: "",
   };
 
   // Card Payment Schema
   const cardValidationSchema = Yup.object().shape({
+    accountType: Yup.string().required("Account Type name is required"),
     cardHolderName: Yup.string().required("Card holder name is required"),
     cardNumber: Yup.string()
       .matches(/^[0-9]{16}$/, "Card number must be 16 digits")
@@ -50,6 +53,7 @@ export default function PaymentCardForm({
 
   // Bank Payment Schema
   const bankValidationSchema = Yup.object().shape({
+    accountType: Yup.string().required("Account Type name is required"),
     cardHolderName: Yup.string().required("Card holder name is required"),
     routingNumber: Yup.string()
       .matches(/^[0-9]{9}$/, "Invalid routing number")
@@ -97,25 +101,25 @@ export default function PaymentCardForm({
 
   // The submit handler function
   const handleSubmit = async (values) => {
-    const payLoad = {
-      AccountHolderName: values.cardHolderName,
-      BankRoutingNumber: values.routingNumber,
-      ConfirmBankRoutingNumber: values.confirmRoutingNumber,
-      AccountNumber: values.bankAccountNumber,
-      ConfirmAccountNumber: values.confirmBankAccountNumber,
-      AccountType: "Checking",
-      Amount: "10.00",
-    };
-    setPaymentStatus("loading");
     // const payLoad = {
-    //   AccountHolderName: "Sam Leo",
-    //   BankRoutingNumber: "124000025",
-    //   ConfirmBankRoutingNumber: "124000025",
-    //   AccountNumber: "987654321",
-    //   ConfirmAccountNumber: "987654321",
+    //   AccountHolderName: values.cardHolderName,
+    //   BankRoutingNumber: values.routingNumber,
+    //   ConfirmBankRoutingNumber: values.confirmRoutingNumber,
+    //   AccountNumber: values.bankAccountNumber,
+    //   ConfirmAccountNumber: values.confirmBankAccountNumber,
     //   AccountType: "Checking",
-    //   Amount: 10.0,
+    //   Amount: "10.00",
     // };
+    setPaymentStatus("loading");
+    const payLoad = {
+      AccountHolderName: "Sam Leo",
+      BankRoutingNumber: "124000025",
+      ConfirmBankRoutingNumber: "124000025",
+      AccountNumber: "987654321",
+      ConfirmAccountNumber: "987654321",
+      AccountType: "Checking",
+      Amount: 10.0,
+    };
 
     try {
       // Encrypt the payload before sending it
@@ -131,6 +135,9 @@ export default function PaymentCardForm({
           setPaymentData(response.data.data);
           setRequestStatus(true);
           setPaymentStatus("success");
+          if (onPaymentSuccess) {
+            onPaymentSuccess();
+          }
         } else {
           setPaymentStatus("error");
         }
@@ -252,6 +259,28 @@ export default function PaymentCardForm({
                   <Form>
                     {paymentMethod === "card" && (
                       <div className="mt-4 space-y-2 text-black">
+                        {/* Payment Method Dropdown */}
+                        <div className="">
+                          <label className="block mt-4">Account Type </label>
+                          <div className="col-span-4">
+                            <div className="flex items-center border-b border-gray-o-60">
+                              <Field
+                                as="select"
+                                name="accountType"
+                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              >
+                                <option value="Checking">Checking</option>
+                                <option value="Saving">Saving</option>
+                              </Field>
+                            </div>
+                            {errors.accountType && touched.accountType && (
+                              <div className="text-red-500 text-sm">
+                                {errors.accountType}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
                         <div className="">
                           <label className="block mt-4">Card Holder Name</label>
                           <Field
@@ -267,7 +296,7 @@ export default function PaymentCardForm({
                         </div>
 
                         <div className="">
-                          <label className="block mt45">Card Number</label>
+                          <label className="block mt-4">Card Number</label>
                           <Field
                             name="cardNumber"
                             className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
@@ -327,6 +356,27 @@ export default function PaymentCardForm({
 
                     {paymentMethod === "bank" && (
                       <div className="mt-4 space-y-2 text-black">
+                        {/* Payment Method Dropdown */}
+                        <div className="">
+                          <label className="block mt-4">Account Type </label>
+                          <div className="col-span-4">
+                            <div className="flex items-center border-b border-gray-o-60">
+                              <Field
+                                as="select"
+                                name="accountType"
+                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              >
+                                <option value="Checking">Checking</option>
+                                <option value="Saving">Saving</option>
+                              </Field>
+                            </div>
+                            {errors.accountType && touched.accountType && (
+                              <div className="text-red-500 text-sm">
+                                {errors.accountType}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                         <div className="mt-4">
                           <label className="block">Card Holder Name</label>
                           <Field
