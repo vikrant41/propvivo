@@ -144,13 +144,6 @@ function DemandStatement() {
         cityId: formik?.values?.city?.name || "",
         country: formik?.values?.country?.name || "",
         countryId: formik?.values?.country?.id || "",
-        // legalEntityAddressDistributionId: formik?.values?.legalEntityAddressDistributionId || "",
-        // legalEntityAddressDistributionName: formik?.values?.legalEntityAddressDistributionName || "",
-        // propertyNumber: formik?.values?.propertyNumber || "",
-        // propertyTypeId: formik?.values?.propertyTypeId || "",
-        // propertyTypeName: formik?.values?.propertyTypeName || "",
-        // propertyValueTypeId: formik?.values?.propertyValueTypeId || "",
-        // propertyValueTypeName: formik?.values?.propertyValueTypeName || "",
         state: formik?.values?.state?.name || "",
         stateId: formik?.values?.state?.id || "",
         zipCode: formik?.values?.zip?.name || "",
@@ -452,11 +445,11 @@ function DemandStatement() {
                         formik.setFieldValue("propertyAddress", values);
                       }}
                       handleSetValue={(x) => {
-                        formik.setFieldValue("association", {
-                          id: x?.id,
-                          name: x?.name,
-                          code: x?.code,
-                        });
+                        // formik.setFieldValue("association", {
+                        //   id: x?.id,
+                        //   name: x?.name,
+                        //   code: x?.code,
+                        // });
                         formik.setFieldValue("country", {
                           id: x?.coutryId,
                           name: x?.countryName,
