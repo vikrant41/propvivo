@@ -3,7 +3,7 @@ import { SuccessIcon } from "./Icons";
 import { formatDateWithTime } from "../../Utils/Utils";
 
 const PaymentSuccessCard = ({paymentResponseData}) => {
-  console.log("paymentResponseData",paymentResponseData)
+
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 max-w-lg mr-20">
       {/* Success Icon */}
@@ -53,7 +53,7 @@ const PaymentSuccessCard = ({paymentResponseData}) => {
           <span>Paid On</span>
           <span className="font-bold text-pvBlack">
             {formatDateWithTime(
-              paymentResponseData?.paymentResponseData?.effectiveDate
+              paymentResponseData?.effectiveDate
             )}
           </span>
         </div>

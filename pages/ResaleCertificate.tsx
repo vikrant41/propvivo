@@ -113,8 +113,7 @@ function ResaleCertificate() {
       attachments:
         formik?.values?.attachments?.map((file) => ({
           fileName: file.name,
-          fileUrl: file.url || "",
-          fileType: file.type,
+          fileSize: file.size || "",
         })) || [],
       buyer: {
         firstName: formik?.values?.buyerFirstName,
@@ -127,7 +126,7 @@ function ResaleCertificate() {
       closingDate: formik?.values?.closingDate
         ? formatDate(formik?.values?.closingDate)
         : null,
-      resaleRequestorType: "Escrow",
+      resaleRequestorType: formik?.values?.requestorType || "Escrow",
       escrowNumber: formik?.values?.escrowNumber,
       legalEntityCode: formik?.values?.association.code || "",
       legalEntityId: formik?.values?.association.id || "",
@@ -311,8 +310,7 @@ function ResaleCertificate() {
   //   formik.setFieldValue("price", totalAmount);
   // }, [formik.values.orderType]);
 
-
-// UI/UX display Code
+  // UI/UX display Code
   return (
     <>
       <TopBanner
@@ -337,7 +335,7 @@ function ResaleCertificate() {
                       >
                         <option value="">Select</option>
                         <option value="Escrow">Escrow Company</option>
-                        <option value="Title Company">Title Company</option>
+                        <option value="Other">Other</option>
                       </Field>
                     </div>
                     <ErrorMessage
