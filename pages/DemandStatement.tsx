@@ -23,6 +23,9 @@ import { GET_ALL_LEGALENTITY_ADDRESS_MAPPING } from "../graphql/queries/LegalEnt
 import { formatDate } from "../Utils/Utils";
 import { useBreadcrumbs } from "../contexts/BreadCrumbContext";
 import ReCAPTCHA from "react-google-recaptcha";
+import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
+import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
+import { p } from "graphql-ws/dist/common-DY-PBNYy";
 
 // Validaition Schema
 const validationSchema = Yup.object({
@@ -48,7 +51,7 @@ const validationSchema = Yup.object({
 function DemandStatement() {
   // ALL HOOKS
   const { setBreadcrumbs } = useBreadcrumbs();
-  const [files, setFiles] = useState<File[]>([]);
+  const [filesPdf, setFilesPdf] = useState<any>([]);
   const [isPayment, setIsPayment] = useState(false);
   const [requestStatus, setRequestStatus] = useState(false);
 
@@ -103,6 +106,16 @@ function DemandStatement() {
     },
   });
 
+  //GQL for bulk upload media
+  const [addMedia, { data: addMediaResponse, loading: addMediaLoading }] =
+    useMutation(BULK_UPLOAD_REQUESTS, {
+      context: {
+        headers: {
+          "GraphQL-Preflight": 1,
+        },
+      },
+    });
+
   /* GQL mutation calling for POST */
   const [
     PostDemandStatementRequest,
@@ -116,11 +129,10 @@ function DemandStatement() {
     // Formulate payload for the GraphQL request
     const payload = {
       amountCharged: parseFloat(formik?.values?.price),
-      attachments:
-        formik?.values?.attachments?.map((file) => ({
-          fileName: file.name,
-          fileSize: file.size || "",
-        })) || [],
+      attachments: filesPdf?.map((x) => {
+        const { __typename, contentType, userContext, ...rest } = x;
+        return rest;
+      }),
       buyer: {
         firstName: formik?.values?.buyerFirstName,
         lastName: formik?.values?.buyerLastName,
@@ -194,19 +206,76 @@ function DemandStatement() {
   }, [setBreadcrumbs]);
 
   // Handle file selection
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = event.target.files;
+  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const selectedFiles = event.target.files;
+  //   if (selectedFiles) {
+  //     const newFiles = Array.from(selectedFiles);
+  //     setFiles([...files, ...newFiles]);
+  //     formik.setFieldValue("attachments", [...files, ...newFiles]);
+  //   }
+  // };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
     if (selectedFiles) {
       const newFiles = Array.from(selectedFiles);
-      setFiles([...files, ...newFiles]);
-      formik.setFieldValue("attachments", [...files, ...newFiles]);
+      const validFiles = [];
+      if (filesPdf.length + newFiles.length <= 5) {
+        validFiles.push(...newFiles);
+      } else {
+        validFiles.push(...newFiles.slice(0, 5 - filesPdf.length));
+      }
+
+      if (validFiles.length > 0) {
+        setFilesPdf([...filesPdf, ...validFiles]);
+        formik.setFieldValue("attachments", [...filesPdf, ...validFiles]);
+
+        try {
+          const response: any = await addMedia({
+            variables: {
+              request: {
+                requestParam: {
+                  containerName: "demand",
+                  formFiles: validFiles,
+                },
+                requestSubType: "Upload",
+                requestType: "demand",
+              },
+            },
+          });
+          if (response?.data?.mediaMutations?.bulkUpload?.statusCode === 200) {
+            // const uploadedFiles = response?.data?.mediaMutations?.bulkUpload?.data?.medias;
+            const uploadedFiles =
+              response?.data?.mediaMutations?.bulkUpload?.data?.medias.map(
+                (fileList: any) => ({
+                  filePath: fileList.filePath,
+                  fileName: fileList.fileName,
+                  uri: fileList.uri,
+                  containerName: fileList.containerName,
+                  contentType: fileList.contentType,
+                  fileExtension: fileList.fileExtension,
+                  mediaType: fileList.mediaType,
+                  fileSize: fileList.fileSize,
+                  folderName: "",
+                  subFolderName: "",
+                })
+              );
+            setFilesPdf([...filesPdf, ...uploadedFiles]);
+            formik.setFieldValue("attachments", [
+              ...filesPdf,
+              ...uploadedFiles,
+            ]);
+          }
+        } catch (error) {
+          console.error("Error uploading files:", error);
+        }
+      }
     }
   };
 
   // Remove a file from the list
   const removeFile = (index: number) => {
-    const updatedFiles = files.filter((_, i) => i !== index);
-    setFiles(updatedFiles);
+    const updatedFiles = filesPdf.filter((_, i) => i !== index);
+    setFilesPdf(updatedFiles);
     formik.setFieldValue("attachments", updatedFiles);
   };
 
@@ -262,12 +331,34 @@ function DemandStatement() {
   const LegalEntityAddressMappingList =
     getAllData?.legalEntityAddressMappingQueries?.legalEntityAddressMapping;
 
+  //Get All LEGALENTITYAddressMapping GQL Calling
+  const { data: getAllOrderType } = useQuery(GET_ALL_ORDER_TYPE, {
+    variables: {
+      request: {
+        requestParam: {
+          orderType: formik?.values?.orderType,
+        },
+        requestSubType: "List",
+        requestType: "LegalEntityAddressMapping",
+      },
+    },
+    client: apiClient,
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-and-network",
+  });
+  const orderTypeList = getAllOrderType?.demandStatementQuery?.OrderType;
+
   useEffect(() => {
-    const demandStatementFee = formik.values.orderType === "Rush" ? 200 : 100;
-    const transferFee = 10;
-    const totalAmount = (demandStatementFee + transferFee).toFixed(2);
-    formik.setFieldValue("price", totalAmount);
-  }, [formik.values.orderType]);
+    if (orderTypeList?.data?.orderTypesFees?.length > 0) {
+      const fees = orderTypeList.data.orderTypesFees[0];
+      const demandStatementFee = fees.demandFees || 0;
+      const transferFee = fees.transferFees || 0;
+
+      // Calculate the total price directly from the API data
+      const totalAmount = (demandStatementFee + transferFee).toFixed(2);
+      formik.setFieldValue("price", totalAmount);
+    }
+  }, [orderTypeList]);
 
   return (
     <>
@@ -630,10 +721,11 @@ function DemandStatement() {
                     <div className="cursor-pointer text-accent1 flex items-center gap-2 relative">
                       <AttchmentIcon /> Add Attachments
                       <input
-                        id="attchments"
                         type="file"
                         multiple
-                        onChange={handleFileChange}
+                        id="tb-file-upload"
+                        accept=".pdf ,image/jpeg, image/jpg"
+                        onChange={(e) => handleFileChange(e)}
                         className="opacity-0 absolute top-0 left-0 cursor-pointer w-full"
                       />
                     </div>
@@ -643,14 +735,14 @@ function DemandStatement() {
                       className="text-red-500 text-sm"
                     />
 
-                    {files.length > 0 && (
+                    {filesPdf.length > 0 && (
                       <ul className="mt-2">
-                        {files.map((file, index) => (
+                        {filesPdf.map((file, index) => (
                           <li
                             key={index}
                             className="flex justify-between items-center bg-gray-100 p-2 rounded mt-2"
                           >
-                            <span>{file.name}</span>
+                            <span>{file?.fileName}</span>
                             <button
                               type="button"
                               className="text-red-500"
@@ -716,16 +808,24 @@ function DemandStatement() {
                             Demand Statement Fees
                           </div>
                           <div>
-                            {formik.values.orderType === "Rush"
-                              ? "$200"
-                              : "$100"}
+                            {/* {formik.values.orderType === "Rush"
+                                              ? "$200"
+                                              : "$100"} */}
+                            $
+                            {orderTypeList?.data?.orderTypesFees[0]?.demandFees}
                           </div>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <div className="text-accent2 font-karla">
                             + Transfer Fees
                           </div>
-                          <div>$10</div>
+                          <div>
+                            $
+                            {
+                              orderTypeList?.data?.orderTypesFees[0]
+                                ?.transferFees
+                            }
+                          </div>
                         </div>
                       </div>
                     </div>
