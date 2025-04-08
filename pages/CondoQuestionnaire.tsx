@@ -86,7 +86,7 @@ function CondoQuestionnaire() {
         id: "",
         name: "",
       },
-      address1: "",
+      address: { id: "", name: "" },
       address2: "",
     },
     validationSchema,
@@ -225,6 +225,8 @@ function CondoQuestionnaire() {
         stateId: formik?.values?.state?.id || "",
         zipCode: formik?.values?.zip?.name || "",
         zipCodeId: formik?.values?.zip?.id || "",
+        address1: formik?.values?.address?.name || "",
+        addressId: formik?.values?.address?.id || "",
       },
       requestor: {
         firstName: formik?.values?.requesterFirstName,
@@ -243,7 +245,9 @@ function CondoQuestionnaire() {
         amountCurrency: paymentData?.amountCurrency,
         bankName: paymentData?.bankName,
         bankRoutingNumber: paymentData?.bankRoutingNumber,
-        effectiveDate: paymentData?.effectiveDate ? `${paymentData?.effectiveDate}Z` : "", 
+        effectiveDate: paymentData?.effectiveDate
+          ? `${paymentData?.effectiveDate}Z`
+          : "",
         transactionDesc: paymentData?.transactionDesc,
         transactionId: paymentData?.transactionId,
       },
@@ -267,7 +271,7 @@ function CondoQuestionnaire() {
   };
 
   const handlePaymentSuccess = () => {
-    formik.submitForm();  
+    formik.submitForm();
   };
 
   useEffect(() => {
@@ -418,7 +422,10 @@ function CondoQuestionnaire() {
                           id: x?.zipCodeId,
                           name: x?.zipCode,
                         });
-                        formik.setFieldValue("address1", x?.address1);
+                        formik.setFieldValue("address", {
+                          id: x?.addressId,
+                          name: x?.address1,
+                        });
                         formik.setFieldValue("address2", x?.address2);
                       }}
                       selectedValue={
@@ -761,7 +768,7 @@ function CondoQuestionnaire() {
           formData={formData}
           setRequestStatus={setRequestStatus}
           setPaymentData={setPaymentData}
-          onPaymentSuccess={handlePaymentSuccess} 
+          onPaymentSuccess={handlePaymentSuccess}
         />
       )}
     </>
