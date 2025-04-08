@@ -196,8 +196,7 @@ function CondoQuestionnaire() {
       attachments:
         formik?.values?.attachments?.map((file) => ({
           fileName: file.name,
-          fileUrl: file.url || "",
-          fileType: file.type,
+          fileSize: file.size || "",
         })) || [],
       buyer: {
         firstName: formik?.values?.buyerFirstName,
@@ -210,7 +209,7 @@ function CondoQuestionnaire() {
       closingDate: formik?.values?.closingDate
         ? formatDate(formik?.values?.closingDate)
         : null,
-      condoRequestorType: "Escrow",
+      condoRequestorType: formik?.values?.requestorType || "Escrow",
       escrowNumber: formik?.values?.escrowNumber,
       legalEntityCode: formik?.values?.association.code || "",
       legalEntityId: formik?.values?.association.id || "",
