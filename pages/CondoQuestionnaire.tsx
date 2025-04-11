@@ -48,6 +48,9 @@ function CondoQuestionnaire() {
   const [requestStatus, setRequestStatus] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
 
+  // Google ReCAPTCHA key
+  const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
+
   // Condo InitialValues
   const formik = useFormik({
     initialValues: {
@@ -856,7 +859,7 @@ function CondoQuestionnaire() {
                         </div>
                       </div>
                     </div>
-                    <ReCAPTCHA sitekey="6LfZHJgUAAAAAA-DCqSNLY0ePycgO4txr-CKq6AE" />
+                    <ReCAPTCHA sitekey={captcha_siteKey} />
                   </div>
                 </div>
               </div>

@@ -57,6 +57,9 @@ function DemandStatement() {
   const [isPayment, setIsPayment] = useState(false);
   const [requestStatus, setRequestStatus] = useState(false);
 
+  // Google ReCAPTCHA key
+  const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
+
   // formik
   const formik = useFormik({
     initialValues: {
@@ -835,7 +838,7 @@ function DemandStatement() {
                         </div>
                       </div>
                     </div>
-                    <ReCAPTCHA sitekey="6LfZHJgUAAAAAA-DCqSNLY0ePycgO4txr-CKq6AE" />
+                    <ReCAPTCHA sitekey={captcha_siteKey} />
                   </div>
                 </div>
               </div>
