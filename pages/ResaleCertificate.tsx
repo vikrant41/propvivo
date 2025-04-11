@@ -49,6 +49,9 @@ function ResaleCertificate() {
   const [requestStatus, setRequestStatus] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
 
+  // Google ReCAPTCHA key
+  const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
+
   // Resale Initial Values
   const formik = useFormik({
     initialValues: {
@@ -860,7 +863,7 @@ function ResaleCertificate() {
                         </div>
                       </div>
                     </div>
-                    <ReCAPTCHA sitekey="6LfZHJgUAAAAAA-DCqSNLY0ePycgO4txr-CKq6AE"/>
+                    <ReCAPTCHA sitekey={captcha_siteKey} />
                   </div>
                 </div>
               </div>
