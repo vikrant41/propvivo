@@ -29,7 +29,7 @@ import { p } from "graphql-ws/dist/common-DY-PBNYy";
 
 // Validaition Schema
 const validationSchema = Yup.object({
-  requestorType: Yup.string().required("Request Type is Required"),
+  requestorType: Yup.string().required("Requestor Type is Required"),
   associationName: Yup.string().required("Association Name is Required"),
   propertyAddress: Yup.string().required("Address is Required"),
   requesterFirstName: Yup.string().required("First Name is Required"),
@@ -44,7 +44,9 @@ const validationSchema = Yup.object({
   buyerLastName: Yup.string().required("Last Name is Required"),
   buyerEmail: Yup.string().email("Invalid email").required("Email is Required"),
   buyerPhone: Yup.string().required("Phone Number is Required"),
-  closingDate: Yup.string().required("Closing Date is Required"),
+  closingDate: Yup.date()
+    .min(new Date(), "Closing Date must be greater than today")
+    .required("Closing Date is Required"),
   orderType: Yup.string().required("Order Type is Required"),
 });
 
@@ -243,7 +245,6 @@ function DemandStatement() {
             },
           });
           if (response?.data?.mediaMutations?.bulkUpload?.statusCode === 200) {
-            // const uploadedFiles = response?.data?.mediaMutations?.bulkUpload?.data?.medias;
             const uploadedFiles =
               response?.data?.mediaMutations?.bulkUpload?.data?.medias.map(
                 (fileList: any) => ({
@@ -359,6 +360,11 @@ function DemandStatement() {
       formik.setFieldValue("price", totalAmount);
     }
   }, [orderTypeList]);
+
+  // Reset Demand Form
+  const handleReset = () => {
+    formik.resetForm();
+  };
 
   return (
     <>
@@ -612,7 +618,7 @@ function DemandStatement() {
                         />
                       </div>
                       <ErrorMessage
-                        name="requesterEmail"
+                        name="requesterPhone"
                         component="div"
                         className="text-red-500 text-sm"
                       />
@@ -829,7 +835,7 @@ function DemandStatement() {
                         </div>
                       </div>
                     </div>
-                    <ReCAPTCHA sitekey="your-recaptcha-site-key" />
+                    <ReCAPTCHA sitekey="6LfZHJgUAAAAAA-DCqSNLY0ePycgO4txr-CKq6AE" />
                   </div>
                 </div>
               </div>
@@ -843,7 +849,11 @@ function DemandStatement() {
                   >
                     Submit
                   </Button>
-                  <button className="!text-accent2 border !border-associationLightgray !bg-white !shadow-none btn">
+                  <button
+                    className="!text-accent2 border !border-associationLightgray !bg-white !shadow-none btn"
+                    type="button"
+                    onClick={handleReset}
+                  >
                     Reset Form
                   </button>
                 </div>

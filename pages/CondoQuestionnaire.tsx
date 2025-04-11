@@ -18,8 +18,8 @@ import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 
 const validationSchema = Yup.object({
-  requestorType: Yup.string().required("Request Type is Required"),
-  associationName: Yup.string().required("Name is Required"),
+  requestorType: Yup.string().required("Requestor Type is Required"),
+  associationName: Yup.string().required("Association Name is Required"),
   propertyAddress: Yup.string().required("Address is Required"),
   requesterFirstName: Yup.string().required("First Name is Required"),
   requesterLastName: Yup.string().required("Last Name is Required"),
@@ -33,7 +33,9 @@ const validationSchema = Yup.object({
   buyerLastName: Yup.string().required("Last Name is Required"),
   buyerEmail: Yup.string().email("Invalid email").required("Email is Required"),
   buyerPhone: Yup.string().required("Phone Number is Required"),
-  closingDate: Yup.string().required("Closing Date is Required"),
+  closingDate: Yup.date()
+    .min(new Date(), "Closing Date must be greater than today")
+    .required("Closing Date is Required"),
   orderType: Yup.string().required("Order Type is Required"),
 });
 
@@ -378,6 +380,10 @@ function CondoQuestionnaire() {
     formik.submitForm();
   };
 
+  // Reset Demand Form
+  const handleReset = () => {
+    formik.resetForm();
+  };
   // useEffect(() => {
   //   const demandStatementFee = formik.values.orderType === "Rush" ? 200 : 100;
   //   const transferFee = 10;
@@ -636,7 +642,7 @@ function CondoQuestionnaire() {
                         />
                       </div>
                       <ErrorMessage
-                        name="requesterEmail"
+                        name="requesterPhone"
                         component="div"
                         className="text-red-500 text-sm"
                       />
@@ -850,7 +856,7 @@ function CondoQuestionnaire() {
                         </div>
                       </div>
                     </div>
-                    <ReCAPTCHA sitekey="your-recaptcha-site-key" />
+                    <ReCAPTCHA sitekey="6LfZHJgUAAAAAA-DCqSNLY0ePycgO4txr-CKq6AE" />
                   </div>
                 </div>
               </div>
@@ -865,7 +871,11 @@ function CondoQuestionnaire() {
                   >
                     Proceed to pay
                   </Button>
-                  <button className="!text-accent2 border !border-associationLightgray !bg-white !shadow-none btn">
+                  <button
+                    className="!text-accent2 border !border-associationLightgray !bg-white !shadow-none btn"
+                    type="button"
+                    onClick={handleReset}
+                  >
                     Reset Form
                   </button>
                 </div>
