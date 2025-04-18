@@ -63,7 +63,7 @@ function ResaleCertificate() {
   const [paymentData, setPaymentData] = useState(null);
   const [demandStatementFee, setDemandStatementFee] = useState(0);
   const [transferFee, setTransferFee] = useState(0);
-
+  const [condoResponse, setCondoResponse] = useState(null);
   
   // Google ReCAPTCHA key
   const siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
@@ -260,7 +260,7 @@ function ResaleCertificate() {
         bankRoutingNumber: paymentData?.bankRoutingNumber,
         effectiveDate: paymentData?.effectiveDate
           ? `${paymentData?.effectiveDate}Z`
-          : "",
+          : null,
         transactionDesc: paymentData?.transactionDesc,
         transactionId: paymentData?.transactionId,
       },
@@ -276,6 +276,11 @@ function ResaleCertificate() {
           },
         },
       });
+      if (response?.data?.resaleCertificateMutation?.createResaleCertificate?.success) {
+        setCondoResponse(
+          response?.data?.resaleCertificateMutation?.createResaleCertificate
+        );
+      }
     } catch (error) {
       console.log(
         error?.graphQLErrors?.[0]?.extensions?.message || error?.message
@@ -1027,6 +1032,7 @@ function ResaleCertificate() {
           setRequestStatus={setRequestStatus}
           setPaymentData={setPaymentData}
           onPaymentSuccess={handlePaymentSuccess}
+          condoResponse={condoResponse}
           demandStatementFee={demandStatementFee}
           transferFee={transferFee}
           associationDetails={{

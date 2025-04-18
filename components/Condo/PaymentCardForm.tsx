@@ -10,12 +10,14 @@ import { BankIcon, CardIcon } from "./Icons";
 import PaymentLoader from "./PaymentLoader";
 import PaymentSuccessCard from "./PaymentSuccessCard";
 import PaymentFailed from "./PaymentFailed";
+import PaymentFailedTwice from "./PaymentFailedTwice";
 
 export default function PaymentCardForm({
   formData,
   setRequestStatus,
   setPaymentData,
   onPaymentSuccess,
+  condoResponse,
   demandStatementFee,
   transferFee,
   associationDetails,
@@ -25,6 +27,7 @@ export default function PaymentCardForm({
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [paymentStatus, setPaymentStatus] = useState("idle");
   const [paymentResponseData, setPaymentResponseData] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Initial values for the form
   const initialValues = {
@@ -41,24 +44,6 @@ export default function PaymentCardForm({
     confirmBankAccountNumber: "",
     accountType: "Checking",
   };
-
-  // Card Payment Schema
-  // const cardValidationSchema = Yup.object().shape({
-  //   accountType: Yup.string().required("Account Type name is required"),
-  //   cardHolderName: Yup.string().required("Card holder name is required"),
-  //   cardNumber: Yup.string()
-  //     .matches(/^[0-9]{16}$/, "Card number must be 16 digits")
-  //     .required("Card number is required"),
-  //   expiryDate: Yup.string()
-  //     .matches(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, "Invalid expiry date")
-  //     .required("Expiry date is required"),
-  //   cvv: Yup.string()
-  //     .matches(/^[0-9]{3}$/, "CVV must be 3 digits")
-  //     .required("CVV is required"),
-  //   zipCode: Yup.string()
-  //     .matches(/^[0-9]{5}$/, "Zip code must be 5 digits")
-  //     .required("Zip code is required"),
-  // });
 
   // Bank Payment Schema
   const bankValidationSchema = Yup.object().shape({
@@ -81,23 +66,6 @@ export default function PaymentCardForm({
       .oneOf([Yup.ref("bankAccountNumber")], "Account numbers must match")
       .required("Confirm bank account number is required"),
   });
-
-  // Luhn algorithm for card number validation
-  const luhnCheck = (cardNumber) => {
-    const clean = cardNumber.replace(/\D/g, "");
-    let sum = 0;
-    let shouldDouble = false;
-    for (let i = clean.length - 1; i >= 0; i--) {
-      let digit = parseInt(clean[i], 10);
-      if (shouldDouble) {
-        digit *= 2;
-        if (digit > 9) digit -= 9;
-      }
-      sum += digit;
-      shouldDouble = !shouldDouble;
-    }
-    return sum % 10 === 0;
-  };
 
   // Card Payment Schema
   const cardValidationSchema = Yup.object().shape({
@@ -127,15 +95,19 @@ export default function PaymentCardForm({
         }
       }),
     expiryDate: Yup.string()
-      .matches(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, "Format must be MM/YY")
+      .matches(/^(0[1-9]|1[0-2])([0-9]{2})$/, "Format must be MMYY")
       .test("expiry-date", "Card has expired", (value) => {
-        if (!value) return false;
-        const [month, year] = value.split("/");
+        if (!value || value.length !== 4) return false;
+
+        const month = value.slice(0, 2);
+        const year = value.slice(2, 4);
         const now = new Date();
         const expMonth = parseInt(month, 10);
         const expYear = 2000 + parseInt(year, 10);
-        const expiry = new Date(expYear, expMonth);
-        return expiry > now;
+
+        // Set expiry to the **last day** of the month
+        const expiry = new Date(expYear, expMonth, 0);
+        return expiry >= now;
       })
       .required("Expiry date is required"),
     cvv: Yup.string()
@@ -164,7 +136,6 @@ export default function PaymentCardForm({
   ] = useValidatePaymentCardNumberMutation();
 
   const secretKey = "SuperSecretKey123";
-
   // Function to generate AES Key and IV from secret key (similar to your backend logic)
   const generateKeyAndIV = (secretKey) => {
     const sha256Key = CryptoJS.SHA256(secretKey).toString(CryptoJS.enc.Hex);
@@ -192,7 +163,6 @@ export default function PaymentCardForm({
       ConfirmAccountNumber: values.confirmBankAccountNumber,
       AccountType: values?.accountType || "Checking",
       Amount: Math.round(parseFloat(formData.price) * 100) / 100,
-      // AccountHolderName :values?.cardHolderName,
       CardNumber: values?.cardNumber,
       CVV: values?.cvv,
       ZipCode: values?.zipCode,
@@ -200,10 +170,7 @@ export default function PaymentCardForm({
     };
     setPaymentStatus("loading");
     try {
-      // Encrypt the payload before sending it
       const encryptedPayload = encrypt(payLoad);
-
-      // Send the encrypted payload to the backend API
       const response = await AddOneTimePaymentRequest({
         paymentInformation: encryptedPayload,
         legalEntityId: associationDetails?.id,
@@ -234,6 +201,13 @@ export default function PaymentCardForm({
 
   const handleRetryPayment = () => {
     setPaymentStatus("idle");
+    setRetryCount(retryCount + 1);
+    // if (retryCount < 2) {
+    //   setPaymentStatus("loading");
+    //   setRetryCount(retryCount + 1);
+    // } else {
+    //   setPaymentStatus("failedTwice");
+    // }
   };
 
   return (
@@ -300,15 +274,32 @@ export default function PaymentCardForm({
             paymentResponseData={paymentResponseData}
             demandStatementFee={demandStatementFee}
             transferFee={transferFee}
+            condoResponse={condoResponse}
           />
         ) : paymentStatus === "error" ? (
-          <PaymentFailed
-            handleRetryPayment={handleRetryPayment}
-            paymentResponseData={paymentResponseData}
-            demandStatementFee={demandStatementFee}
-            transferFee={transferFee}
-          />
+          // retryCount >= 2 ? (
+          //   <PaymentFailedTwice
+          //     paymentResponseData={paymentResponseData}
+          //     demandStatementFee={demandStatementFee}
+          //     transferFee={transferFee}
+          //   />
+          // ) : (
+          retryCount >= 2 ? (
+            <PaymentFailedTwice
+              paymentResponseData={paymentResponseData}
+              demandStatementFee={demandStatementFee}
+              transferFee={transferFee}
+            />
+          ) : (
+            <PaymentFailed
+              handleRetryPayment={handleRetryPayment}
+              paymentResponseData={paymentResponseData}
+              demandStatementFee={demandStatementFee}
+              transferFee={transferFee}
+            />
+          )
         ) : (
+          // )
           <div className="w-full max-w-xl p-6 mr-20 bg-white rounded-md border">
             <h3 className="text-lg font-bold">Select Payment Option</h3>
             <p className="text-gray-600 text-sm">
@@ -349,7 +340,14 @@ export default function PaymentCardForm({
               }
               onSubmit={handleSubmit}
             >
-              {({ errors, touched, handleChange, handleBlur, values }) => {
+              {({
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                values,
+                setFieldValue,
+              }) => {
                 return (
                   <Form>
                     {paymentMethod === "card" && (
@@ -376,7 +374,6 @@ export default function PaymentCardForm({
                               }
                             }}
                           />
-
                           {errors.accountHolderName &&
                             touched.accountHolderName && (
                               <div className="text-red-500 text-sm">
@@ -434,12 +431,44 @@ export default function PaymentCardForm({
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          <div>
+                          {/* <div>
                             <label className="block mt-4">Expiry Date</label>
                             <Field
                               name="expiryDate"
                               className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
                               placeholder="MM/YY"
+                              onCopy={(e) => e.preventDefault()}
+                              onPaste={(e) => e.preventDefault()}
+                              onCut={(e) => e.preventDefault()}
+                            />
+                            {errors.expiryDate && touched.expiryDate && (
+                              <div className="text-red-500 text-sm">
+                                {errors.expiryDate}
+                              </div>
+                            )}
+                          </div> */}
+                          <div>
+                            <label className="block mt-4">Expiry Date</label>
+                            <input
+                              name="expiryDate"
+                              inputMode="numeric"
+                              maxLength={5}
+                              value={
+                                values.expiryDate.length === 4
+                                  ? values.expiryDate.slice(0, 2) +
+                                    "/" +
+                                    values.expiryDate.slice(2)
+                                  : values.expiryDate
+                              }
+                              onChange={(e) => {
+                                let input = e.target.value
+                                  .replace(/\D/g, "")
+                                  .slice(0, 4); // only digits max 4
+                                setFieldValue("expiryDate", input);
+                              }}
+                              onBlur={handleBlur}
+                              placeholder="MM/YY"
+                              className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
                               onCopy={(e) => e.preventDefault()}
                               onPaste={(e) => e.preventDefault()}
                               onCut={(e) => e.preventDefault()}
