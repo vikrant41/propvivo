@@ -21,9 +21,22 @@ export const ResaleCertificateSlice = newApislice.injectEndpoints({
       }),
       invalidatesTags: ["OneTimePayment"],
     }),
+    ValidatePaymentCardNumber: builder.mutation<any, any>({
+      query: (data) => ({
+        url: `/Payment/ValidateCardNumber`,
+        method: "POST",
+        body: generateBodyPayload(
+          requestSubType.Add,
+          requestType.CardValidate,
+          data
+        ),
+      }),
+      invalidatesTags: ["CardValidate"],
+    }),
   }),
 });
 
 export const {
-    useAddOneTimePaymentMutation
+    useAddOneTimePaymentMutation,
+    useValidatePaymentCardNumberMutation
 } = ResaleCertificateSlice;

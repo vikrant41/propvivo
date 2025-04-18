@@ -292,6 +292,7 @@ export const newApislice = createApi({
     "Feature",
     "unitDocumnetDownload",
     "OneTimePayment",
+    "CardValidate",
 
   ],
   endpoints: (builder) => ({}),

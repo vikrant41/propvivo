@@ -22,21 +22,27 @@ const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
   associationName: Yup.string().required("Association Name is Required"),
   propertyAddress: Yup.string().required("Address is Required"),
-  requesterFirstName: Yup.string().required("First Name is Required"),
+  requesterFirstName: Yup.string()
+    .min(3, "First Name min length should be 3")
+    .required("First Name is Required"),
   requesterLastName: Yup.string().required("Last Name is Required"),
   requesterCompany: Yup.string().required("Company Name is Required"),
   escrowNumber: Yup.string().required("Escrow Number is Required"),
   requesterEmail: Yup.string()
     .email("Invalid email")
     .required("Email is Required"),
-  requesterPhone: Yup.string().required("Phone Number is Required"),
-  buyerFirstName: Yup.string().required("First Name is Required"),
+  requesterPhone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Phone number length should be 10")
+    .required("Phone Number is Required"),
+  buyerFirstName: Yup.string()
+    .min(3, "First Name min length should be 3")
+    .required("First Name is Required"),
   buyerLastName: Yup.string().required("Last Name is Required"),
   buyerEmail: Yup.string().email("Invalid email").required("Email is Required"),
-  buyerPhone: Yup.string().required("Phone Number is Required"),
-  closingDate: Yup.date()
-    .min(new Date(), "Closing Date must be greater than today")
-    .required("Closing Date is Required"),
+  buyerPhone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Phone number length should be 10")
+    .required("Phone Number is Required"),
+  closingDate: Yup.date().required("Closing Date is Required"),
   orderType: Yup.string().required("Order Type is Required"),
 });
 
@@ -48,6 +54,8 @@ function ResaleCertificate() {
   const [formData, setFormData] = useState<any>(null);
   const [requestStatus, setRequestStatus] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
+  const [demandStatementFee, setDemandStatementFee] = useState(0);
+  const [transferFee, setTransferFee] = useState(0);
 
   // Google ReCAPTCHA key
   const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
@@ -373,6 +381,8 @@ function ResaleCertificate() {
       const demandStatementFee = fees.demandFees || 0;
       const transferFee = fees.transferFees || 0;
 
+      setDemandStatementFee(demandStatementFee);
+      setTransferFee(transferFee);
       // Calculate the total price directly from the API data
       const totalAmount = (demandStatementFee + transferFee).toFixed(2);
       formik.setFieldValue("price", totalAmount);
@@ -393,6 +403,10 @@ function ResaleCertificate() {
   //   const totalAmount = (demandStatementFee + transferFee).toFixed(2);
   //   formik.setFieldValue("price", totalAmount);
   // }, [formik.values.orderType]);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split("T")[0];
 
   // UI/UX display Code
   return (
@@ -435,7 +449,7 @@ function ResaleCertificate() {
                     Association Information{" "}
                     <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 space-y-6">
+                  <div className="col-span-4 space-y-4">
                     <SearchTextBox
                       name={"associationName"}
                       placeholder={"Association Name"}
@@ -638,12 +652,67 @@ function ResaleCertificate() {
 
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
-                        <Field
+                        {/* <Field
                           type="text"
                           name="requesterPhone"
                           placeholder="Phone Number"
                           className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
+                        /> */}
+                        <Field name="requesterPhone">
+                          {({ field, form }) => {
+                            const formatPhone = (value) => {
+                              const cleaned = value
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              const match = cleaned.match(
+                                /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                              );
+                              if (!match) return value;
+                              let formatted = "";
+                              if (match[1]) formatted = `(${match[1]}`;
+                              if (match[2]) formatted += `) ${match[2]}`;
+                              if (match[3]) formatted += `-${match[3]}`;
+                              return formatted;
+                            };
+
+                            const handleChange = (e) => {
+                              const input = e.target.value;
+                              const cleaned = input
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              form.setFieldValue(field.name, cleaned);
+                            };
+
+                            const handleKeyDown = (e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/[0-9]/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            };
+
+                            return (
+                              <input
+                                {...field}
+                                value={formatPhone(field.value || "")}
+                                onChange={handleChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Phone Number"
+                                inputMode="numeric"
+                                maxLength={14}
+                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            );
+                          }}
+                        </Field>
                       </div>
                       <ErrorMessage
                         name="requesterPhone"
@@ -708,12 +777,66 @@ function ResaleCertificate() {
 
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
-                        <Field
+                        {/* <Field
                           type="text"
                           name="buyerPhone"
                           placeholder="Phone Number"
                           className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
+                        /> */}
+                        <Field name="buyerPhone">
+                          {({ field, form }) => {
+                            const formatPhone = (value) => {
+                              const cleaned = value
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              const match = cleaned.match(
+                                /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                              );
+                              if (!match) return value;
+                              let formatted = "";
+                              if (match[1]) formatted = `(${match[1]}`;
+                              if (match[2]) formatted += `) ${match[2]}`;
+                              if (match[3]) formatted += `-${match[3]}`;
+                              return formatted;
+                            };
+
+                            const handleChange = (e) => {
+                              const input = e.target.value;
+                              const cleaned = input
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              form.setFieldValue(field.name, cleaned);
+                            };
+
+                            const handleKeyDown = (e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/[0-9]/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            };
+                            return (
+                              <input
+                                {...field}
+                                value={formatPhone(field.value)}
+                                onChange={handleChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Phone Number"
+                                inputMode="numeric"
+                                maxLength={14}
+                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            );
+                          }}
+                        </Field>
                       </div>
                       <ErrorMessage
                         name="buyerPhone"
@@ -734,6 +857,7 @@ function ResaleCertificate() {
                         <Field
                           type="date"
                           name="closingDate"
+                          min={minDate}
                           placeholder="First Name"
                           className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                         />
@@ -895,6 +1019,14 @@ function ResaleCertificate() {
           setRequestStatus={setRequestStatus}
           setPaymentData={setPaymentData}
           onPaymentSuccess={handlePaymentSuccess}
+          demandStatementFee={demandStatementFee}
+          transferFee={transferFee}
+          associationDetails={{
+            id: formik.values.association.id,
+            name: formik.values.association.name,
+            code: formik.values.association.code,
+          }}
+          addressId={formik.values.address.id}
         />
       )}
     </>
