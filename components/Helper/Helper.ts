@@ -73,6 +73,7 @@ export const requestType = {
   UnitDocument:"UnitDocument",
   CondoQuestionnaire:"CondoQuestionnaire",
   OneTimePayment:"OneTimePayment",
+  CardValidate:"CardValidate",
 };
 
 export const containerName = {

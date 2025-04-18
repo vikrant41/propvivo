@@ -2,7 +2,7 @@ import React from "react";
 import { SuccessIcon } from "./Icons";
 import { formatDateWithTime } from "../../Utils/Utils";
 
-const PaymentSuccessCard = ({paymentResponseData}) => {
+const PaymentSuccessCard = ({paymentResponseData, demandStatementFee, transferFee}) => {
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 max-w-lg mr-20">
@@ -35,11 +35,11 @@ const PaymentSuccessCard = ({paymentResponseData}) => {
         </div>
         <div className="flex justify-between">
           <span>Demand Statement Fees</span>
-          <span className="font-bold text-pvBlack">$100.00</span>
+          <span className="font-bold text-pvBlack">${demandStatementFee}</span>
         </div>
         <div className="flex justify-between">
           <span>Transfer Fee</span>
-          <span className="font-bold text-pvBlack">$10.00</span>
+          <span className="font-bold text-pvBlack">${transferFee}</span>
         </div>
         <div className="flex justify-between">
           <span>Transaction Fee</span>
@@ -59,7 +59,7 @@ const PaymentSuccessCard = ({paymentResponseData}) => {
         </div>
         <div className="flex justify-between font-semibold">
           <span>Status</span>
-          <span className="text-green-600">Approved</span>
+          <span className="text-green-600">{paymentResponseData?.transactionStatus}</span>
         </div>
       </div>
 

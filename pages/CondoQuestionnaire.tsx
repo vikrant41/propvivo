@@ -21,21 +21,27 @@ const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
   associationName: Yup.string().required("Association Name is Required"),
   propertyAddress: Yup.string().required("Address is Required"),
-  requesterFirstName: Yup.string().required("First Name is Required"),
+  requesterFirstName: Yup.string()
+    .min(3, "First Name min length should be 3")
+    .required("First Name is Required"),
   requesterLastName: Yup.string().required("Last Name is Required"),
   requesterCompany: Yup.string().required("Company Name is Required"),
   escrowNumber: Yup.string().required("Escrow Number is Required"),
   requesterEmail: Yup.string()
     .email("Invalid email")
     .required("Email is Required"),
-  requesterPhone: Yup.string().required("Phone Number is Required"),
-  buyerFirstName: Yup.string().required("First Name is Required"),
+  requesterPhone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Phone number length should be 10")
+    .required("Phone Number is Required"),
+  buyerFirstName: Yup.string()
+    .min(3, "First Name min length should be 3")
+    .required("First Name is Required"),
   buyerLastName: Yup.string().required("Last Name is Required"),
   buyerEmail: Yup.string().email("Invalid email").required("Email is Required"),
-  buyerPhone: Yup.string().required("Phone Number is Required"),
-  closingDate: Yup.date()
-    .min(new Date(), "Closing Date must be greater than today")
-    .required("Closing Date is Required"),
+  buyerPhone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Phone number length should be 10")
+    .required("Phone Number is Required"),
+  closingDate: Yup.date().required("Closing Date is Required"),
   orderType: Yup.string().required("Order Type is Required"),
 });
 
@@ -47,6 +53,8 @@ function CondoQuestionnaire() {
   const [formData, setFormData] = useState<any>(null);
   const [requestStatus, setRequestStatus] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
+  const [demandStatementFee, setDemandStatementFee] = useState(0);
+  const [transferFee, setTransferFee] = useState(0);
 
   // Google ReCAPTCHA key
   const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
@@ -187,23 +195,6 @@ function CondoQuestionnaire() {
     formik.setFieldValue("attachments", updatedFiles);
   };
 
-  // Handle file selection
-  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const selectedFiles = event.target.files;
-  //   if (selectedFiles) {
-  //     const newFiles = Array.from(selectedFiles);
-  //     setFiles([...files, ...newFiles]);
-  //     formik.setFieldValue("attachments", [...files, ...newFiles]);
-  //   }
-  // };
-
-  // Remove a file from the list
-  // const removeFile = (index: number) => {
-  //   const updatedFiles = files.filter((_, i) => i !== index);
-  //   setFiles(updatedFiles);
-  //   formik.setFieldValue("attachments", updatedFiles);
-  // };
-
   //Change status isPayment
   const handleProceedToPay = async () => {
     const isValid = await formik.validateForm();
@@ -281,12 +272,24 @@ function CondoQuestionnaire() {
   const orderTypeList = getAllOrderType?.demandStatementQuery?.OrderType;
 
   // OrderType api Calling
+  // useEffect(() => {
+  //   if (orderTypeList?.data?.orderTypesFees?.length > 0) {
+  //     const fees = orderTypeList.data.orderTypesFees[0];
+  //     const demandStatementFee = fees.demandFees || 0;
+  //     const transferFee = fees.transferFees || 0;
+  //     const totalAmount = (demandStatementFee + transferFee).toFixed(2);
+  //     formik.setFieldValue("price", totalAmount);
+  //   }
+  // }, [orderTypeList]);
   useEffect(() => {
     if (orderTypeList?.data?.orderTypesFees?.length > 0) {
       const fees = orderTypeList.data.orderTypesFees[0];
-      const demandStatementFee = fees.demandFees || 0;
-      const transferFee = fees.transferFees || 0;
-      const totalAmount = (demandStatementFee + transferFee).toFixed(2);
+      const demandFee = fees.demandFees || 0;
+      const transferFeeVal = fees.transferFees || 0;
+      const totalAmount = (demandFee + transferFeeVal).toFixed(2);
+
+      setDemandStatementFee(demandFee); // <- store demand fee
+      setTransferFee(transferFeeVal); // <- store transfer fee
       formik.setFieldValue("price", totalAmount);
     }
   }, [orderTypeList]);
@@ -387,12 +390,10 @@ function CondoQuestionnaire() {
   const handleReset = () => {
     formik.resetForm();
   };
-  // useEffect(() => {
-  //   const demandStatementFee = formik.values.orderType === "Rush" ? 200 : 100;
-  //   const transferFee = 10;
-  //   const totalAmount = (demandStatementFee + transferFee).toFixed(2);
-  //   formik.setFieldValue("price", totalAmount);
-  // }, [formik.values.orderType]);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split("T")[0];
 
   return (
     <>
@@ -434,7 +435,7 @@ function CondoQuestionnaire() {
                     Association Information{" "}
                     <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 space-y-6">
+                  <div className="col-span-4 space-y-4">
                     <SearchTextBox
                       name={"associationName"}
                       placeholder={"Association Name"}
@@ -637,12 +638,61 @@ function CondoQuestionnaire() {
 
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
-                          name="requesterPhone"
-                          placeholder="Phone Number"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
+                        <Field name="requesterPhone">
+                          {({ field, form }) => {
+                            const formatPhone = (value) => {
+                              const cleaned = value
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              const match = cleaned.match(
+                                /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                              );
+                              if (!match) return value;
+                              let formatted = "";
+                              if (match[1]) formatted = `(${match[1]}`;
+                              if (match[2]) formatted += `) ${match[2]}`;
+                              if (match[3]) formatted += `-${match[3]}`;
+                              return formatted;
+                            };
+
+                            const handleChange = (e) => {
+                              const input = e.target.value;
+                              const cleaned = input
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              form.setFieldValue(field.name, cleaned); // save raw value
+                            };
+
+                            const handleKeyDown = (e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/[0-9]/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            };
+
+                            return (
+                              <input
+                                {...field}
+                                value={formatPhone(field.value || "")}
+                                onChange={handleChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Phone Number"
+                                inputMode="numeric"
+                                maxLength={14}
+                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            );
+                          }}
+                        </Field>
                       </div>
                       <ErrorMessage
                         name="requesterPhone"
@@ -704,15 +754,63 @@ function CondoQuestionnaire() {
                         className="text-red-500 text-sm"
                       />
                     </div>
-
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
-                          name="buyerPhone"
-                          placeholder="Phone Number"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
+                        <Field name="buyerPhone">
+                          {({ field, form }) => {
+                            const formatPhone = (value) => {
+                              const cleaned = value
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              const match = cleaned.match(
+                                /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                              );
+                              if (!match) return value;
+                              let formatted = "";
+                              if (match[1]) formatted = `(${match[1]}`;
+                              if (match[2]) formatted += `) ${match[2]}`;
+                              if (match[3]) formatted += `-${match[3]}`;
+                              return formatted;
+                            };
+
+                            const handleChange = (e) => {
+                              const input = e.target.value;
+                              const cleaned = input
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              form.setFieldValue(field.name, cleaned);
+                            };
+
+                            const handleKeyDown = (e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/[0-9]/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            };
+
+                            return (
+                              <input
+                                {...field}
+                                value={formatPhone(field.value)}
+                                onChange={handleChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Phone Number"
+                                inputMode="numeric"
+                                maxLength={14}
+                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            );
+                          }}
+                        </Field>
                       </div>
                       <ErrorMessage
                         name="buyerPhone"
@@ -733,6 +831,7 @@ function CondoQuestionnaire() {
                         <Field
                           type="date"
                           name="closingDate"
+                          min={minDate}
                           placeholder="First Name"
                           className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                         />
@@ -815,7 +914,6 @@ function CondoQuestionnaire() {
                     </label>
                   </div>
                 </div>
-
                 <div className="relative grid grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Amount Charged
@@ -892,6 +990,14 @@ function CondoQuestionnaire() {
           setRequestStatus={setRequestStatus}
           setPaymentData={setPaymentData}
           onPaymentSuccess={handlePaymentSuccess}
+          demandStatementFee={demandStatementFee}
+          transferFee={transferFee}
+          associationDetails={{
+            id: formik.values.association.id,
+            name: formik.values.association.name,
+            code: formik.values.association.code,
+          }}
+          addressId={formik.values.address.id}
         />
       )}
     </>

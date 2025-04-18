@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
-import { useAddOneTimePaymentMutation } from "../../slices/ResaleCertificate";
+import {
+  useAddOneTimePaymentMutation,
+  useValidatePaymentCardNumberMutation,
+} from "../../slices/ResaleCertificate";
 import CryptoJS from "crypto-js";
 import { BankIcon, CardIcon } from "./Icons";
 import PaymentLoader from "./PaymentLoader";
@@ -13,6 +16,10 @@ export default function PaymentCardForm({
   setRequestStatus,
   setPaymentData,
   onPaymentSuccess,
+  demandStatementFee,
+  transferFee,
+  associationDetails,
+  addressId,
 }) {
   // ALL HOOKS
   const [paymentMethod, setPaymentMethod] = useState("card");
@@ -22,7 +29,8 @@ export default function PaymentCardForm({
   // Initial values for the form
   const initialValues = {
     paymentMethod: "card",
-    cardHolderName: "",
+    // cardHolderName: "",
+    accountHolderName: "",
     cardNumber: "",
     expiryDate: "",
     cvv: "",
@@ -35,39 +43,107 @@ export default function PaymentCardForm({
   };
 
   // Card Payment Schema
-  const cardValidationSchema = Yup.object().shape({
-    accountType: Yup.string().required("Account Type name is required"),
-    cardHolderName: Yup.string().required("Card holder name is required"),
-    cardNumber: Yup.string()
-      .matches(/^[0-9]{16}$/, "Card number must be 16 digits")
-      .required("Card number is required"),
-    expiryDate: Yup.string()
-      .matches(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, "Invalid expiry date")
-      .required("Expiry date is required"),
-    cvv: Yup.string()
-      .matches(/^[0-9]{3}$/, "CVV must be 3 digits")
-      .required("CVV is required"),
-    zipCode: Yup.string()
-      .matches(/^[0-9]{5}$/, "Zip code must be 5 digits")
-      .required("Zip code is required"),
-  });
+  // const cardValidationSchema = Yup.object().shape({
+  //   accountType: Yup.string().required("Account Type name is required"),
+  //   cardHolderName: Yup.string().required("Card holder name is required"),
+  //   cardNumber: Yup.string()
+  //     .matches(/^[0-9]{16}$/, "Card number must be 16 digits")
+  //     .required("Card number is required"),
+  //   expiryDate: Yup.string()
+  //     .matches(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, "Invalid expiry date")
+  //     .required("Expiry date is required"),
+  //   cvv: Yup.string()
+  //     .matches(/^[0-9]{3}$/, "CVV must be 3 digits")
+  //     .required("CVV is required"),
+  //   zipCode: Yup.string()
+  //     .matches(/^[0-9]{5}$/, "Zip code must be 5 digits")
+  //     .required("Zip code is required"),
+  // });
 
   // Bank Payment Schema
   const bankValidationSchema = Yup.object().shape({
     accountType: Yup.string().required("Account Type name is required"),
-    cardHolderName: Yup.string().required("Card holder name is required"),
+    accountHolderName: Yup.string()
+      .required("Name is required")
+      .min(3, "Account holder name min length should be 3")
+      .max(22, "Length should be between 3 to 22"),
     routingNumber: Yup.string()
-      .matches(/^[0-9]{9}$/, "Invalid routing number")
+      .length(9, "Length should be 9")
+      .matches(/^\d{9}$/, "Routing number must be numeric")
       .required("Routing number is required"),
     confirmRoutingNumber: Yup.string()
       .oneOf([Yup.ref("routingNumber")], "Routing numbers must match")
       .required("Confirm routing number is required"),
     bankAccountNumber: Yup.string()
-      .matches(/^[0-9]{9}$/, "Invalid account number")
+      .matches(/^\d{9,18}$/, "Length should be between 9 to 18")
       .required("Bank account number is required"),
     confirmBankAccountNumber: Yup.string()
       .oneOf([Yup.ref("bankAccountNumber")], "Account numbers must match")
       .required("Confirm bank account number is required"),
+  });
+
+  // Luhn algorithm for card number validation
+  const luhnCheck = (cardNumber) => {
+    const clean = cardNumber.replace(/\D/g, "");
+    let sum = 0;
+    let shouldDouble = false;
+    for (let i = clean.length - 1; i >= 0; i--) {
+      let digit = parseInt(clean[i], 10);
+      if (shouldDouble) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+    return sum % 10 === 0;
+  };
+
+  // Card Payment Schema
+  const cardValidationSchema = Yup.object().shape({
+    accountType: Yup.string().required("Account type is required"),
+    accountHolderName: Yup.string()
+      .matches(/^[a-zA-Z\s]*$/, "Name can only contain letters and spaces")
+      .min(3, "Length should be between 3 to 22")
+      .max(22, "Length should be between 3 to 22")
+      .required("Name is required"),
+    cardNumber: Yup.string()
+      .matches(/^\d{13,19}$/, "Card number must be between 13 and 19 digits")
+      .required("Card number is required")
+      .test("is-valid-card", "Card number is invalid", async function (value) {
+        if (!value || value.length < 13) return true;
+
+        try {
+          const response = await triggerValidateCardNumber({
+            creditCardNumber: value,
+          }).unwrap();
+
+          const isValid = response?.data?.isValidCardNumber;
+          return isValid;
+        } catch (err) {
+          return this.createError({
+            message: "Error validating card number. Try again.",
+          });
+        }
+      }),
+    expiryDate: Yup.string()
+      .matches(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, "Format must be MM/YY")
+      .test("expiry-date", "Card has expired", (value) => {
+        if (!value) return false;
+        const [month, year] = value.split("/");
+        const now = new Date();
+        const expMonth = parseInt(month, 10);
+        const expYear = 2000 + parseInt(year, 10);
+        const expiry = new Date(expYear, expMonth);
+        return expiry > now;
+      })
+      .required("Expiry date is required"),
+    cvv: Yup.string()
+      .matches(/^\d{3,4}$/, "CVV must be 3 or 4 digits")
+      .required("CVV is required"),
+    zipCode: Yup.string()
+      // .matches(/^\d{5}(-\d{4})?$/, "Zip code must be 5 digits or ZIP+4 format")
+      .required("Zip code is required"),
   });
 
   // oneTime Payment api calling
@@ -81,6 +157,11 @@ export default function PaymentCardForm({
       isError: addIsError,
     },
   ] = useAddOneTimePaymentMutation();
+
+  const [
+    triggerValidateCardNumber,
+    { data: validationData, error: validationError },
+  ] = useValidatePaymentCardNumberMutation();
 
   const secretKey = "SuperSecretKey123";
 
@@ -102,14 +183,20 @@ export default function PaymentCardForm({
 
   // The submit handler function
   const handleSubmit = async (values) => {
+    const transformedExpiryDate = values?.expiryDate.replace("/", "");
     const payLoad = {
-      AccountHolderName: values.cardHolderName,
+      AccountHolderName: values.accountHolderName,
       BankRoutingNumber: values.routingNumber,
       ConfirmBankRoutingNumber: values.confirmRoutingNumber,
       AccountNumber: values.bankAccountNumber,
       ConfirmAccountNumber: values.confirmBankAccountNumber,
       AccountType: values?.accountType || "Checking",
       Amount: Math.round(parseFloat(formData.price) * 100) / 100,
+      // AccountHolderName :values?.cardHolderName,
+      CardNumber: values?.cardNumber,
+      CVV: values?.cvv,
+      ZipCode: values?.zipCode,
+      ExpirationDate: transformedExpiryDate,
     };
     setPaymentStatus("loading");
     try {
@@ -119,6 +206,10 @@ export default function PaymentCardForm({
       // Send the encrypted payload to the backend API
       const response = await AddOneTimePaymentRequest({
         paymentInformation: encryptedPayload,
+        legalEntityId: associationDetails?.id,
+        legalEntityCode: associationDetails?.code,
+        propertyId: addressId,
+        paymentMethod: paymentMethod === "card" ? "CC" : "Bank",
       });
       if ("data" in response) {
         // Access the nested data
@@ -205,11 +296,20 @@ export default function PaymentCardForm({
         {paymentStatus === "loading" ? (
           <PaymentLoader />
         ) : paymentStatus === "success" ? (
-          <PaymentSuccessCard paymentResponseData={paymentResponseData} />
+          <PaymentSuccessCard
+            paymentResponseData={paymentResponseData}
+            demandStatementFee={demandStatementFee}
+            transferFee={transferFee}
+          />
         ) : paymentStatus === "error" ? (
-          <PaymentFailed handleRetryPayment={handleRetryPayment} />
+          <PaymentFailed
+            handleRetryPayment={handleRetryPayment}
+            paymentResponseData={paymentResponseData}
+            demandStatementFee={demandStatementFee}
+            transferFee={transferFee}
+          />
         ) : (
-          <div className="w-full max-w-md p-6 mr-20 bg-white rounded-md border">
+          <div className="w-full max-w-xl p-6 mr-20 bg-white rounded-md border">
             <h3 className="text-lg font-bold">Select Payment Option</h3>
             <p className="text-gray-600 text-sm">
               All transactions are secure and encrypted
@@ -218,7 +318,7 @@ export default function PaymentCardForm({
               <button
                 className={`flex items-center justify-start space-x-2 px-4 py-2 flex-1 rounded-md border-2 ${
                   paymentMethod === "card"
-                    ? "bg-[#F3FAFF] text-[#4790CD] border-[#4790CD]"
+                    ? "bg-borderBg text-btnDarkBlue border-btnDarkBlue"
                     : "bg-gray-200 text-black"
                 }`}
                 onClick={() => setPaymentMethod("card")}
@@ -229,7 +329,7 @@ export default function PaymentCardForm({
               <button
                 className={`flex items-center justify-start space-x-2 px-4 py-2 flex-1 rounded-md border-2 ${
                   paymentMethod === "bank"
-                    ? "bg-[#F3FAFF] text-[#4790CD] border-[#4790CD]"
+                    ? "bg-borderBg text-btnDarkBlue border-btnDarkBlue"
                     : "bg-gray-200 text-black"
                 }`}
                 onClick={() => setPaymentMethod("bank")}
@@ -254,48 +354,77 @@ export default function PaymentCardForm({
                   <Form>
                     {paymentMethod === "card" && (
                       <div className="mt-4 space-y-2 text-black">
-                        {/* Payment Method Dropdown */}
-                        <div className="">
-                          <label className="block mt-4">Account Type </label>
-                          <div className="col-span-4">
-                            <div className="flex items-center border-b border-gray-o-60">
-                              <Field
-                                as="select"
-                                name="accountType"
-                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                              >
-                                <option value="Checking">Checking</option>
-                                <option value="Saving">Saving</option>
-                              </Field>
-                            </div>
-                            {errors.accountType && touched.accountType && (
-                              <div className="text-red-500 text-sm">
-                                {errors.accountType}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
                         <div className="">
                           <label className="block mt-4">Card Holder Name</label>
                           <Field
-                            name="cardHolderName"
+                            name="accountHolderName"
                             className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500 text-17"
                             placeholder="Caroline Marine"
+                            maxLength={22}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "Tab",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Delete",
+                                " ",
+                              ];
+                              const isLetter = /^[a-zA-Z_]$/.test(e.key);
+                              if (!isLetter && !allowedKeys.includes(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
-                          {errors.cardHolderName && touched.cardHolderName && (
-                            <div className="text-red-500 text-sm">
-                              {errors.cardHolderName}
-                            </div>
-                          )}
-                        </div>
 
+                          {errors.accountHolderName &&
+                            touched.accountHolderName && (
+                              <div className="text-red-500 text-sm">
+                                {errors.accountHolderName}
+                              </div>
+                            )}
+                        </div>
                         <div className="">
                           <label className="block mt-4">Card Number</label>
-                          <Field
+                          {/* <Field
                             name="cardNumber"
                             className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
                             placeholder="XXXX-XXXX-8224"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                          /> */}
+                          <Field
+                            name="cardNumber"
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={19}
+                            className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                            placeholder="XXXX-XXXX-XXXX-XXXX"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                e.currentTarget.value.length >= 19 &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                              if (
+                                !/^\d$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
                           {errors.cardNumber && touched.cardNumber && (
                             <div className="text-red-500 text-sm">
@@ -311,6 +440,9 @@ export default function PaymentCardForm({
                               name="expiryDate"
                               className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
                               placeholder="MM/YY"
+                              onCopy={(e) => e.preventDefault()}
+                              onPaste={(e) => e.preventDefault()}
+                              onCut={(e) => e.preventDefault()}
                             />
                             {errors.expiryDate && touched.expiryDate && (
                               <div className="text-red-500 text-sm">
@@ -320,10 +452,40 @@ export default function PaymentCardForm({
                           </div>
                           <div>
                             <label className="block mt-4">CVV</label>
-                            <Field
+                            {/* <Field
                               name="cvv"
                               className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
                               placeholder="124"
+                              onCopy={(e) => e.preventDefault()}
+                              onPaste={(e) => e.preventDefault()}
+                              onCut={(e) => e.preventDefault()}
+                            /> */}
+                            <Field
+                              name="cvv"
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              maxLength={4}
+                              placeholder="124"
+                              className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                              onCopy={(e) => e.preventDefault()}
+                              onPaste={(e) => e.preventDefault()}
+                              onCut={(e) => e.preventDefault()}
+                              onKeyDown={(e) => {
+                                const allowedKeys = [
+                                  "Backspace",
+                                  "ArrowLeft",
+                                  "ArrowRight",
+                                  "Tab",
+                                  "Delete",
+                                ];
+                                if (
+                                  !/^[0-9]$/.test(e.key) &&
+                                  !allowedKeys.includes(e.key)
+                                ) {
+                                  e.preventDefault();
+                                }
+                              }}
                             />
                             {errors.cvv && touched.cvv && (
                               <div className="text-red-500 text-sm">
@@ -339,6 +501,9 @@ export default function PaymentCardForm({
                             name="zipCode"
                             className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
                             placeholder="82246"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
                           />
                           {errors.zipCode && touched.zipCode && (
                             <div className="text-red-500 text-sm">
@@ -373,25 +538,92 @@ export default function PaymentCardForm({
                           </div>
                         </div>
                         <div className="mt-4">
-                          <label className="block">Card Holder Name</label>
-                          <Field
-                            name="cardHolderName"
-                            className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                          <label className="block">Account Holder Name</label>
+                          {/* <Field
+                            name="accountHolderName"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
                             placeholder="Caroline Marine"
+                          /> */}
+                          <Field
+                            name="accountHolderName"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
+                            placeholder="Caroline Marine"
+                            maxLength={22}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "Tab",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Delete",
+                                " ",
+                              ];
+                              const isLetterOrUnderscore = /^[a-zA-Z_]$/.test(
+                                e.key
+                              );
+                              if (
+                                !isLetterOrUnderscore &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                            onPaste={(e) => e.preventDefault()}
+                            onCopy={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
                           />
-                          {errors.cardHolderName && touched.cardHolderName && (
-                            <div className="text-red-500 text-sm">
-                              {errors.cardHolderName}
-                            </div>
-                          )}
+
+                          {errors.accountHolderName &&
+                            touched.accountHolderName && (
+                              <div className="text-red-500 text-sm">
+                                {errors.accountHolderName}
+                              </div>
+                            )}
                         </div>
 
                         <div>
+                          <div className="flex items-center text-blue-700 text-sm mt-4 -mb-4">
+                            <span className="inline-flex items-center justify-center w-4 h-4 text-white bg-blue-500 rounded-full text-xs font-bold mr-1">
+                              ℹ
+                            </span>
+                            <span>
+                              If your routing number is less than 9 digits,
+                              please prepend it with <strong>0</strong>.
+                            </span>
+                          </div>
                           <label className="block mt-4">Routing Number</label>
                           <Field
                             name="routingNumber"
-                            className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={9}
+                            pattern="\d*"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
                             placeholder="XXXX-XXXX-8224"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                e.currentTarget.value.length >= 9 &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                              if (
+                                !/^\d$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
                           {errors.routingNumber && touched.routingNumber && (
                             <div className="text-red-500 text-sm">
@@ -399,14 +631,44 @@ export default function PaymentCardForm({
                             </div>
                           )}
                         </div>
+
                         <div>
                           <label className="block mt-4">
                             Confirm Routing Number
                           </label>
                           <Field
                             name="confirmRoutingNumber"
-                            className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={9}
+                            pattern="\d*"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
                             placeholder="XXXX-XXXX-8224"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              // Block further input beyond 9 digits
+                              if (
+                                e.currentTarget.value.length >= 9 &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                              if (
+                                !/^\d$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
                           {errors.confirmRoutingNumber &&
                             touched.confirmRoutingNumber && (
@@ -416,14 +678,54 @@ export default function PaymentCardForm({
                             )}
                         </div>
                         <div>
+                          {/* <div className="flex items-start text-blue-700 text-sm mt-4 -mb-4">
+                            <span className="mr-1 text-base font-bold">ℹ️</span>
+                            <span>
+                              If your account number is less than 9 digits,
+                              please prepend it with <strong>0</strong>.
+                            </span>
+                          </div> */}
+                          <div className="flex items-center text-blue-700 text-sm mt-4 -mb-4">
+                            <span className="inline-flex items-center justify-center w-4 h-4 text-white bg-blue-500 rounded-full text-xs font-bold mr-1">
+                              ℹ
+                            </span>
+                            <span>
+                              If your account number is less than 9 digits,
+                              please prepend it with <strong>0</strong>.
+                            </span>
+                          </div>
                           <label className="block mt-4">
                             Bank Account Number
                           </label>
                           <Field
                             name="bankAccountNumber"
-                            className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            minLength={9}
+                            maxLength={18}
                             placeholder="XXXX-XXXX-8224"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/^[0-9]$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
+
                           {errors.bankAccountNumber &&
                             touched.bankAccountNumber && (
                               <div className="text-red-500 text-sm">
@@ -437,9 +739,32 @@ export default function PaymentCardForm({
                           </label>
                           <Field
                             name="confirmBankAccountNumber"
-                            className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            maxLength={16}
                             placeholder="XXXX-XXXX-8224"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/^[0-9]$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
+
                           {errors.confirmBankAccountNumber &&
                             touched.confirmBankAccountNumber && (
                               <div className="text-red-500 text-sm">
@@ -449,13 +774,12 @@ export default function PaymentCardForm({
                         </div>
                       </div>
                     )}
-
                     <div className="flex items-center space-x-2 mt-4">
                       <button
                         type="submit"
-                        className="w-full bg-[#4790CD] text-white py-2 rounded-full"
+                        className="w-full bg-accent1 text-white py-2 rounded-full"
                       >
-                        Pay | ${formData?.formData?.price || "0.00"}
+                        Pay | ${formData?.price || "0.00"}
                       </button>
                     </div>
                   </Form>

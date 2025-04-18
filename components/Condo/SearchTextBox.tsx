@@ -64,7 +64,7 @@ const SearchTextBox = ({
         {/* <span className=" text-black-b-300">{title}</span> */}
         {required && <span className="text-status-danger-800">*</span>}
       </div>
-      <div className="-mb-4">
+      <div className="">
         <div className="flex items-center border-b border-gray-o-60">
           <input
             name={name}

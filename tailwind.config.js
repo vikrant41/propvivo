@@ -55,6 +55,9 @@ module.exports = {
         associationGray : "#7A7D9C",
         associationLightBlue : "#F6F9FF",
         associationLightgray: "#DADADA",
+        borderBg:"#F3FAFF",
+        borderColor: "#D5D7ED",
+        gryTextColor:"#7A7D9C",
         "gray-o": {
           600: "#CCCCCC",
           500: "#4E4F50",

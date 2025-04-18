@@ -28,25 +28,69 @@ import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 import { p } from "graphql-ws/dist/common-DY-PBNYy";
 
 // Validaition Schema
+// const validationSchema = Yup.object({
+//   requestorType: Yup.string().required("Requestor Type is Required"),
+//   associationName: Yup.string().required("Association Name is Required"),
+//   propertyAddress: Yup.string().required("Address is Required"),
+//   requesterFirstName: Yup.string().required("First Name is Required"),
+//   requesterLastName: Yup.string().required("Last Name is Required"),
+//   requesterCompany: Yup.string().required("Company Name is Required"),
+//   escrowNumber: Yup.string().required("Escrow Number is Required"),
+//   requesterEmail: Yup.string()
+//     .email("Invalid email")
+//     .required("Email is Required"),
+//   requesterPhone: Yup.string()
+//     .matches(/^[0-9]{10}$/, "Phone number length should be 10")
+//     .required("Phone Number is Required"),
+
+//   buyerPhone: Yup.string()
+//     .matches(/^[0-9]{10}$/, "Phone number length should be 10")
+//     .required("Phone Number is Required"),
+
+//   buyerFirstName: Yup.string().required("First Name is Required"),
+//   buyerLastName: Yup.string().required("Last Name is Required"),
+//   buyerEmail: Yup.string().email("Invalid email").required("Email is Required"),
+//   closingDate: Yup.date()
+//     .min(new Date(), "Closing Date must be greater than today")
+//     .required("Closing Date is Required"),
+//   orderType: Yup.string().required("Order Type is Required"),
+// });
+
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
-  associationName: Yup.string().required("Association Name is Required"),
+  associationName: Yup.string()
+    .min(3, "Association Name min length should be 3")
+    .required("Association Name is Required"),
   propertyAddress: Yup.string().required("Address is Required"),
-  requesterFirstName: Yup.string().required("First Name is Required"),
-  requesterLastName: Yup.string().required("Last Name is Required"),
+  requesterFirstName: Yup.string()
+    .matches(/^[a-zA-Z\s]*$/, "First Name can only contain letters and spaces")
+    .min(3, "First Name min length should be 3")
+    .required("First Name is Required"),
+  requesterLastName: Yup.string()
+    .matches(/^[a-zA-Z\s]*$/, "Last Name can only contain letters and spaces")
+    .required("Last Name is Required"),
   requesterCompany: Yup.string().required("Company Name is Required"),
   escrowNumber: Yup.string().required("Escrow Number is Required"),
   requesterEmail: Yup.string()
     .email("Invalid email")
     .required("Email is Required"),
-  requesterPhone: Yup.string().required("Phone Number is Required"),
-  buyerFirstName: Yup.string().required("First Name is Required"),
-  buyerLastName: Yup.string().required("Last Name is Required"),
+  requesterPhone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Phone number length should be 10")
+    .required("Phone Number is Required"),
+
+  buyerPhone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Phone number length should be 10")
+    .required("Phone Number is Required"),
+
+  buyerFirstName: Yup.string()
+    .matches(/^[a-zA-Z\s]*$/, "First Name can only contain letters and spaces")
+    .min(3, "First Name min length should be 3")
+    .required("First Name is Required"),
+  buyerLastName: Yup.string()
+    .matches(/^[a-zA-Z\s]*$/, "Last Name can only contain letters and spaces")
+    .required("Last Name is Required"),
   buyerEmail: Yup.string().email("Invalid email").required("Email is Required"),
-  buyerPhone: Yup.string().required("Phone Number is Required"),
-  closingDate: Yup.date()
-    .min(new Date(), "Closing Date must be greater than today")
-    .required("Closing Date is Required"),
+  closingDate: Yup.date().required("Closing Date is Required"),
   orderType: Yup.string().required("Order Type is Required"),
 });
 
@@ -210,15 +254,6 @@ function DemandStatement() {
     ]);
   }, [setBreadcrumbs]);
 
-  // Handle file selection
-  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const selectedFiles = event.target.files;
-  //   if (selectedFiles) {
-  //     const newFiles = Array.from(selectedFiles);
-  //     setFiles([...files, ...newFiles]);
-  //     formik.setFieldValue("attachments", [...files, ...newFiles]);
-  //   }
-  // };
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
     if (selectedFiles) {
@@ -366,8 +401,14 @@ function DemandStatement() {
 
   // Reset Demand Form
   const handleReset = () => {
+    const currentPrice = formik.values.price;
     formik.resetForm();
+    formik.setFieldValue("price", currentPrice);
   };
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split("T")[0];
 
   return (
     <>
@@ -410,7 +451,7 @@ function DemandStatement() {
                     Association Information{" "}
                     <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 space-y-6">
+                  <div className="col-span-4 space-y-4">
                     <SearchTextBox
                       name={"associationName"}
                       placeholder={"Association Name"}
@@ -613,12 +654,61 @@ function DemandStatement() {
 
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
-                          name="requesterPhone"
-                          placeholder="Phone Number"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
+                        <Field name="requesterPhone">
+                          {({ field, form }) => {
+                            const formatPhone = (value) => {
+                              const cleaned = value
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              const match = cleaned.match(
+                                /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                              );
+                              if (!match) return value;
+                              let formatted = "";
+                              if (match[1]) formatted = `(${match[1]}`;
+                              if (match[2]) formatted += `) ${match[2]}`;
+                              if (match[3]) formatted += `-${match[3]}`;
+                              return formatted;
+                            };
+
+                            const handleChange = (e) => {
+                              const input = e.target.value;
+                              const cleaned = input
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              form.setFieldValue(field.name, cleaned); // save raw value
+                            };
+
+                            const handleKeyDown = (e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/[0-9]/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            };
+
+                            return (
+                              <input
+                                {...field}
+                                value={formatPhone(field.value || "")}
+                                onChange={handleChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Phone Number"
+                                inputMode="numeric"
+                                maxLength={14}
+                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            );
+                          }}
+                        </Field>
                       </div>
                       <ErrorMessage
                         name="requesterPhone"
@@ -683,12 +773,85 @@ function DemandStatement() {
 
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
+                        {/* <Field
                           name="buyerPhone"
                           placeholder="Phone Number"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          minLength={10}
+                          maxLength={10}
+                          onKeyDown={(e) => {
+                            const allowedKeys = [
+                              "Backspace",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Tab",
+                              "Delete",
+                            ];
+                            if (
+                              !/[0-9]/.test(e.key) &&
+                              !allowedKeys.includes(e.key)
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
                           className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
+                        /> */}
+                        <Field name="buyerPhone">
+                          {({ field, form }) => {
+                            const formatPhone = (value) => {
+                              const cleaned = value
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              const match = cleaned.match(
+                                /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                              );
+                              if (!match) return value;
+                              let formatted = "";
+                              if (match[1]) formatted = `(${match[1]}`;
+                              if (match[2]) formatted += `) ${match[2]}`;
+                              if (match[3]) formatted += `-${match[3]}`;
+                              return formatted;
+                            };
+
+                            const handleChange = (e) => {
+                              const input = e.target.value;
+                              const cleaned = input
+                                .replace(/\D/g, "")
+                                .slice(0, 10);
+                              form.setFieldValue(field.name, cleaned);
+                            };
+
+                            const handleKeyDown = (e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/[0-9]/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            };
+
+                            return (
+                              <input
+                                {...field}
+                                value={formatPhone(field.value)}
+                                onChange={handleChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Phone Number"
+                                inputMode="numeric"
+                                maxLength={14}
+                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            );
+                          }}
+                        </Field>
                       </div>
                       <ErrorMessage
                         name="buyerPhone"
@@ -709,6 +872,7 @@ function DemandStatement() {
                         <Field
                           type="date"
                           name="closingDate"
+                          min={minDate}
                           placeholder="First Name"
                           className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                         />
