@@ -55,6 +55,7 @@ function CondoQuestionnaire() {
   const [paymentData, setPaymentData] = useState(null);
   const [demandStatementFee, setDemandStatementFee] = useState(0);
   const [transferFee, setTransferFee] = useState(0);
+  const [condoResponse, setCondoResponse] = useState(null);
 
   // Google ReCAPTCHA key
   const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
@@ -159,7 +160,6 @@ function CondoQuestionnaire() {
             },
           });
           if (response?.data?.mediaMutations?.bulkUpload?.statusCode === 200) {
-            // const uploadedFiles = response?.data?.mediaMutations?.bulkUpload?.data?.medias;
             const uploadedFiles =
               response?.data?.mediaMutations?.bulkUpload?.data?.medias.map(
                 (fileList: any) => ({
@@ -272,15 +272,6 @@ function CondoQuestionnaire() {
   const orderTypeList = getAllOrderType?.demandStatementQuery?.OrderType;
 
   // OrderType api Calling
-  // useEffect(() => {
-  //   if (orderTypeList?.data?.orderTypesFees?.length > 0) {
-  //     const fees = orderTypeList.data.orderTypesFees[0];
-  //     const demandStatementFee = fees.demandFees || 0;
-  //     const transferFee = fees.transferFees || 0;
-  //     const totalAmount = (demandStatementFee + transferFee).toFixed(2);
-  //     formik.setFieldValue("price", totalAmount);
-  //   }
-  // }, [orderTypeList]);
   useEffect(() => {
     if (orderTypeList?.data?.orderTypesFees?.length > 0) {
       const fees = orderTypeList.data.orderTypesFees[0];
@@ -288,8 +279,8 @@ function CondoQuestionnaire() {
       const transferFeeVal = fees.transferFees || 0;
       const totalAmount = (demandFee + transferFeeVal).toFixed(2);
 
-      setDemandStatementFee(demandFee); // <- store demand fee
-      setTransferFee(transferFeeVal); // <- store transfer fee
+      setDemandStatementFee(demandFee); 
+      setTransferFee(transferFeeVal); 
       formik.setFieldValue("price", totalAmount);
     }
   }, [orderTypeList]);
@@ -359,7 +350,7 @@ function CondoQuestionnaire() {
         bankRoutingNumber: paymentData?.bankRoutingNumber,
         effectiveDate: paymentData?.effectiveDate
           ? `${paymentData?.effectiveDate}Z`
-          : "",
+          : null,
         transactionDesc: paymentData?.transactionDesc,
         transactionId: paymentData?.transactionId,
       },
@@ -375,6 +366,11 @@ function CondoQuestionnaire() {
           },
         },
       });
+      if (response?.data?.condoQuestionMutation?.createCondoQuestion?.success) {
+        setCondoResponse(
+          response?.data?.condoQuestionMutation?.createCondoQuestion
+        );
+      }
     } catch (error) {
       console.log(
         error?.graphQLErrors?.[0]?.extensions?.message || error?.message
@@ -660,7 +656,7 @@ function CondoQuestionnaire() {
                               const cleaned = input
                                 .replace(/\D/g, "")
                                 .slice(0, 10);
-                              form.setFieldValue(field.name, cleaned); // save raw value
+                              form.setFieldValue(field.name, cleaned); 
                             };
 
                             const handleKeyDown = (e) => {
@@ -990,6 +986,7 @@ function CondoQuestionnaire() {
           setRequestStatus={setRequestStatus}
           setPaymentData={setPaymentData}
           onPaymentSuccess={handlePaymentSuccess}
+          condoResponse={condoResponse}
           demandStatementFee={demandStatementFee}
           transferFee={transferFee}
           associationDetails={{
