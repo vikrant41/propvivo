@@ -4,7 +4,6 @@ import { useBreadcrumbs } from "../contexts/BreadCrumbContext";
 import * as Yup from "yup";
 import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import { AttchmentIcon, CloseIcon, FaDollar } from "../components/shared/Icons";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "../components/CommonComponents/Button";
 import PaymentCardForm from "../components/Condo/PaymentCardForm";
 import { formatDate } from "../Utils/Utils";
@@ -16,6 +15,14 @@ import { GET_ALL_LEGALENTITY_ADDRESS_MAPPING } from "../graphql/queries/LegalEnt
 import { CREATE_RESALE_CERTIFICATION_REQUEST } from "../graphql/mutations/ResaleCertificationMutations";
 import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
+import dynamic from "next/dynamic";
+
+const ReCAPTCHA = dynamic(() => import('react-google-recaptcha'), {
+  ssr: false,
+}) as unknown as React.FC<{
+  sitekey: string;
+  onChange?: (token: string | null) => void;
+}>;
 
 // Resale Certification Validation
 const validationSchema = Yup.object({
@@ -57,8 +64,9 @@ function ResaleCertificate() {
   const [demandStatementFee, setDemandStatementFee] = useState(0);
   const [transferFee, setTransferFee] = useState(0);
 
+  
   // Google ReCAPTCHA key
-  const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
+  const siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
 
   // Resale Initial Values
   const formik = useFormik({
@@ -987,7 +995,7 @@ function ResaleCertificate() {
                         </div>
                       </div>
                     </div>
-                    <ReCAPTCHA sitekey={captcha_siteKey} />
+                    <ReCAPTCHA sitekey={siteKey} />
                   </div>
                 </div>
               </div>
