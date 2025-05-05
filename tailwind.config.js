@@ -58,6 +58,8 @@ module.exports = {
         borderBg:"#F3FAFF",
         borderColor: "#D5D7ED",
         gryTextColor:"#7A7D9C",
+        dropdownText: "#404a5f",
+        dropdownHover: "#E9F5FF",
         "gray-o": {
           600: "#CCCCCC",
           500: "#4E4F50",

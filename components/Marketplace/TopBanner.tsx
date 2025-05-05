@@ -13,7 +13,7 @@ const TopBanner: React.FC<BannerProps> = ({ backgroundImage, title }) => {
 
   return (
     <div
-      className="relative w-full h-64 md:h-96 bg-cover bg-center flex items-center justify-center after:absolute after:bg-accent/30 after:top-0 after:left-0 after:w-full after:h-full after:z-0"
+      className="relative w-full h-64 md:h-96 bg-cover bg-center flex items-center justify-center after:absolute after:bg-accent/30 after:top-0 after:left-0 after:w-full after:h-full after:z-0 px-5"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className="text-center relative z-10 space-y-3">

@@ -53,11 +53,23 @@ const HeroSection = () => {
         <div className="">
           <div className="flex flex-col lg:flex-row gap-5">
             <div className="space-y-4 md:space-y-5 lg:w-1/2 px-8 xl:pr-0 xl:pl-0 padLeft">
-              <SubHeading
+              {/* <SubHeading
                 text="SINCE 2013"
                 showRightLine={false}
                 isLeft={true}
-              />
+              /> */}
+              <div
+                className={`flex items-center justify-start gap-2.5`}
+                style={{ gap: "10px" }}
+              >
+                <div
+                  className="w-7 h-0.5 bg-lightGreen rounded-xl"
+                  style={{ height: "3px" }}
+                />
+                <div className="font-outfit text-base uppercase tracking-wide text-pvBlack">
+                  SINCE 2013
+                </div>
+              </div>
               <h1 className="leading-tight space-x-3">
                 Revolutionizing <br />
                 <span className="text-accent1 relative lg:pl-0 lg:pr-2 inline-block">
@@ -70,7 +82,7 @@ const HeroSection = () => {
                 className="padLeft"
                 style={{
                   // maxWidth: !isMobile ? "540px" : "auto",
-                  maxWidth: isMobile ? "100%" : "540px"
+                  maxWidth: isMobile ? "100%" : "540px",
                 }}
               >
                 <p>
@@ -123,7 +135,10 @@ const HeroSection = () => {
                   <span className="font-caveat text-pvBlack text-2xl">
                     Now Integrated with
                   </span>
-                  <img src="./img/TopArrowImg.png" className="-mb-6 hidden md:block" />
+                  <img
+                    src="./img/TopArrowImg.png"
+                    className="-mb-6 hidden md:block"
+                  />
                   <img src="./img/CoPilotImg.png" className="" />
                 </div>
               </div>

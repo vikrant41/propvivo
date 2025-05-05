@@ -93,7 +93,7 @@ const SearchTextBox = ({
       </div>
       {showData && text.length >= searchAfterChar && (
         <div
-          className="absolute w-full max-h-32 overflow-y-auto text-sm bg-white z-50 rounded-md"
+          className="absolute w-full max-h-32 overflow-y-auto text-sm bg-white z-50 rounded-md shadow-md p-2 border space-y-1"
           ref={ref}
         >
           {data &&
@@ -105,7 +105,7 @@ const SearchTextBox = ({
                     e.code.toLowerCase().startsWith(text.toLowerCase()))) && (
                   <div
                     key={e.code || e.name}
-                    className="hover:bg-secondary-g-50 cursor-pointer px-3 py-1"
+                    className="p-2 cursor-pointer font-normal text-sm text-dropdownText hover:bg-dropdownHover hover:text-accent1 transition-all leading-none flex gap-2 rounded-md"
                     onClick={() => {
                       setText(e.name || e.code || e.lineId);
                       if (e.filedName === "glCode") {
