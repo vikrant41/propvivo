@@ -28,7 +28,7 @@ a {
 }
 
 p {
-  @apply mb-4 last:mb-0;
+  @apply mb-4 last:mb-0 md:leading-6;
 }
 
 h1,
@@ -309,7 +309,7 @@ h6 {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   h1 br,
   h2 br {
     display: none;

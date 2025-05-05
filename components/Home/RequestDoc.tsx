@@ -50,7 +50,7 @@ const RequestDoc = () => {
   return (
     <>
       <section className="py-9 md:py-16 relative">
-        <DocShapeIcon className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:block" />
+        <DocShapeIcon className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none" />
         <div className="container">
           <div className="grid lg:grid-cols-2 items-center gap-y-8 lg:gap-x-10">
             <div className="relative">
