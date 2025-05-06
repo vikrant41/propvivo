@@ -5,6 +5,10 @@ import * as Yup from "yup";
 import { CustomTextField } from "./CustomTextField";
 import { useResendOtpMutation, useVerifyOtpMutation } from "../../slices/MarketPlace";
 import { ArrowIcon, AssociationOtpIcon } from "../shared/Icons";
+import { useMutation } from "@apollo/client";
+import { RESEND_OTP, VERIFY_OTP } from "../../graphql/mutations/MarketplaceMutations";
+import { generateBodyPayload } from "../../slices/apiSlice";
+import { requestSubType, requestType } from "../Helper/Helper";
 
 
 type Props = {
@@ -24,30 +28,33 @@ function VerifyOTP({
   formData,
   nextStep,
   inquiryId,
-  initialTime = 180,
+  initialTime = 10,
 }: Props) {
   const [isResendOtp, setisResendOtp] = useState(false);
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [isTimeUp, setIsTimeUp] = useState(false);
-  const [
-    addOtp,
-    {
-      data: addInquiryResponse,
-      isLoading: addInquiryLoading,
-      isError: addInquiryError,
-      error: addInquiryErrorData,
-    },
-  ] = useVerifyOtpMutation();
+  // const [
+  //   addOtp,
+  //   {
+  //     data: addInquiryResponse,
+  //     isLoading: addInquiryLoading,
+  //     isError: addInquiryError,
+  //     error: addInquiryErrorData,
+  //   },
+  // ] = useVerifyOtpMutation();
 
-  const [
-    resendOtp,
-    {
-      data: resendResponse,
-      isLoading: resendLoading,
-      isError: resendError,
-      error: resendErrorData,
-    },
-  ] = useResendOtpMutation();
+  // const [
+  //   resendOtp,
+  //   {
+  //     data: resendResponse,
+  //     isLoading: resendLoading,
+  //     isError: resendError,
+  //     error: resendErrorData,
+  //   },
+  // ] = useResendOtpMutation();
+
+  const [addOtp, { loading:addotpLoading, error:addotpErrorData, data:addotpResponse }] = useMutation(VERIFY_OTP);
+  const [resendOtp, { loading:addResendOtpLoading, error:addResendOtpErrorData, data:addResendOtpResponse }] = useMutation(RESEND_OTP);
 
   // formik validation schema
   const validationSchema = () =>
@@ -68,12 +75,44 @@ function VerifyOTP({
   });
 
   // function for submit form
+  // const handleSubmit = (values) => {
+  //   if (isResendOtp) {
+  //     resendOtp({
+  //       enqiuryId: inquiryId,
+  //       marketPlaceAdId: marketPlaceId,
+  //     });
+  //     // .then((res)=>{
+  //     //   if (response?.data?.statusCode === 200) {
+  //     //     nextStep();
+  //     //   }
+  //     // });
+  //     setTimeLeft(initialTime);
+  //     setIsTimeUp(false);
+  //   } else {
+  //     addOtp({
+  //       enqiuryId: inquiryId,
+  //       marketPlaceAdId: marketPlaceId,
+  //       otp: values?.otp,
+  //     }).then((response: any) => {
+  //       if (response?.data?.statusCode === 200) {
+  //         nextStep();
+  //       }
+  //     });
+  //   }
+  // };
+
   const handleSubmit = (values) => {
     if (isResendOtp) {
-      resendOtp({
+      const payload = {
         enqiuryId: inquiryId,
         marketPlaceAdId: marketPlaceId,
-      });
+      };
+      const finalPayload = generateBodyPayload(
+        requestSubType.Add,
+        requestType.MarketPlace,
+        payload
+      );
+      resendOtp({ variables: { request: finalPayload } });
       // .then((res)=>{
       //   if (response?.data?.statusCode === 200) {
       //     nextStep();
@@ -82,19 +121,23 @@ function VerifyOTP({
       setTimeLeft(initialTime);
       setIsTimeUp(false);
     } else {
-      addOtp({
+      const otpPayload = {
         enqiuryId: inquiryId,
         marketPlaceAdId: marketPlaceId,
         otp: values?.otp,
-      }).then((response: any) => {
-        if (response?.data?.statusCode === 200) {
+      };
+      const finalPayload = generateBodyPayload(
+        requestSubType.Add,
+        requestType.MarketPlace,
+        otpPayload
+      );
+      addOtp({ variables: { request: finalPayload } }).then((response: any) => {
+        if (response?.data?.marketPlaceMutation?.VerifyOtp?.success) {
           nextStep();
         }
       });
     }
-  };
-
-  
+  };  
 
   useEffect(() => {
     if (timeLeft > 0) {
