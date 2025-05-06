@@ -22,7 +22,7 @@ export default function SimpleModal({
     >
       {/* Modal Box */}
       <div
-        className="bg-white rounded-xl shadow-lg w-full sm:w-[570px] p-6 relative"
+        className="bg-white rounded-xl shadow-lg w-full sm:max-w-570 p-6 relative mx-5"
         onClick={(e) => e.stopPropagation()} // Prevents closing when clicking inside modal
       >
         {/* Modal Header */}

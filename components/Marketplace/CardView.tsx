@@ -171,7 +171,7 @@ function CardView({ data }: Props) {
                     {truncateText(item?.title, 30)}
                   </h3>
                   <div className="mt-1">
-                    <span className="paddingXStatusPill text-sm py-1 px-2 capitalize leading-wide rounded-full bg-[#F7F7FE] text-[#2E94EA]">{item?.category}</span>
+                    <span className="paddingXStatusPill text-sm py-1 px-2 capitalize leading-wide rounded-full bg-marketplaceLightBlue text-blue-o-400">{item?.category}</span>
                   </div>
 
                   {/* Description */}
@@ -187,11 +187,11 @@ function CardView({ data }: Props) {
                 <div className="p-5 pt-0 ">
                   {!isAddOfCurrentUser &&
                     <div className="flex justify-between items-center">
-                      < div className="text-base font-semibold text-[#EC8431]">
+                      < div className="text-base font-semibold text-marketplaceOrange">
                         ${item?.price}
                       </div>
                       <div className="text-sm font-medium text-primary-o-600 hover:text-primary-o-550 transition-all duration-300">
-                        <span className="text-right text-[#404A5F] text-xs font-normal pt-3">
+                        <span className="text-right text-dropdownText text-xs font-normal pt-3">
                           {convertUTCToLocalDate(item?.productStatus?.trim()?.replace(/\s+/g, "")?.toLowerCase() === "sold" ? item?.soldDate : item?.userContext?.createdOn)}
                         </span>
                       </div>
@@ -200,11 +200,11 @@ function CardView({ data }: Props) {
                   {isAddOfCurrentUser &&
                     <div className="flex justify-between flex-col">
                       <div className="flex items-center justify-between">
-                        <div className="text-base font-semibold text-[#EC8431]">
+                        <div className="text-base font-semibold text-marketplaceOrange">
                           {item?.productStatus?.trim()?.replace(/\s+/g, "")?.toLowerCase() === "sold" ? "Sold for" : "$" + item?.price}
                         </div>
                         {item?.productStatus?.trim()?.replace(/\s+/g, "")?.toLowerCase() === "sold" ?
-                          <div className="text-base font-semibold text-[#EC8431]">
+                          <div className="text-base font-semibold text-marketplaceOrange">
                             ${item?.soldPrice}
                           </div>
                           :
@@ -227,7 +227,7 @@ function CardView({ data }: Props) {
                             <Link href={`/Socials/MarketPlace/${item?.marketPlaceAdId}`}>
                               <div className="flex gap-1 items-center cursor-pointer group relative">
                                 <AdInqueryMarketPlace />
-                                <span className="text-lg text-[#47ABFF]">
+                                <span className="text-lg text-marketplaceBlue">
                                   {item?.enquiryCount}
                                 </span>
                                 <span className="min-w-max absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 text-white bg-black text-xs p-1 rounded">
@@ -255,7 +255,7 @@ function CardView({ data }: Props) {
                         }
                       </div>
                       <div className="text-right text-sm font-medium text-primary-o-600 hover:text-primary-o-550 transition-all duration-300">
-                        <span className="text-right text-[#404A5F] text-xs font-normal pt-3">
+                        <span className="text-right text-dropdownText text-xs font-normal pt-3">
                           {convertUTCToLocalDate(item?.productStatus?.trim()?.replace(/\s+/g, "")?.toLowerCase() === "sold" ? item?.soldDate : item?.userContext?.createdOn)}
                         </span>
                       </div>

@@ -12,7 +12,10 @@ import {
   AssociationProfileIcon,
 } from "../shared/Icons";
 import { useUnAutorizeEnquiryMutation } from "../../slices/MarketPlace";
-
+import { useMutation } from "@apollo/client";
+import { generateBodyPayload } from "../../slices/apiSlice";
+import { requestSubType, requestType } from "../Helper/Helper";
+import { NOT_LOGGEDIN_ENQUIRY } from "../../graphql/mutations/MarketplaceMutations";
 
 type Props = {
   hideModal?: () => void;
@@ -33,7 +36,7 @@ function MakeInquiry({
   nextStep,
   setFormData,
   formData,
-  setInquiryId
+  setInquiryId,
 }: Props) {
   // formik validation schema
   const validationSchema = (price) =>
@@ -79,37 +82,51 @@ function MakeInquiry({
   });
 
   // add inquiry API
-  const [
-    addInquiry,
-    {
-      data: addInquiryResponse,
-      isLoading: addInquiryLoading,
-      isError: addInquiryError,
-      error: addInquiryErrorData,
-    },
-  ] = useUnAutorizeEnquiryMutation();
+  // const [
+  //   addInquiry,
+  //   {
+  //     data: addInquiryResponse,
+  //     isLoading: addInquiryLoading,
+  //     isError: addInquiryError,
+  //     error: addInquiryErrorData,
+  //   },
+  // ] = useUnAutorizeEnquiryMutation();
 
-  const handleSubmit = (values) => {
-    setFormData((prev: any) => ({ ...prev, step1: values }));
-    addInquiry({
-      name: values?.name,
-      email: values?.email,
-      phoneNo: values?.phoneNo,
-      marketPlaceAdId: marketPlaceId,
-      message: values?.message,
-      offerPrice: values?.offerPrice,
-    })
-      .then((res: any) => {
-        if (res?.data?.statusCode === 200) {
-          setInquiryId(res?.data?.data?.enqiuryId
-          )
-          nextStep();
-        }
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
-  };
+  const [addInquiry, { loading:addInquiryLoading, error:addInquiryErrorData, data:addInquiryResponse }] = useMutation(NOT_LOGGEDIN_ENQUIRY);
+
+    const handleSubmit = (values) => {
+      setFormData((prev: any) => ({ ...prev, step1: values }));
+      const payload = {
+        name: values?.name,
+        email: values?.email,
+        phoneNo: 
+        {
+          countryId:"",
+          countryName:"",
+          number:values?.phoneNo,
+          phoneCode: ""
+        },
+        marketPlaceAdId: marketPlaceId,
+        message: values?.message,
+        offerPrice: parseFloat(values?.offerPrice),
+      };
+  
+      const finalPayload = generateBodyPayload(
+        requestSubType.Add,
+        requestType.MarketPlace,
+        payload
+      );
+      addInquiry({ variables: { request: finalPayload } })
+        .then((res: any) => {
+          if (res?.data?.marketPlaceMutation?.NotLoggedInEnquiry?.statusCode === 200) {
+            setInquiryId(res?.data?.marketPlaceMutation?.NotLoggedInEnquiry?.data?.enqiuryId);
+            nextStep();
+          }
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
+    };
 
   return (
     <>

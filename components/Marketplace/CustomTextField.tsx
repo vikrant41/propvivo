@@ -96,7 +96,7 @@ export const CustomTextField = ({
               errors
                 ? "focus:border-status-danger-800"
                 : "focus:border-gray-p-350"
-            } text-[17px] disabled:text-gray-400 ${clsName}`}
+            } text-17 disabled:text-gray-400 ${clsName}`}
             disabled={disable}
           />
           {/* {isShowIcon && (
