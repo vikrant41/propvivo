@@ -28,7 +28,7 @@ function VerifyOTP({
   formData,
   nextStep,
   inquiryId,
-  initialTime = 10,
+  initialTime = 180,
 }: Props) {
   const [isResendOtp, setisResendOtp] = useState(false);
   const [timeLeft, setTimeLeft] = useState(initialTime);
@@ -78,7 +78,7 @@ function VerifyOTP({
   // const handleSubmit = (values) => {
   //   if (isResendOtp) {
   //     resendOtp({
-  //       enqiuryId: inquiryId,
+  //       enquiryId: inquiryId,
   //       marketPlaceAdId: marketPlaceId,
   //     });
   //     // .then((res)=>{
@@ -90,7 +90,7 @@ function VerifyOTP({
   //     setIsTimeUp(false);
   //   } else {
   //     addOtp({
-  //       enqiuryId: inquiryId,
+  //       enquiryId: inquiryId,
   //       marketPlaceAdId: marketPlaceId,
   //       otp: values?.otp,
   //     }).then((response: any) => {
@@ -104,7 +104,7 @@ function VerifyOTP({
   const handleSubmit = (values) => {
     if (isResendOtp) {
       const payload = {
-        enqiuryId: inquiryId,
+        enquiryId: inquiryId,
         marketPlaceAdId: marketPlaceId,
       };
       const finalPayload = generateBodyPayload(
@@ -122,7 +122,7 @@ function VerifyOTP({
       setIsTimeUp(false);
     } else {
       const otpPayload = {
-        enqiuryId: inquiryId,
+        enquiryId: inquiryId,
         marketPlaceAdId: marketPlaceId,
         otp: values?.otp,
       };
@@ -132,7 +132,7 @@ function VerifyOTP({
         otpPayload
       );
       addOtp({ variables: { request: finalPayload } }).then((response: any) => {
-        if (response?.data?.marketPlaceMutation?.VerifyOtp?.success) {
+        if (response?.data?.marketPlaceMutation?.guestUserVerifyOTP?.success) {
           nextStep();
         }
       });

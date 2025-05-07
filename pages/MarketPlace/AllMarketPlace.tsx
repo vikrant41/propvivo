@@ -82,7 +82,7 @@ const AllMarketPlace = () => {
     skip: selectedTab === 1 && SelectedFilter?.name !== "All",
   });
 
-  const marketPlaceData = marketPlaceDataGql?.marketPlaceQuery?.MarketPlace;
+  const marketPlaceData = marketPlaceDataGql?.marketPlaceQuery?.getAllMarketPlaceAds;
 
   return (
     <>
@@ -100,9 +100,13 @@ const AllMarketPlace = () => {
                 <CenteredLoader />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-14">
-                  <CardView
-                    data={marketPlaceData?.data?.getAllMarketPlaceAdItems}
-                  />
+                  {marketPlaceData?.statusCode === 200 ? (
+                    <CardView
+                      data={marketPlaceData?.data?.marketPlaceAds}
+                    />
+                  ) : (
+                    <div>Data Not Found!!</div>
+                  )}
                 </div>
               )}
             </div>

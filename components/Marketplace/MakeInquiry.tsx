@@ -118,8 +118,8 @@ function MakeInquiry({
       );
       addInquiry({ variables: { request: finalPayload } })
         .then((res: any) => {
-          if (res?.data?.marketPlaceMutation?.NotLoggedInEnquiry?.statusCode === 200) {
-            setInquiryId(res?.data?.marketPlaceMutation?.NotLoggedInEnquiry?.data?.enqiuryId);
+          if (res?.data?.marketPlaceMutation?.guestUserMarketPlaceEnquiry?.statusCode === 200) {
+            setInquiryId(res?.data?.marketPlaceMutation?.guestUserMarketPlaceEnquiry?.data?.enquiryId);
             nextStep();
           }
         })
