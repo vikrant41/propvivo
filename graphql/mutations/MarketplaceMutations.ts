@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
 
 export const NOT_LOGGEDIN_ENQUIRY = gql`
-  mutation NotLoggedIn($request:  CreateEnquiryForNotLoggedInUserRequestInput!) {
+  mutation guestUserMarketPlaceEnquiry($request:  GuestUserMarketPlaceEnquiryRequestInput!) {
     marketPlaceMutation {
-      NotLoggedInEnquiry(request: $request) {
+      guestUserMarketPlaceEnquiry(request: $request) {
         data {
-          enqiuryId
+          enquiryId
           otp
         }
         message
@@ -16,9 +16,9 @@ export const NOT_LOGGEDIN_ENQUIRY = gql`
   }
 `;
 export const RESEND_OTP = gql`
-  mutation ResendOtp($request: ResendOtpRequestInput!) {
+  mutation guestUserResendOTP($request: GuestUserResendOTPRequestInput!) {
     marketPlaceMutation {
-      ResendOtp(request: $request) {
+      guestUserResendOTP(request: $request) {
         data {
           otp
         }
@@ -30,11 +30,11 @@ export const RESEND_OTP = gql`
   }
 `;
 export const VERIFY_OTP = gql`
-  mutation VerifyOtp($request: VerifyActivationCodeRequestInput!) {
+  mutation guestUserVerifyOTP($request: GuestUserVerifyOTPRequestInput!) {
     marketPlaceMutation {
-      VerifyOtp(request: $request) {
+      guestUserVerifyOTP(request: $request) {
         data {
-          enqiuryId
+          enquiryId
         }
         message
         statusCode

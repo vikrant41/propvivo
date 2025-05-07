@@ -109,7 +109,7 @@ function MarketPlaceDetailView() {
     skip: !MarketPlace
   });
 
-  const adsData=adsDataGql?.marketPlaceQuery?.MarketPlace
+  const adsData=adsDataGql?.marketPlaceQuery?.getAllMarketPlaceAds
 
   // sold ad API
   const [
@@ -149,11 +149,11 @@ function MarketPlaceDetailView() {
 
   // useEffect for store detail of ads
   useEffect(() => {
-    if (adsData && adsData?.data?.getAllMarketPlaceAdItems?.length > 0) {
-      setaddDetail(adsData?.data?.getAllMarketPlaceAdItems[0]);
+    if (adsData && adsData?.data?.marketPlaceAds?.length > 0) {
+      setaddDetail(adsData?.data?.marketPlaceAds[0]);
       setisadofCurrentUser(
         JSON.parse(localStorage.getItem("userProfile"))?.userProfileId ===
-          adsData?.data?.getAllMarketPlaceAdItems[0]?.userContext
+          adsData?.data?.marketPlaceAds[0]?.userContext
             ?.createdByUserId
       );
     }

@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
 
 export const MARKET_PLACE_QUERY = gql`
-  query GetAllMarketPlaces($request: GetAllMarketPlaceAdRequestsInput!) {
+  query getAllMarketPlaceAds($request: GetAllMarketPlaceAdsRequestInput!) {
     marketPlaceQuery {
-      MarketPlace(request: $request) {
+      getAllMarketPlaceAds(request: $request) {
         message
         statusCode
         success
@@ -11,7 +11,7 @@ export const MARKET_PLACE_QUERY = gql`
           totalCount
         }
         data {
-          getAllMarketPlaceAdItems {
+          marketPlaceAds {
             category
             categoryId
             cityId
@@ -22,15 +22,11 @@ export const MARKET_PLACE_QUERY = gql`
             description
             enquiries {
               email
-              enqiuryId
+              enquiryId
               enquiryStatus
               message
               name
               offerPrice
-              otp {
-                createdTime
-                otp
-              }
               phoneNo {
               countryId
               countryName
@@ -98,46 +94,46 @@ export const MARKET_PLACE_QUERY = gql`
     }
   }
 `;
-export const MARKET_PLACE_INQUIRY_QUERY = gql`
-  query GetAllMarketPlacesInquiry($request: GetAllEnquiryRequestsInput!) {
-    marketPlaceQuery {
-      Enquiry(request: $request) {
-        message
-        statusCode
-        success
-        meta {
-          totalCount
-        }
-        data {
-          enquiries {
-            email
-            enquiryStatus
-            id
-            message
-            name
-            offerPrice
-            otp{
-            createdTime
-            otp
-            }
-            phoneNo {
-              countryId
-              countryName
-              number
-              phoneCode
-            }
-            title
-            userContext {
-              createdByUserId
-              createdByUserName
-              createdOn
-              modifiedByUserId
-              modifiedByUserName
-              modifiedOn
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+// export const MARKET_PLACE_INQUIRY_QUERY = gql`
+//   query GetAllMarketPlacesInquiry($request: GetAllEnquiryRequestsInput!) {
+//     marketPlaceQuery {
+//       Enquiry(request: $request) {
+//         message
+//         statusCode
+//         success
+//         meta {
+//           totalCount
+//         }
+//         data {
+//           enquiries {
+//             email
+//             enquiryStatus
+//             id
+//             message
+//             name
+//             offerPrice
+//             otp{
+//             createdTime
+//             otp
+//             }
+//             phoneNo {
+//               countryId
+//               countryName
+//               number
+//               phoneCode
+//             }
+//             title
+//             userContext {
+//               createdByUserId
+//               createdByUserName
+//               createdOn
+//               modifiedByUserId
+//               modifiedByUserName
+//               modifiedOn
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
