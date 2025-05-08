@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
               <div>
                 <Link href="/" passHref>
                   <a>
-                    <img src="./PropVIVO.png" className="propvivoLogo" />
+                    <img src="/PropVIVO.png" className="propvivoLogo" />
                   </a>
                 </Link>
                 <div className="flex gap-x-8 text-sm mt-5">
