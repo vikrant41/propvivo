@@ -54,8 +54,7 @@ const MarketPlace = () => {
         requestParam: {
           marketPlaceAdContext: "AllAds",
           categoryId: reduxData?.data["Category"]?.join(","),
-          productStatus:
-            SelectedFilter?.name === "All" ? "allads" : SelectedFilter?.name,
+          productStatus: "Available",
         },
       },
     },
@@ -88,7 +87,7 @@ const MarketPlace = () => {
                 </>
               }
             />
-            {console.log(marketPlaceData?.data?.marketPlaceAds, "marketPlaceData?.data?.marketPlaceAds")}
+
             {marketPlaceData?.data?.marketPlaceAds != undefined && (
               <div className="w-full text-right">
                 <div className="inline-block">

@@ -73,8 +73,7 @@ const AllMarketPlace = () => {
         requestParam: {
           marketPlaceAdContext: "AllAds",
           categoryId: reduxData?.data["Category"]?.join(","),
-          productStatus:
-            SelectedFilter?.name === "All" ? "allads" : SelectedFilter?.name,
+          productStatus: "Available",
           // UserId: JSON.parse(localStorage.getItem("userProfile"))
           //   ?.userProfileId,
         },
