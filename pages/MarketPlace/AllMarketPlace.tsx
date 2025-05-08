@@ -11,6 +11,7 @@ import { useQuery } from "@apollo/client";
 import { MARKET_PLACE_QUERY } from "../../graphql/queries/MarketPlace";
 import apiClient from "../../apollo/apiClient";
 import CenteredLoader from "../../components/CommonComponents/CenterLoader";
+import { NoDataFound } from "../../components/CommonComponents/DataNotFound";
 
 const AllMarketPlace = () => {
   const reduxData = useSelector(getFilterData);
@@ -72,8 +73,7 @@ const AllMarketPlace = () => {
         requestParam: {
           marketPlaceAdContext: "AllAds",
           categoryId: reduxData?.data["Category"]?.join(","),
-          productStatus:
-            SelectedFilter?.name === "All" ? "allads" : SelectedFilter?.name,
+          productStatus: "Available",
           // UserId: JSON.parse(localStorage.getItem("userProfile"))
           //   ?.userProfileId,
         },
@@ -95,7 +95,7 @@ const AllMarketPlace = () => {
         <div className="relative">
           <div className="container">
             <SubHeading text="All Ads" />
-            <div>
+            {/* <div>
               {marketPlaceLoading ? (
                 <CenteredLoader />
               ) : (
@@ -108,6 +108,23 @@ const AllMarketPlace = () => {
                     <div>Data Not Found!!</div>
                   )}
                 </div>
+              )}
+            </div> */}
+            <div>
+              {marketPlaceData?.data?.marketPlaceAds === undefined ? (
+                <NoDataFound
+                  headermessage="No Ad Found"
+                  message=""
+                  isBtn={false}
+                />
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-9">
+                  <CardView
+                      data={marketPlaceData?.data?.marketPlaceAds}
+                    />
+                  </div>
+                </>
               )}
             </div>
           </div>

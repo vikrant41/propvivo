@@ -13,6 +13,7 @@ import { useQuery } from "@apollo/client";
 import { MARKET_PLACE_QUERY } from "../../graphql/queries/MarketPlace";
 import apiClient from "../../apollo/apiClient";
 import CenteredLoader from "../../components/CommonComponents/CenterLoader";
+import { NoDataFound } from "../../components/CommonComponents/DataNotFound";
 
 const MarketPlace = () => {
   const reduxData = useSelector(getFilterData);
@@ -53,15 +54,15 @@ const MarketPlace = () => {
         requestParam: {
           marketPlaceAdContext: "AllAds",
           categoryId: reduxData?.data["Category"]?.join(","),
-          productStatus:
-            SelectedFilter?.name === "All" ? "allads" : SelectedFilter?.name,
+          productStatus: "Available",
         },
       },
     },
     skip: selectedTab === 1 && SelectedFilter?.name !== "All",
   });
 
-  const marketPlaceData = marketPlaceDataGql?.marketPlaceQuery?.getAllMarketPlaceAds;
+  const marketPlaceData =
+    marketPlaceDataGql?.marketPlaceQuery?.getAllMarketPlaceAds;
 
   // {console.log(localStorage, "localStorage")}
 
@@ -86,30 +87,34 @@ const MarketPlace = () => {
                 </>
               }
             />
-            <div className="w-full text-right">
-              <a
-                href="../MarketPlace/AllMarketPlace"
-                className="flex items-center justify-end gap-2 text-lg underline text-primary-o-600 hover:text-primary-o-550 transition duration-300 font-lato"
-              >
-                View All <ArrowBlueIcon />{" "}
-              </a>
-            </div>
-            <div>
-              {marketPlaceLoading ? (
-                <CenteredLoader />
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-9">
-                  {marketPlaceData?.statusCode === 200 ? (
-                    <CardView
-                      data={marketPlaceData?.data?.marketPlaceAds?.slice(
-                        0,
-                        4
-                      )}
-                    />
-                  ) : (
-                    <div>Data Not Found!!</div>
-                  )}
+
+            {marketPlaceData?.data?.marketPlaceAds != undefined && (
+              <div className="w-full text-right">
+                <div className="inline-block">
+                  <a
+                    href="../MarketPlace/AllMarketPlace"
+                    className="flex items-center justify-end gap-2 text-lg underline text-primary-o-600 hover:text-primary-o-550 transition duration-300 font-lato"
+                  >
+                    View All <ArrowBlueIcon />{" "}
+                  </a>
                 </div>
+              </div>
+            )}
+            <div>
+              {marketPlaceData?.data?.marketPlaceAds === undefined ? (
+                <NoDataFound
+                  headermessage="No Ad Found"
+                  message=""
+                  isBtn={false}
+                />
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-9">
+                    <CardView
+                      data={marketPlaceData?.data?.marketPlaceAds?.slice(0, 4)}
+                    />
+                  </div>
+                </>
               )}
             </div>
           </div>
