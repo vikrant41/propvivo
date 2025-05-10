@@ -76,20 +76,27 @@ function VerifyOTP({
   // formik validation schema
   const validationSchema = () =>
     Yup.object({
-      otp: Yup.string().required(
-        "Invalid One-Time-Password (OTP). Try again or re-generate new."
-      ),
+      otp: Yup.string()
+        .required("Invalid One-Time-Password (OTP).")
+        .test(
+          "is-valid-otp",
+          "Invalid OTP. Please try again.", 
+          (value) => /^\d{6}$/.test(value || "") 
+        ),
     });
 
   //formik hook
   const formik = useFormik({
     initialValues: formData.step2,
-    validationSchema: !isResendOtp ? validationSchema : "",
+    // validationSchema: !isResendOtp ? validationSchema : "",
     // enableReinitialize: isEdit ? true : false,
     onSubmit: (values) => {
       handleSubmit(values);
     },
   });
+  console.log("formik",formik?.errors);
+  console.log("formik",formik?.values);
+  
 
   // function for submit form
   // const handleSubmit = (values) => {
@@ -152,7 +159,7 @@ function VerifyOTP({
         if (response?.data?.marketPlaceMutation?.guestUserVerifyOTP?.success) {
           nextStep();
         } else {
-          setErrorMessage("Invalid OTP. Please try again."); // Set error message
+          setErrorMessage("Invalid OTP. Please try again."); 
         }
       });
     }
@@ -190,9 +197,9 @@ function VerifyOTP({
             maxLength="50"
             required
             value={formik.values?.otp}
-            errors={
-              formik.touched.otp && formik.errors.otp && formik.errors.otp
-            }
+            // errors={
+            //   errorMessage ? "" : formik.touched.otp && formik.errors.otp && formik.errors.otp
+            // }
             icon={<AssociationOtpIcon />}
           />
           {errorMessage && (
