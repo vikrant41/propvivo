@@ -38,6 +38,7 @@ import { useQuery } from "@apollo/client";
 import { MARKET_PLACE_QUERY } from "../../graphql/queries/MarketPlace";
 import apiClient from "../../apollo/apiClient";
 import { NoDataFound } from "../../components/CommonComponents/DataNotFound";
+import CenteredLoader from "../../components/CommonComponents/CenterLoader";
 
 function MarketPlaceDetailView() {
   // state for router
@@ -264,7 +265,9 @@ function MarketPlaceDetailView() {
         <div className="relative">
           <div className="container">
             <SubHeading text="Ad Details" />
-            {adsData?.statusCode === 200 ? (
+            {adsDataLoading ? (
+                <CenteredLoader />
+              ) : adsData?.data !== null ? (
               <div className="mt-9">
                 {/* <div className="flex items-center justify-between gap-3 p-5"> */}
                 {/* <div className='flex items-center gap-3'>
