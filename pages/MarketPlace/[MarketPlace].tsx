@@ -242,8 +242,14 @@ function MarketPlaceDetailView() {
       setBreadcrumbs([{ name: "PropVivo", href: "/" }, { name: "Marketplace" }]);
     }, [setBreadcrumbs]);
 
+
+    const swipCss = `.adsDetails .swiper-button-prev {left: auto;right: 50px;}
+    .adsDetails .mySwiper .swiper-slide {min-width: 100%;height: 75px;}
+    .adsDetails .swiper-thumbs .swiper-wrapper{flex-direction: column;gap: 10px;}`
+
   return (
     <>
+    <style>{swipCss}</style>
       <TopBanner
         backgroundImage="../img/Banner.jpg"
         title="Marketplace"
