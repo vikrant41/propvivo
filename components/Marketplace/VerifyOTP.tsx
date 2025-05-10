@@ -3,13 +3,18 @@ import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 
 import { CustomTextField } from "./CustomTextField";
-import { useResendOtpMutation, useVerifyOtpMutation } from "../../slices/MarketPlace";
+import {
+  useResendOtpMutation,
+  useVerifyOtpMutation,
+} from "../../slices/MarketPlace";
 import { ArrowIcon, AssociationOtpIcon } from "../shared/Icons";
 import { useMutation } from "@apollo/client";
-import { RESEND_OTP, VERIFY_OTP } from "../../graphql/mutations/MarketplaceMutations";
+import {
+  RESEND_OTP,
+  VERIFY_OTP,
+} from "../../graphql/mutations/MarketplaceMutations";
 import { generateBodyPayload } from "../../slices/apiSlice";
 import { requestSubType, requestType } from "../Helper/Helper";
-
 
 type Props = {
   hideModal?: () => void;
@@ -33,6 +38,8 @@ function VerifyOTP({
   const [isResendOtp, setisResendOtp] = useState(false);
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [isTimeUp, setIsTimeUp] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   // const [
   //   addOtp,
   //   {
@@ -53,26 +60,41 @@ function VerifyOTP({
   //   },
   // ] = useResendOtpMutation();
 
-  const [addOtp, { loading:addotpLoading, error:addotpErrorData, data:addotpResponse }] = useMutation(VERIFY_OTP);
-  const [resendOtp, { loading:addResendOtpLoading, error:addResendOtpErrorData, data:addResendOtpResponse }] = useMutation(RESEND_OTP);
+  const [
+    addOtp,
+    { loading: addotpLoading, error: addotpErrorData, data: addotpResponse },
+  ] = useMutation(VERIFY_OTP);
+  const [
+    resendOtp,
+    {
+      loading: addResendOtpLoading,
+      error: addResendOtpErrorData,
+      data: addResendOtpResponse,
+    },
+  ] = useMutation(RESEND_OTP);
 
   // formik validation schema
   const validationSchema = () =>
     Yup.object({
-      otp: Yup.string().required(
-        "Invalid One-Time-Password (OTP). Try again or re-generate new."
-      ),
+      otp: Yup.string()
+        .required("Invalid One-Time-Password (OTP).")
+        .test(
+          "is-valid-otp",
+          "Invalid OTP. Please try again.", 
+          (value) => /^\d{6}$/.test(value || "") 
+        ),
     });
 
   //formik hook
   const formik = useFormik({
     initialValues: formData.step2,
-    validationSchema: !isResendOtp ? validationSchema : "",
+    // validationSchema: !isResendOtp ? validationSchema : "",
     // enableReinitialize: isEdit ? true : false,
     onSubmit: (values) => {
       handleSubmit(values);
     },
   });
+ 
 
   // function for submit form
   // const handleSubmit = (values) => {
@@ -134,10 +156,12 @@ function VerifyOTP({
       addOtp({ variables: { request: finalPayload } }).then((response: any) => {
         if (response?.data?.marketPlaceMutation?.guestUserVerifyOTP?.success) {
           nextStep();
+        } else {
+          setErrorMessage("Invalid OTP. Please try again."); 
         }
       });
     }
-  };  
+  };
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -163,6 +187,7 @@ function VerifyOTP({
           <div className="font-karla text-associationGray text-lg">
             OTP sent on xxxxxxxx90 Phone number.
           </div>
+          {console.log(formik.values, "values")}
           <CustomTextField
             type="text"
             name="otp"
@@ -170,11 +195,16 @@ function VerifyOTP({
             maxLength="50"
             required
             value={formik.values?.otp}
-            errors={
-              formik.touched.otp && formik.errors.otp && formik.errors.otp
-            }
+            // errors={
+            //   errorMessage ? "" : formik.touched.otp && formik.errors.otp && formik.errors.otp
+            // }
             icon={<AssociationOtpIcon />}
           />
+          {errorMessage && (
+            <div className="text-red-500 text-sm font-karla">
+              {errorMessage}
+            </div>
+          )}
           <div className="text-btnDarkBlue font-karla text-lg mb-4">
             OTP will expire in {formatTime(timeLeft)} ms.
           </div>
