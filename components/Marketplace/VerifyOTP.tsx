@@ -94,9 +94,7 @@ function VerifyOTP({
       handleSubmit(values);
     },
   });
-  console.log("formik",formik?.errors);
-  console.log("formik",formik?.values);
-  
+ 
 
   // function for submit form
   // const handleSubmit = (values) => {
