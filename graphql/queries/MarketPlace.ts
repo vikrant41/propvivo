@@ -44,7 +44,6 @@ export const MARKET_PLACE_QUERY = gql`
             }
             legalEntityCode
             legalEntityName
-            enquiryCount
             marketPlaceAdId
             price
             productStatus

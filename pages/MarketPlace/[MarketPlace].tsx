@@ -37,6 +37,7 @@ import { useBreadcrumbs } from "../../contexts/BreadCrumbContext";
 import { useQuery } from "@apollo/client";
 import { MARKET_PLACE_QUERY } from "../../graphql/queries/MarketPlace";
 import apiClient from "../../apollo/apiClient";
+import { NoDataFound } from "../../components/CommonComponents/DataNotFound";
 
 function MarketPlaceDetailView() {
   // state for router
@@ -245,7 +246,8 @@ function MarketPlaceDetailView() {
 
     const swipCss = `.adsDetails .swiper-button-prev {left: auto;right: 50px;}
     .adsDetails .mySwiper .swiper-slide {min-width: 100%;height: 75px;}
-    .adsDetails .swiper-thumbs .swiper-wrapper{flex-direction: column;gap: 10px;}`
+    .adsDetails .swiper-thumbs .swiper-wrapper{flex-direction:}
+    .adsDetails .mySwiper {height: 400px; }`
 
   return (
     <>
@@ -276,8 +278,9 @@ function MarketPlaceDetailView() {
                     <div className="flex md:grid grid-cols-10 flex-col-reverse gap-5">
                       <Swiper
                         onSwiper={setThumbsSwiper}
+                        direction="vertical"
                         spaceBetween={10}
-                        slidesPerView={6}
+                        slidesPerView={5}
                         freeMode={true}
                         watchSlidesProgress={true}
                         modules={[FreeMode, Navigation, Thumbs]}
@@ -517,6 +520,7 @@ function MarketPlaceDetailView() {
                           marketPlaceId={addDetail?.marketPlaceAdId}
                           inquiryId={inquiryId}
                           nextStep={() => setStep(3)}
+                          phoneNo={formData.step1.phoneNo}
                         />
                       </>
                     }
@@ -528,7 +532,11 @@ function MarketPlaceDetailView() {
                 )}
               </div>
             ) : (
-              <div>Data Not Found!!</div>
+              <NoDataFound
+                  headermessage="No Ad Found"
+                  message=""
+                  isBtn={false}
+                />
             )}
           </div>
         </div>

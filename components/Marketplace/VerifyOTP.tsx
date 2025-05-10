@@ -24,7 +24,10 @@ type Props = {
   setFormData: any;
   inquiryId: string;
   initialTime?: number;
+  phoneNo?: any;
 };
+
+
 
 function VerifyOTP({
   hideModal,
@@ -33,6 +36,7 @@ function VerifyOTP({
   formData,
   nextStep,
   inquiryId,
+  phoneNo,
   initialTime = 180,
 }: Props) {
   const [isResendOtp, setisResendOtp] = useState(false);
@@ -123,6 +127,12 @@ function VerifyOTP({
   //   }
   // };
 
+  function maskPhoneNumber(phoneNo: number | undefined): string {
+    if (!phoneNo) return "";
+    const phoneStr = phoneNo.toString();
+    return phoneStr.slice(0, -2).replace(/\d/g, "x") + phoneStr.slice(-2);
+  }
+
   const handleSubmit = (values) => {
     if (isResendOtp) {
       const payload = {
@@ -180,12 +190,14 @@ function VerifyOTP({
     return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
+
+
   return (
     <>
       <FormikProvider value={formik}>
         <Form onSubmit={formik.handleSubmit} className="flex flex-col gap-3">
           <div className="font-karla text-associationGray text-lg">
-            OTP sent on xxxxxxxx90 Phone number.
+            OTP sent on {maskPhoneNumber(phoneNo)} Phone number.
           </div>
           {console.log(formik.values, "values")}
           <CustomTextField
