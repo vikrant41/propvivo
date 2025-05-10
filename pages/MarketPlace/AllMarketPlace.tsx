@@ -111,7 +111,9 @@ const AllMarketPlace = () => {
               )}
             </div> */}
             <div>
-              {marketPlaceData?.data?.marketPlaceAds === undefined ? (
+              {marketPlaceLoading ? (
+                <CenteredLoader />
+              ) : marketPlaceData?.data?.marketPlaceAds === undefined ? (
                 <NoDataFound
                   headermessage="No Ad Found"
                   message=""

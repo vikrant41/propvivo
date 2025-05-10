@@ -68,7 +68,7 @@ function MakeInquiry({
           }
         ),
       message: Yup.string()
-        .max(5000, "Message must be at most 5000 characters")
+        .max(1000, "Message must be at most 1000 characters")
         .required("Message is required"),
     });
 
@@ -209,7 +209,6 @@ function MakeInquiry({
             placeholder="Drop a message here..."
             title="Message"
             // clsName="py-1"
-            maxLength="5000"
             required
             value={formik.values.message}
             errors={
