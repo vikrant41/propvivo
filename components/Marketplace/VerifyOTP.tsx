@@ -35,7 +35,7 @@ function VerifyOTP({
   nextStep,
   inquiryId,
   phoneNo,
-  initialTime = 30,
+  initialTime = 180,
 }: Props) {
   const [isResendOtp, setisResendOtp] = useState(false);
   const [timeLeft, setTimeLeft] = useState(initialTime);
@@ -56,57 +56,30 @@ function VerifyOTP({
   ] = useMutation(RESEND_OTP);
 
   // formik validation schema
-  const validationSchema = (isTimeUp: boolean) =>
-    Yup.object({
-      otp: Yup.string()
+ const validationSchema = (isTimeUp: boolean) =>
+  Yup.object({
+    otp: Yup.string()
       .required("Invalid One-Time-Password (OTP).")
+      .matches(/^\d{6}$/, "Invalid One-Time-Password (OTP).")
       .test(
-        "is-valid-otp",
-        "Invalid One-Time-Password (OTP).",
-        (value) => /^\d{6}$/.test(value || "")
-      )
-      .test("is-expired", "OTP has expired. Please request a new OTP.", function () {
-        return !isTimeUp;
-      }),
-    });
+        "is-expired",
+        "OTP has expired. Please request a new OTP.",
+        () => !isTimeUp
+      ),
+  });
+
+  
 
   //formik hook
   const formik = useFormik({
     initialValues: formData.step2,
-    validationSchema: !isResendOtp ? validationSchema(isTimeUp) : "",
+    // validationSchema: !isResendOtp ? validationSchema(isTimeUp) : undefined,
     // enableReinitialize: isEdit ? true : false,
     onSubmit: (values) => {
       handleSubmit(values);
     },
     ...({ context: { isTimeUp } } as any),
   });
-
-  // function for submit form
-  // const handleSubmit = (values) => {
-  //   if (isResendOtp) {
-  //     resendOtp({
-  //       enquiryId: inquiryId,
-  //       marketPlaceAdId: marketPlaceId,
-  //     });
-  //     // .then((res)=>{
-  //     //   if (response?.data?.statusCode === 200) {
-  //     //     nextStep();
-  //     //   }
-  //     // });
-  //     setTimeLeft(initialTime);
-  //     setIsTimeUp(false);
-  //   } else {
-  //     addOtp({
-  //       enquiryId: inquiryId,
-  //       marketPlaceAdId: marketPlaceId,
-  //       otp: values?.otp,
-  //     }).then((response: any) => {
-  //       if (response?.data?.statusCode === 200) {
-  //         nextStep();
-  //       }
-  //     });
-  //   }
-  // };
 
   function maskPhoneNumber(phoneNo: number | undefined): string {
     if (!phoneNo) return "";
@@ -196,11 +169,18 @@ function VerifyOTP({
             errors={formik.touched.otp && formik.errors.otp}
             icon={<AssociationOtpIcon />}
           />
+         {errorMessage && (
+          <div
+            className={`text-xs font-medium text-red-500 -mt-2 mb-0`}
+          >
+            {errorMessage}
+          </div>
+        )}
 
           <div className="text-btnDarkBlue font-karla text-lg mb-4">
             {isTimeUp
               ? "OTP has expired. Please request a new OTP."
-              : `OTP will expire in ${formatTime(timeLeft)} ms.`}
+              : `OTP will expire in ${formatTime(timeLeft)} minutes.`}
           </div>
 
           <div className="flex items-center gap-3">
