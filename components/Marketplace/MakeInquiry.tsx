@@ -61,7 +61,7 @@ function MakeInquiry({
         // .matches(/^\d+$/, "Offer Price must contain only numbers")
         .test(
           "is-less-than-price",
-          `Offer price must be smaller than the price (${price})`,
+          `Offer price must be less than or equal to the price (${price})`,
           function (value) {
             if (!value || !price) return true;
             return parseFloat(value) <= parseFloat(price);
