@@ -22,6 +22,8 @@ export default function PaymentCardForm({
   transferFee,
   associationDetails,
   addressId,
+  message,
+  propertyId,
 }) {
   // ALL HOOKS
   const [paymentMethod, setPaymentMethod] = useState("card");
@@ -175,12 +177,15 @@ export default function PaymentCardForm({
         paymentInformation: encryptedPayload,
         legalEntityId: associationDetails?.id,
         legalEntityCode: associationDetails?.code,
-        propertyId: addressId,
+        propertyId: propertyId,
         paymentMethod: paymentMethod === "card" ? "CC" : "Bank",
       });
       if ("data" in response) {
         // Access the nested data
-        if (response.data && response.data.data) {
+        if (
+          response.data &&
+          response.data.data?.transactionStatus === "Success"
+        ) {
           setPaymentData(response.data.data);
           setRequestStatus(true);
           setPaymentStatus("success");
@@ -275,6 +280,7 @@ export default function PaymentCardForm({
             demandStatementFee={demandStatementFee}
             transferFee={transferFee}
             condoResponse={condoResponse}
+            message={message}
           />
         ) : paymentStatus === "error" ? (
           // retryCount >= 2 ? (

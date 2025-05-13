@@ -1,16 +1,14 @@
 import { gql } from "@apollo/client";
 
 export const CREATE_RESALE_CERTIFICATION_REQUEST = gql`
-  mutation CreateResaleCertificate(
-    $request: CreateResaleCertificateRequestInput!
-  ) {
-    resaleCertificateMutation {
-      createResaleCertificate(request: $request) {
+  mutation createDocumentRequest($request: CreateDocumentRequestRequestInput!) {
+    documentRequestMasterMutation {
+      createDocumentRequest(request: $request) {
         message
         statusCode
         success
         data {
-          resaleCertificateId
+          documentRequestId
           paymentReceipt {
             containerName
             contentType
@@ -25,21 +23,6 @@ export const CREATE_RESALE_CERTIFICATION_REQUEST = gql`
             thumbnailPath
             thumbnailUri
             uri
-            documents {
-              containerName
-              contentType
-              fileExtension
-              fileName
-              filePath
-              fileSize
-              folderName
-              mediaId
-              mediaType
-              subFolderName
-              thumbnailPath
-              thumbnailUri
-              uri
-            }
             userContext {
               createdByUserId
               createdByUserName
@@ -51,6 +34,37 @@ export const CREATE_RESALE_CERTIFICATION_REQUEST = gql`
             }
           }
         }
+      }
+    }
+  }
+`;
+
+export const GET_PROPERTY_ID_BY_ADDRESS_ID = gql`
+  mutation addressOrActivationCode(
+    $request: GetUserProfileByAddressOrActivationCodeRequestInput!
+  ) {
+    userMutations {
+      addressOrActivationCode(request: $request) {
+        data {
+          userProfile {
+            userLegalEntities {
+              code
+              domain
+              legalEntityId
+              name
+              website
+              userLegalEntityUnits {
+                propertyId
+                propertyAddress {
+                  addressId
+                }
+              }
+            }
+          }
+        }
+        statusCode
+        message
+        success
       }
     }
   }

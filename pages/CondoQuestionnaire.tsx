@@ -16,6 +16,8 @@ import { GET_ALL_LEGALENTITY } from "../graphql/queries/LegalEntityQueries";
 import { GET_ALL_LEGALENTITY_ADDRESS_MAPPING } from "../graphql/queries/LegalEntityAddressMappingQueries";
 import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
+import { GET_ALL_REQUESTOR_TYPE } from "../graphql/queries/RequestorTypeQueries";
+import { GET_PROPERTY_ID_BY_ADDRESS_ID } from "../graphql/mutations/ResaleCertificationMutations";
 
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
@@ -56,6 +58,7 @@ function CondoQuestionnaire() {
   const [demandStatementFee, setDemandStatementFee] = useState(0);
   const [transferFee, setTransferFee] = useState(0);
   const [condoResponse, setCondoResponse] = useState(null);
+  const [storePropertyId, setStorePropertyId] = useState("");
 
   // Google ReCAPTCHA key
   const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
@@ -269,18 +272,34 @@ function CondoQuestionnaire() {
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-and-network",
   });
-  const orderTypeList = getAllOrderType?.demandStatementQuery?.OrderType;
+  const orderTypeList =
+    getAllOrderType?.documentRequestMasterQuery?.getAllOrderTypes;
+
+  const { data: getAllRequestorType } = useQuery(GET_ALL_REQUESTOR_TYPE, {
+    variables: {
+      request: {
+        requestParam: {},
+        requestSubType: "List",
+        requestType: "RequestorType",
+      },
+    },
+    client: apiClient,
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-and-network",
+  });
+  const getRequestorTypeList =
+    getAllRequestorType?.documentRequestMasterQuery?.getAllRequestorTypes;
 
   // OrderType api Calling
   useEffect(() => {
-    if (orderTypeList?.data?.orderTypesFees?.length > 0) {
-      const fees = orderTypeList.data.orderTypesFees[0];
-      const demandFee = fees.demandFees || 0;
+    if (orderTypeList?.data?.orderTypes?.length > 0) {
+      const fees = orderTypeList.data.orderTypes[0];
+      const demandFee = fees.fees || 0;
       const transferFeeVal = fees.transferFees || 0;
       const totalAmount = (demandFee + transferFeeVal).toFixed(2);
 
-      setDemandStatementFee(demandFee); 
-      setTransferFee(transferFeeVal); 
+      setDemandStatementFee(demandFee);
+      setTransferFee(transferFeeVal);
       formik.setFieldValue("price", totalAmount);
     }
   }, [orderTypeList]);
@@ -293,9 +312,55 @@ function CondoQuestionnaire() {
     onCompleted: () => {},
   });
 
+  const storedLegalEntityId = formik?.values?.association?.id;
+
+  const [PostAddressId, { data: getData }] = useMutation(
+    GET_PROPERTY_ID_BY_ADDRESS_ID,
+    {
+      onCompleted: (data) => {
+        const userLegalEntities =
+          data?.userMutations?.addressOrActivationCode?.data?.userProfile
+            ?.userLegalEntities || [];
+
+        const matchedEntity = userLegalEntities.find(
+          (entity) => entity.legalEntityId === storedLegalEntityId
+        );
+
+        const matchedUnit = matchedEntity?.userLegalEntityUnits?.find(
+          (unit) =>
+            unit.propertyAddress?.addressId === formik?.values?.address?.id
+        );
+
+        if (matchedUnit?.propertyId) {
+          setStorePropertyId(matchedUnit.propertyId);
+        } else {
+          console.warn("No matching propertyId found");
+        }
+      },
+      onError: (error) => {
+        console.error("Mutation error:", error);
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (formik?.values?.address?.id) {
+      PostAddressId({
+        variables: {
+          request: {
+            requestParam: {
+              addressId: formik?.values?.address.id,
+            },
+          },
+        },
+      });
+    }
+  }, [formik?.values?.address?.id]);
+
   const handleSubmit = async () => {
     // Formulate payload for the GraphQL request
     const payload = {
+      documentType: "CondoQuestionnaire",
       amountCharged: parseFloat(formik?.values?.price),
       attachments: filesPdf?.map((x) => {
         const { __typename, contentType, userContext, ...rest } = x;
@@ -312,7 +377,7 @@ function CondoQuestionnaire() {
       closingDate: formik?.values?.closingDate
         ? formatDate(formik?.values?.closingDate)
         : null,
-      condoRequestorType: formik?.values?.requestorType || "Escrow",
+      requestorType: formik?.values?.requestorType || "Escrow",
       escrowNumber: formik?.values?.escrowNumber,
       legalEntityCode: formik?.values?.association.code || "",
       legalEntityId: formik?.values?.association.id || "",
@@ -340,7 +405,7 @@ function CondoQuestionnaire() {
           number: formik?.values?.requesterPhone,
         },
       },
-      paymentData: {
+      paymentInformation: {
         accountName: paymentData?.accountName,
         accountNumber: paymentData?.accountNumber,
         accountType: paymentData?.accountType,
@@ -353,6 +418,10 @@ function CondoQuestionnaire() {
           : null,
         transactionDesc: paymentData?.transactionDesc,
         transactionId: paymentData?.transactionId,
+        transactionStatus: paymentData?.transactionStatus,
+        transactionDate: paymentData?.transactionDate,
+        additionalFee: paymentData?.additionalFee,
+        totalAmount: paymentData?.totalAmount,
       },
     };
     try {
@@ -366,9 +435,12 @@ function CondoQuestionnaire() {
           },
         },
       });
-      if (response?.data?.condoQuestionMutation?.createCondoQuestion?.success) {
+      if (
+        response?.data?.documentRequestMasterMutation?.createDocumentRequest
+          ?.success
+      ) {
         setCondoResponse(
-          response?.data?.condoQuestionMutation?.createCondoQuestion
+          response?.data?.documentRequestMasterMutation?.createDocumentRequest
         );
       }
     } catch (error) {
@@ -390,7 +462,23 @@ function CondoQuestionnaire() {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDate = tomorrow.toISOString().split("T")[0];
+  const [selectedOrderType, setSelectedOrderType] = useState("Normal");
 
+  // Update the price when an order type is selected
+  const handleOrderTypeChange = (orderType) => {
+    setSelectedOrderType(orderType);
+
+    // Find the selected order type from the list and calculate total
+    const selectedOrder = orderTypeList?.data?.orderTypes.find(
+      (order) => order.orderType === orderType
+    );
+    if (selectedOrder) {
+      const totalAmount = (
+        selectedOrder.fees + selectedOrder.transferFees
+      ).toFixed(2);
+      formik.setFieldValue("price", totalAmount);
+    }
+  };
   return (
     <>
       <TopBanner
@@ -413,9 +501,17 @@ function CondoQuestionnaire() {
                         name="requestorType"
                         className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                       >
-                        <option value="">Select</option>
-                        <option value="Escrow">Escrow Company</option>
-                        <option value="Title Company">Title Company</option>
+                        {/* Map over the fetched data to create options dynamically */}
+                        {getRequestorTypeList?.data?.requestorTypes?.map(
+                          (type) => (
+                            <option
+                              key={type.requestorType}
+                              value={type.requestorType}
+                            >
+                              {type.requestorTypeDisplayValue}
+                            </option>
+                          )
+                        )}
                       </Field>
                     </div>
                     <ErrorMessage
@@ -656,7 +752,7 @@ function CondoQuestionnaire() {
                               const cleaned = input
                                 .replace(/\D/g, "")
                                 .slice(0, 10);
-                              form.setFieldValue(field.name, cleaned); 
+                              form.setFieldValue(field.name, cleaned);
                             };
 
                             const handleKeyDown = (e) => {
@@ -890,26 +986,29 @@ function CondoQuestionnaire() {
                     Order Type <span className="text-red-500">*</span>
                   </label>
                   <div className="col-span-4 grid grid-cols-2 gap-5 text-pvBlack">
-                    <label>
-                      <Field
-                        type="radio"
-                        name="orderType"
-                        value="Normal"
-                        className="mr-2"
-                      />
-                      Normal (3-5 business days)
-                    </label>
-                    <label>
-                      <Field
-                        type="radio"
-                        name="orderType"
-                        value="Rush"
-                        className="mr-2"
-                      />
-                      Rush (24-36 hours)
-                    </label>
+                    {/* Dynamically render radio buttons based on the order types */}
+                    {orderTypeList?.data?.orderTypes?.map((order) => (
+                      <label
+                        key={order.orderType}
+                        className="flex items-center"
+                      >
+                        <Field
+                          type="radio"
+                          name="orderType"
+                          value={order.orderType}
+                          checked={selectedOrderType === order.orderType}
+                          onChange={() =>
+                            handleOrderTypeChange(order.orderType)
+                          } // Handle change
+                          className="mr-2"
+                        />
+                        {order.orderTypeDisplayValue} (
+                        {order.processingDuration})
+                      </label>
+                    ))}
                   </div>
                 </div>
+
                 <div className="relative grid grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Amount Charged
@@ -930,27 +1029,38 @@ function CondoQuestionnaire() {
                       </div>
                       <div className="mt-2">
                         {/* Show the breakdown for the pricing */}
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="text-accent2 font-karla">
-                            Demand Statement Fees
-                          </div>
-                          <div>
-                            $
-                            {orderTypeList?.data?.orderTypesFees[0]?.demandFees}
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="text-accent2 font-karla">
-                            + Transfer Fees
-                          </div>
-                          <div>
-                            $
-                            {
-                              orderTypeList?.data?.orderTypesFees[0]
-                                ?.transferFees
-                            }
-                          </div>
-                        </div>
+                        {selectedOrderType && (
+                          <>
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="text-accent2 font-karla">
+                                Fees
+                              </div>
+                              <div>
+                                $
+                                {
+                                  orderTypeList?.data?.orderTypes?.find(
+                                    (order) =>
+                                      order.orderType === selectedOrderType
+                                  )?.fees
+                                }
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="text-accent2 font-karla">
+                                + Transfer Fees
+                              </div>
+                              <div>
+                                $
+                                {
+                                  orderTypeList?.data?.orderTypes?.find(
+                                    (order) =>
+                                      order.orderType === selectedOrderType
+                                  )?.transferFees
+                                }
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                     <ReCAPTCHA sitekey={captcha_siteKey} />
@@ -995,6 +1105,8 @@ function CondoQuestionnaire() {
             code: formik.values.association.code,
           }}
           addressId={formik.values.address.id}
+          message={"condo"}
+          propertyId = {storePropertyId}
         />
       )}
     </>
