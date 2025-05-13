@@ -27,8 +27,6 @@ type Props = {
   phoneNo?: any;
 };
 
-
-
 function VerifyOTP({
   hideModal,
   marketPlaceId,
@@ -37,32 +35,12 @@ function VerifyOTP({
   nextStep,
   inquiryId,
   phoneNo,
-  initialTime = 180,
+  initialTime = 30,
 }: Props) {
   const [isResendOtp, setisResendOtp] = useState(false);
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  // const [
-  //   addOtp,
-  //   {
-  //     data: addInquiryResponse,
-  //     isLoading: addInquiryLoading,
-  //     isError: addInquiryError,
-  //     error: addInquiryErrorData,
-  //   },
-  // ] = useVerifyOtpMutation();
-
-  // const [
-  //   resendOtp,
-  //   {
-  //     data: resendResponse,
-  //     isLoading: resendLoading,
-  //     isError: resendError,
-  //     error: resendErrorData,
-  //   },
-  // ] = useResendOtpMutation();
 
   const [
     addOtp,
@@ -78,27 +56,30 @@ function VerifyOTP({
   ] = useMutation(RESEND_OTP);
 
   // formik validation schema
-  const validationSchema = () =>
+  const validationSchema = (isTimeUp: boolean) =>
     Yup.object({
       otp: Yup.string()
-        .required("Invalid One-Time-Password (OTP).")
-        .test(
-          "is-valid-otp",
-          "Invalid OTP. Please try again.", 
-          (value) => /^\d{6}$/.test(value || "") 
-        ),
+      .required("Invalid One-Time-Password (OTP).")
+      .test(
+        "is-valid-otp",
+        "Invalid One-Time-Password (OTP).",
+        (value) => /^\d{6}$/.test(value || "")
+      )
+      .test("is-expired", "OTP has expired. Please request a new OTP.", function () {
+        return !isTimeUp;
+      }),
     });
 
   //formik hook
   const formik = useFormik({
     initialValues: formData.step2,
-    // validationSchema: !isResendOtp ? validationSchema : "",
+    validationSchema: !isResendOtp ? validationSchema(isTimeUp) : "",
     // enableReinitialize: isEdit ? true : false,
     onSubmit: (values) => {
       handleSubmit(values);
     },
+    ...({ context: { isTimeUp } } as any),
   });
- 
 
   // function for submit form
   // const handleSubmit = (values) => {
@@ -134,6 +115,7 @@ function VerifyOTP({
   }
 
   const handleSubmit = (values) => {
+    setErrorMessage(null);
     if (isResendOtp) {
       const payload = {
         enquiryId: inquiryId,
@@ -163,13 +145,20 @@ function VerifyOTP({
         requestType.MarketPlace,
         otpPayload
       );
-      addOtp({ variables: { request: finalPayload } }).then((response: any) => {
-        if (response?.data?.marketPlaceMutation?.guestUserVerifyOTP?.success) {
-          nextStep();
-        } else {
-          setErrorMessage("Invalid OTP. Please try again."); 
-        }
-      });
+      addOtp({ variables: { request: finalPayload } })
+        .then((response: any) => {
+          const success = response?.data?.marketPlaceMutation?.guestUserVerifyOTP?.success;
+          const msg = response?.data?.marketPlaceMutation?.guestUserVerifyOTP?.message;
+          if (success) {
+            nextStep();
+          } else {
+            setErrorMessage(msg || "Invalid One-Time-Password (OTP).");
+          }
+        })
+        .catch(() => {
+          setErrorMessage("Something went wrong. Please try again.");
+        });
+      
     }
   };
 
@@ -190,8 +179,6 @@ function VerifyOTP({
     return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
-
-
   return (
     <>
       <FormikProvider value={formik}>
@@ -199,7 +186,6 @@ function VerifyOTP({
           <div className="font-karla text-associationGray text-lg">
             OTP sent on {maskPhoneNumber(phoneNo)} Phone number.
           </div>
-          {console.log(formik.values, "values")}
           <CustomTextField
             type="text"
             name="otp"
@@ -207,18 +193,14 @@ function VerifyOTP({
             maxLength="50"
             required
             value={formik.values?.otp}
-            // errors={
-            //   errorMessage ? "" : formik.touched.otp && formik.errors.otp && formik.errors.otp
-            // }
+            errors={formik.touched.otp && formik.errors.otp}
             icon={<AssociationOtpIcon />}
           />
-          {errorMessage && (
-            <div className="text-red-500 text-sm font-karla">
-              {errorMessage}
-            </div>
-          )}
+
           <div className="text-btnDarkBlue font-karla text-lg mb-4">
-            OTP will expire in {formatTime(timeLeft)} ms.
+            {isTimeUp
+              ? "OTP has expired. Please request a new OTP."
+              : `OTP will expire in ${formatTime(timeLeft)} ms.`}
           </div>
 
           <div className="flex items-center gap-3">
