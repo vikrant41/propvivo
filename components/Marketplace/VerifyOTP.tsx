@@ -180,7 +180,7 @@ function VerifyOTP({
           <div className="text-btnDarkBlue font-karla text-lg mb-4">
             {isTimeUp
               ? "OTP has expired. Please request a new OTP."
-              : `OTP will expire in ${formatTime(timeLeft)} mins.`}
+              : `OTP will expire in ${formatTime(timeLeft)} minutes.`}
           </div>
 
           <div className="flex items-center gap-3">
