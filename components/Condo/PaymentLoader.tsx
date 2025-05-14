@@ -1,5 +1,5 @@
 import React from "react";
-import { PaymentLoaderIcon } from "./Icons";
+import { DollarIcon, PaymentLoaderIcon } from "./Icons";
 
 const PaymentLoader = () => {
   return (

@@ -27,35 +27,6 @@ import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 import { p } from "graphql-ws/dist/common-DY-PBNYy";
 
-// Validaition Schema
-// const validationSchema = Yup.object({
-//   requestorType: Yup.string().required("Requestor Type is Required"),
-//   associationName: Yup.string().required("Association Name is Required"),
-//   propertyAddress: Yup.string().required("Address is Required"),
-//   requesterFirstName: Yup.string().required("First Name is Required"),
-//   requesterLastName: Yup.string().required("Last Name is Required"),
-//   requesterCompany: Yup.string().required("Company Name is Required"),
-//   escrowNumber: Yup.string().required("Escrow Number is Required"),
-//   requesterEmail: Yup.string()
-//     .email("Invalid email")
-//     .required("Email is Required"),
-//   requesterPhone: Yup.string()
-//     .matches(/^[0-9]{10}$/, "Phone number length should be 10")
-//     .required("Phone Number is Required"),
-
-//   buyerPhone: Yup.string()
-//     .matches(/^[0-9]{10}$/, "Phone number length should be 10")
-//     .required("Phone Number is Required"),
-
-//   buyerFirstName: Yup.string().required("First Name is Required"),
-//   buyerLastName: Yup.string().required("Last Name is Required"),
-//   buyerEmail: Yup.string().email("Invalid email").required("Email is Required"),
-//   closingDate: Yup.date()
-//     .min(new Date(), "Closing Date must be greater than today")
-//     .required("Closing Date is Required"),
-//   orderType: Yup.string().required("Order Type is Required"),
-// });
-
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
   associationName: Yup.string()
@@ -95,7 +66,7 @@ const validationSchema = Yup.object({
 });
 
 function DemandStatement() {
-  // ALL HOOKS
+  // all state management
   const { setBreadcrumbs } = useBreadcrumbs();
   const [filesPdf, setFilesPdf] = useState<any>([]);
   const [isPayment, setIsPayment] = useState(false);
@@ -177,6 +148,7 @@ function DemandStatement() {
   const handleSubmit = async () => {
     // Formulate payload for the GraphQL request
     const payload = {
+      documentType: "DemandStatement",
       amountCharged: parseFloat(formik?.values?.price),
       attachments: filesPdf?.map((x) => {
         const { __typename, contentType, userContext, ...rest } = x;
@@ -234,7 +206,7 @@ function DemandStatement() {
         },
       });
       if (
-        response?.data?.demandStatementMutation?.createDemandStatement
+        response?.data?.documentRequestMasterMutation?.createDocumentRequest
           ?.statusCode === 200
       ) {
         setRequestStatus(true);
@@ -385,12 +357,13 @@ function DemandStatement() {
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-and-network",
   });
-  const orderTypeList = getAllOrderType?.demandStatementQuery?.OrderType;
+  const orderTypeList =
+    getAllOrderType?.documentRequestMasterQuery?.getAllOrderTypes;
 
   useEffect(() => {
-    if (orderTypeList?.data?.orderTypesFees?.length > 0) {
-      const fees = orderTypeList.data.orderTypesFees[0];
-      const demandStatementFee = fees.demandFees || 0;
+    if (orderTypeList?.data?.orderTypes?.length > 0) {
+      const fees = orderTypeList.data.orderTypes[0];
+      const demandStatementFee = fees.fees || 0;
       const transferFee = fees.transferFees || 0;
 
       // Calculate the total price directly from the API data
@@ -984,8 +957,7 @@ function DemandStatement() {
                             {/* {formik.values.orderType === "Rush"
                                               ? "$200"
                                               : "$100"} */}
-                            $
-                            {orderTypeList?.data?.orderTypesFees[0]?.demandFees}
+                            ${orderTypeList?.data?.orderTypes[0]?.fees}
                           </div>
                         </div>
                         <div className="flex items-center justify-between text-sm">
@@ -993,11 +965,7 @@ function DemandStatement() {
                             + Transfer Fees
                           </div>
                           <div>
-                            $
-                            {
-                              orderTypeList?.data?.orderTypesFees[0]
-                                ?.transferFees
-                            }
+                            ${orderTypeList?.data?.orderTypes[0]?.transferFees}
                           </div>
                         </div>
                       </div>

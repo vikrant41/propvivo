@@ -1,14 +1,14 @@
 import { gql } from "@apollo/client";
 
 export const CREATE_CONDO_REQUEST = gql`
-  mutation CreateCondoQuestion($request: CreateCondoQuestionRequestInput!) {
-    condoQuestionMutation {
-      createCondoQuestion(request: $request) {
+  mutation createDocumentRequest($request: CreateDocumentRequestRequestInput!) {
+    documentRequestMasterMutation {
+      createDocumentRequest(request: $request) {
         message
         statusCode
         success
         data {
-          condoQuestionId
+          documentRequestId
           paymentReceipt {
             containerName
             contentType
@@ -23,21 +23,6 @@ export const CREATE_CONDO_REQUEST = gql`
             thumbnailPath
             thumbnailUri
             uri
-            documents {
-              containerName
-              contentType
-              fileExtension
-              fileName
-              filePath
-              fileSize
-              folderName
-              mediaId
-              mediaType
-              subFolderName
-              thumbnailPath
-              thumbnailUri
-              uri
-            }
             userContext {
               createdByUserId
               createdByUserName

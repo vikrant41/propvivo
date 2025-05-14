@@ -11,8 +11,8 @@ import PaymentLoader from "./PaymentLoader";
 import PaymentSuccessCard from "./PaymentSuccessCard";
 import PaymentFailed from "./PaymentFailed";
 import PaymentFailedTwice from "./PaymentFailedTwice";
-import { ArrowBlueIcon } from "../shared/Icons";
 import { useRouter } from "next/router";
+import { ArrowBlueIcon } from "../shared/Icons";
 
 export default function PaymentCardForm({
   formData,
@@ -24,14 +24,16 @@ export default function PaymentCardForm({
   transferFee,
   associationDetails,
   addressId,
+  message,
+  propertyId,
 }) {
   // ALL HOOKS
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [paymentStatus, setPaymentStatus] = useState("idle");
   const [paymentResponseData, setPaymentResponseData] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
-  const router = useRouter();
 
+  const router = useRouter();
   // Initial values for the form
   const initialValues = {
     paymentMethod: "card",
@@ -178,12 +180,12 @@ export default function PaymentCardForm({
         paymentInformation: encryptedPayload,
         legalEntityId: associationDetails?.id,
         legalEntityCode: associationDetails?.code,
-        propertyId: addressId,
+        propertyId: propertyId,
         paymentMethod: paymentMethod === "card" ? "CC" : "Bank",
       });
       if ("data" in response) {
         // Access the nested data
-        if (response.data && response.data.data) {
+        if (response.data && response.data.data?.transactionStatus === "Success") {
           setPaymentData(response.data.data);
           setRequestStatus(true);
           setPaymentStatus("success");
@@ -283,7 +285,8 @@ export default function PaymentCardForm({
               demandStatementFee={demandStatementFee}
               transferFee={transferFee}
               condoResponse={condoResponse}
-            />
+              message={message}
+          />
           ) : paymentStatus === "error" ? (
             // retryCount >= 2 ? (
             //   <PaymentFailedTwice
@@ -338,63 +341,60 @@ export default function PaymentCardForm({
                 </button>
               </div>
 
-              {/* Formik Form */}
-              <Formik
-                initialValues={initialValues}
-                validationSchema={
-                  paymentMethod === "card"
-                    ? cardValidationSchema
-                    : bankValidationSchema
-                }
-                onSubmit={handleSubmit}
-              >
-                {({
-                  errors,
-                  touched,
-                  handleChange,
-                  handleBlur,
-                  values,
-                  setFieldValue,
-                }) => {
-                  return (
-                    <Form>
-                      {paymentMethod === "card" && (
-                        <div className="mt-4 space-y-2 text-black">
-                          <div className="">
-                            <label className="block mt-4">
-                              Card Holder Name
-                            </label>
-                            <Field
-                              name="accountHolderName"
-                              className="w-full py-2 border-b-2 focus:outline-none focus:border-blue-500 text-17"
-                              placeholder="Enter Card Holder Name
-"
-                              maxLength={22}
-                              onKeyDown={(e) => {
-                                const allowedKeys = [
-                                  "Backspace",
-                                  "Tab",
-                                  "ArrowLeft",
-                                  "ArrowRight",
-                                  "Delete",
-                                  " ",
-                                ];
-                                const isLetter = /^[a-zA-Z_]$/.test(e.key);
-                                if (!isLetter && !allowedKeys.includes(e.key)) {
-                                  e.preventDefault();
-                                }
-                              }}
-                            />
-                            {errors.accountHolderName &&
-                              touched.accountHolderName && (
-                                <div className="text-red-500 text-sm">
-                                  {errors.accountHolderName}
-                                </div>
-                              )}
-                          </div>
-                          <div className="">
-                            <label className="block mt-4">Card Number</label>
-                            {/* <Field
+            {/* Formik Form */}
+            <Formik
+              initialValues={initialValues}
+              validationSchema={
+                paymentMethod === "card"
+                  ? cardValidationSchema
+                  : bankValidationSchema
+              }
+              onSubmit={handleSubmit}
+            >
+              {({
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                values,
+                setFieldValue,
+              }) => {
+                return (
+                  <Form>
+                    {paymentMethod === "card" && (
+                      <div className="mt-4 space-y-2 text-black">
+                        <div className="">
+                          <label className="block mt-4">Card Holder Name</label>
+                          <Field
+                            name="accountHolderName"
+                            className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500 text-17"
+                            placeholder="Caroline Marine"
+                            maxLength={22}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "Tab",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Delete",
+                                " ",
+                              ];
+                              const isLetter = /^[a-zA-Z_]$/.test(e.key);
+                              if (!isLetter && !allowedKeys.includes(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
+                          />
+                          {errors.accountHolderName &&
+                            touched.accountHolderName && (
+                              <div className="text-red-500 text-sm">
+                                {errors.accountHolderName}
+                              </div>
+                            )}
+                        </div>
+                        <div className="">
+                          <label className="block mt-4">Card Number</label>
+                          {/* <Field
                             name="cardNumber"
                             className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
                             placeholder="XXXX-XXXX-8224"
@@ -402,47 +402,47 @@ export default function PaymentCardForm({
                             onPaste={(e) => e.preventDefault()}
                             onCut={(e) => e.preventDefault()}
                           /> */}
-                            <Field
-                              name="cardNumber"
-                              type="text"
-                              inputMode="numeric"
-                              maxLength={19}
-                              className="w-full py-2 border-b-2 focus:outline-none focus:border-blue-500"
-                              placeholder="XXXX-XXXX-XXXX-XXXX"
-                              onCopy={(e) => e.preventDefault()}
-                              onPaste={(e) => e.preventDefault()}
-                              onCut={(e) => e.preventDefault()}
-                              onKeyDown={(e) => {
-                                const allowedKeys = [
-                                  "Backspace",
-                                  "ArrowLeft",
-                                  "ArrowRight",
-                                  "Tab",
-                                  "Delete",
-                                ];
-                                if (
-                                  e.currentTarget.value.length >= 19 &&
-                                  !allowedKeys.includes(e.key)
-                                ) {
-                                  e.preventDefault();
-                                }
-                                if (
-                                  !/^\d$/.test(e.key) &&
-                                  !allowedKeys.includes(e.key)
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                            />
-                            {errors.cardNumber && touched.cardNumber && (
-                              <div className="text-red-500 text-sm">
-                                {errors.cardNumber}
-                              </div>
-                            )}
-                          </div>
+                          <Field
+                            name="cardNumber"
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={19}
+                            className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                            placeholder="XXXX-XXXX-XXXX-XXXX"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                e.currentTarget.value.length >= 19 &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                              if (
+                                !/^\d$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          />
+                          {errors.cardNumber && touched.cardNumber && (
+                            <div className="text-red-500 text-sm">
+                              {errors.cardNumber}
+                            </div>
+                          )}
+                        </div>
 
-                          <div className="grid grid-cols-2 gap-4">
-                            {/* <div>
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* <div>
                             <label className="block mt-4">Expiry Date</label>
                             <Field
                               name="expiryDate"
@@ -458,41 +458,41 @@ export default function PaymentCardForm({
                               </div>
                             )}
                           </div> */}
-                            <div>
-                              <label className="block mt-4">Expiry Date</label>
-                              <input
-                                name="expiryDate"
-                                inputMode="numeric"
-                                maxLength={5}
-                                value={
-                                  values.expiryDate.length === 4
-                                    ? values.expiryDate.slice(0, 2) +
-                                      "/" +
-                                      values.expiryDate.slice(2)
-                                    : values.expiryDate
-                                }
-                                onChange={(e) => {
-                                  let input = e.target.value
-                                    .replace(/\D/g, "")
-                                    .slice(0, 4); // only digits max 4
-                                  setFieldValue("expiryDate", input);
-                                }}
-                                onBlur={handleBlur}
-                                placeholder="MM/YY"
-                                className="w-full py-2 border-b-2 focus:outline-none focus:border-blue-500"
-                                onCopy={(e) => e.preventDefault()}
-                                onPaste={(e) => e.preventDefault()}
-                                onCut={(e) => e.preventDefault()}
-                              />
-                              {errors.expiryDate && touched.expiryDate && (
-                                <div className="text-red-500 text-sm">
-                                  {errors.expiryDate}
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <label className="block mt-4">CVV</label>
-                              {/* <Field
+                          <div>
+                            <label className="block mt-4">Expiry Date</label>
+                            <input
+                              name="expiryDate"
+                              inputMode="numeric"
+                              maxLength={5}
+                              value={
+                                values.expiryDate.length === 4
+                                  ? values.expiryDate.slice(0, 2) +
+                                    "/" +
+                                    values.expiryDate.slice(2)
+                                  : values.expiryDate
+                              }
+                              onChange={(e) => {
+                                let input = e.target.value
+                                  .replace(/\D/g, "")
+                                  .slice(0, 4); // only digits max 4
+                                setFieldValue("expiryDate", input);
+                              }}
+                              onBlur={handleBlur}
+                              placeholder="MM/YY"
+                              className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                              onCopy={(e) => e.preventDefault()}
+                              onPaste={(e) => e.preventDefault()}
+                              onCut={(e) => e.preventDefault()}
+                            />
+                            {errors.expiryDate && touched.expiryDate && (
+                              <div className="text-red-500 text-sm">
+                                {errors.expiryDate}
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block mt-4">CVV</label>
+                            {/* <Field
                               name="cvv"
                               className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
                               placeholder="124"
@@ -500,336 +500,336 @@ export default function PaymentCardForm({
                               onPaste={(e) => e.preventDefault()}
                               onCut={(e) => e.preventDefault()}
                             /> */}
-                              <Field
-                                name="cvv"
-                                type="text"
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                                maxLength={4}
-                                placeholder="124"
-                                className="w-full py-2 border-b-2 focus:outline-none focus:border-blue-500"
-                                onCopy={(e) => e.preventDefault()}
-                                onPaste={(e) => e.preventDefault()}
-                                onCut={(e) => e.preventDefault()}
-                                onKeyDown={(e) => {
-                                  const allowedKeys = [
-                                    "Backspace",
-                                    "ArrowLeft",
-                                    "ArrowRight",
-                                    "Tab",
-                                    "Delete",
-                                  ];
-                                  if (
-                                    !/^[0-9]$/.test(e.key) &&
-                                    !allowedKeys.includes(e.key)
-                                  ) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                              />
-                              {errors.cvv && touched.cvv && (
-                                <div className="text-red-500 text-sm">
-                                  {errors.cvv}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          <div>
-                            <label className="block mt-4">Zip Code</label>
                             <Field
-                              name="zipCode"
-                              className="w-full py-2 border-b-2 focus:outline-none focus:border-blue-500"
-                              placeholder="82246"
+                              name="cvv"
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              maxLength={4}
+                              placeholder="124"
+                              className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
                               onCopy={(e) => e.preventDefault()}
                               onPaste={(e) => e.preventDefault()}
                               onCut={(e) => e.preventDefault()}
+                              onKeyDown={(e) => {
+                                const allowedKeys = [
+                                  "Backspace",
+                                  "ArrowLeft",
+                                  "ArrowRight",
+                                  "Tab",
+                                  "Delete",
+                                ];
+                                if (
+                                  !/^[0-9]$/.test(e.key) &&
+                                  !allowedKeys.includes(e.key)
+                                ) {
+                                  e.preventDefault();
+                                }
+                              }}
                             />
-                            {errors.zipCode && touched.zipCode && (
+                            {errors.cvv && touched.cvv && (
                               <div className="text-red-500 text-sm">
-                                {errors.zipCode}
+                                {errors.cvv}
                               </div>
                             )}
                           </div>
                         </div>
-                      )}
 
-                      {paymentMethod === "bank" && (
-                        <div className="mt-4 space-y-2 text-black">
-                          {/* Payment Method Dropdown */}
-                          <div className="">
-                            <label className="block mt-4">Account Type </label>
-                            <div className="col-span-4">
-                              <div className="flex items-center border-b border-gray-o-60">
-                                <Field
-                                  as="select"
-                                  name="accountType"
-                                  className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                                >
-                                  <option value="Checking">Checking</option>
-                                  <option value="Saving">Saving</option>
-                                </Field>
-                              </div>
-                              {errors.accountType && touched.accountType && (
-                                <div className="text-red-500 text-sm">
-                                  {errors.accountType}
-                                </div>
-                              )}
+                        <div>
+                          <label className="block mt-4">Zip Code</label>
+                          <Field
+                            name="zipCode"
+                            className="w-full p-2 border-b-2 focus:outline-none focus:border-blue-500"
+                            placeholder="82246"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                          />
+                          {errors.zipCode && touched.zipCode && (
+                            <div className="text-red-500 text-sm">
+                              {errors.zipCode}
                             </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {paymentMethod === "bank" && (
+                      <div className="mt-4 space-y-2 text-black">
+                        {/* Payment Method Dropdown */}
+                        <div className="">
+                          <label className="block mt-4">Account Type </label>
+                          <div className="col-span-4">
+                            <div className="flex items-center border-b border-gray-o-60">
+                              <Field
+                                as="select"
+                                name="accountType"
+                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              >
+                                <option value="Checking">Checking</option>
+                                <option value="Saving">Saving</option>
+                              </Field>
+                            </div>
+                            {errors.accountType && touched.accountType && (
+                              <div className="text-red-500 text-sm">
+                                {errors.accountType}
+                              </div>
+                            )}
                           </div>
-                          <div className="mt-4">
-                            <label className="block">Account Holder Name</label>
-                            {/* <Field
+                        </div>
+                        <div className="mt-4">
+                          <label className="block">Account Holder Name</label>
+                          {/* <Field
                             name="accountHolderName"
                             className="w-full border-b-2 focus:outline-none focus:border-blue-500"
                             placeholder="Caroline Marine"
                           /> */}
-                            <Field
-                              name="accountHolderName"
-                              className="w-full border-b-2 focus:outline-none focus:border-blue-500"
-                              placeholder="Enter Account Holder Name"
-                              maxLength={22}
-                              onKeyDown={(e) => {
-                                const allowedKeys = [
-                                  "Backspace",
-                                  "Tab",
-                                  "ArrowLeft",
-                                  "ArrowRight",
-                                  "Delete",
-                                  " ",
-                                ];
-                                const isLetterOrUnderscore = /^[a-zA-Z_]$/.test(
-                                  e.key
-                                );
-                                if (
-                                  !isLetterOrUnderscore &&
-                                  !allowedKeys.includes(e.key)
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                              onPaste={(e) => e.preventDefault()}
-                              onCopy={(e) => e.preventDefault()}
-                              onCut={(e) => e.preventDefault()}
-                            />
+                          <Field
+                            name="accountHolderName"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
+                            placeholder="Caroline Marine"
+                            maxLength={22}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "Tab",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Delete",
+                                " ",
+                              ];
+                              const isLetterOrUnderscore = /^[a-zA-Z_]$/.test(
+                                e.key
+                              );
+                              if (
+                                !isLetterOrUnderscore &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                            onPaste={(e) => e.preventDefault()}
+                            onCopy={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                          />
 
-                            {errors.accountHolderName &&
-                              touched.accountHolderName && (
-                                <div className="text-red-500 text-sm">
-                                  {errors.accountHolderName}
-                                </div>
-                              )}
-                          </div>
-
-                          <div>
-                            <div className="flex items-center text-blue-700 text-sm mt-4 -mb-4">
-                              <span className="inline-flex items-center justify-center w-4 h-4 text-white bg-blue-500 rounded-full text-xs font-bold mr-1">
-                                ℹ
-                              </span>
-                              <span>
-                                If your routing number is less than 9 digits,
-                                please prepend it with <strong>0</strong>.
-                              </span>
-                            </div>
-                            <label className="block mt-4">Routing Number</label>
-                            <Field
-                              name="routingNumber"
-                              type="text"
-                              inputMode="numeric"
-                              maxLength={9}
-                              pattern="\d*"
-                              className="w-full border-b-2 focus:outline-none focus:border-blue-500"
-                              placeholder="XXXX-XXXX-8224"
-                              onCopy={(e) => e.preventDefault()}
-                              onPaste={(e) => e.preventDefault()}
-                              onCut={(e) => e.preventDefault()}
-                              onKeyDown={(e) => {
-                                const allowedKeys = [
-                                  "Backspace",
-                                  "ArrowLeft",
-                                  "ArrowRight",
-                                  "Tab",
-                                  "Delete",
-                                ];
-                                if (
-                                  e.currentTarget.value.length >= 9 &&
-                                  !allowedKeys.includes(e.key)
-                                ) {
-                                  e.preventDefault();
-                                }
-                                if (
-                                  !/^\d$/.test(e.key) &&
-                                  !allowedKeys.includes(e.key)
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                            />
-                            {errors.routingNumber && touched.routingNumber && (
+                          {errors.accountHolderName &&
+                            touched.accountHolderName && (
                               <div className="text-red-500 text-sm">
-                                {errors.routingNumber}
+                                {errors.accountHolderName}
                               </div>
                             )}
-                          </div>
+                        </div>
 
-                          <div>
-                            <label className="block mt-4">
-                              Confirm Routing Number
-                            </label>
-                            <Field
-                              name="confirmRoutingNumber"
-                              type="text"
-                              inputMode="numeric"
-                              maxLength={9}
-                              pattern="\d*"
-                              className="w-full border-b-2 focus:outline-none focus:border-blue-500"
-                              placeholder="XXXX-XXXX-8224"
-                              onCopy={(e) => e.preventDefault()}
-                              onPaste={(e) => e.preventDefault()}
-                              onCut={(e) => e.preventDefault()}
-                              onKeyDown={(e) => {
-                                const allowedKeys = [
-                                  "Backspace",
-                                  "ArrowLeft",
-                                  "ArrowRight",
-                                  "Tab",
-                                  "Delete",
-                                ];
-                                // Block further input beyond 9 digits
-                                if (
-                                  e.currentTarget.value.length >= 9 &&
-                                  !allowedKeys.includes(e.key)
-                                ) {
-                                  e.preventDefault();
-                                }
-                                if (
-                                  !/^\d$/.test(e.key) &&
-                                  !allowedKeys.includes(e.key)
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                            />
-                            {errors.confirmRoutingNumber &&
-                              touched.confirmRoutingNumber && (
-                                <div className="text-red-500 text-sm">
-                                  {errors.confirmRoutingNumber}
-                                </div>
-                              )}
+                        <div>
+                          <div className="flex items-center text-blue-700 text-sm mt-4 -mb-4">
+                            <span className="inline-flex items-center justify-center w-4 h-4 text-white bg-blue-500 rounded-full text-xs font-bold mr-1">
+                              ℹ
+                            </span>
+                            <span>
+                              If your routing number is less than 9 digits,
+                              please prepend it with <strong>0</strong>.
+                            </span>
                           </div>
-                          <div>
-                            {/* <div className="flex items-start text-blue-700 text-sm mt-4 -mb-4">
+                          <label className="block mt-4">Routing Number</label>
+                          <Field
+                            name="routingNumber"
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={9}
+                            pattern="\d*"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
+                            placeholder="XXXX-XXXX-8224"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                e.currentTarget.value.length >= 9 &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                              if (
+                                !/^\d$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          />
+                          {errors.routingNumber && touched.routingNumber && (
+                            <div className="text-red-500 text-sm">
+                              {errors.routingNumber}
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block mt-4">
+                            Confirm Routing Number
+                          </label>
+                          <Field
+                            name="confirmRoutingNumber"
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={9}
+                            pattern="\d*"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
+                            placeholder="XXXX-XXXX-8224"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              // Block further input beyond 9 digits
+                              if (
+                                e.currentTarget.value.length >= 9 &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                              if (
+                                !/^\d$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          />
+                          {errors.confirmRoutingNumber &&
+                            touched.confirmRoutingNumber && (
+                              <div className="text-red-500 text-sm">
+                                {errors.confirmRoutingNumber}
+                              </div>
+                            )}
+                        </div>
+                        <div>
+                          {/* <div className="flex items-start text-blue-700 text-sm mt-4 -mb-4">
                             <span className="mr-1 text-base font-bold">ℹ️</span>
                             <span>
                               If your account number is less than 9 digits,
                               please prepend it with <strong>0</strong>.
                             </span>
                           </div> */}
-                            <div className="flex items-center text-blue-700 text-sm mt-4 -mb-4">
-                              <span className="inline-flex items-center justify-center w-4 h-4 text-white bg-blue-500 rounded-full text-xs font-bold mr-1">
-                                ℹ
-                              </span>
-                              <span>
-                                If your account number is less than 9 digits,
-                                please prepend it with <strong>0</strong>.
-                              </span>
-                            </div>
-                            <label className="block mt-4">
-                              Bank Account Number
-                            </label>
-                            <Field
-                              name="bankAccountNumber"
-                              type="text"
-                              inputMode="numeric"
-                              pattern="[0-9]*"
-                              minLength={9}
-                              maxLength={18}
-                              placeholder="XXXX-XXXX-8224"
-                              className="w-full border-b-2 focus:outline-none focus:border-blue-500"
-                              onCopy={(e) => e.preventDefault()}
-                              onPaste={(e) => e.preventDefault()}
-                              onCut={(e) => e.preventDefault()}
-                              onKeyDown={(e) => {
-                                const allowedKeys = [
-                                  "Backspace",
-                                  "ArrowLeft",
-                                  "ArrowRight",
-                                  "Tab",
-                                  "Delete",
-                                ];
-                                if (
-                                  !/^[0-9]$/.test(e.key) &&
-                                  !allowedKeys.includes(e.key)
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                            />
-
-                            {errors.bankAccountNumber &&
-                              touched.bankAccountNumber && (
-                                <div className="text-red-500 text-sm">
-                                  {errors.bankAccountNumber}
-                                </div>
-                              )}
+                          <div className="flex items-center text-blue-700 text-sm mt-4 -mb-4">
+                            <span className="inline-flex items-center justify-center w-4 h-4 text-white bg-blue-500 rounded-full text-xs font-bold mr-1">
+                              ℹ
+                            </span>
+                            <span>
+                              If your account number is less than 9 digits,
+                              please prepend it with <strong>0</strong>.
+                            </span>
                           </div>
-                          <div>
-                            <label className="block mt-4">
-                              Confirm Bank Account Number
-                            </label>
-                            <Field
-                              name="confirmBankAccountNumber"
-                              type="text"
-                              inputMode="numeric"
-                              pattern="[0-9]*"
-                              maxLength={16}
-                              placeholder="XXXX-XXXX-8224"
-                              className="w-full border-b-2 focus:outline-none focus:border-blue-500"
-                              onCopy={(e) => e.preventDefault()}
-                              onPaste={(e) => e.preventDefault()}
-                              onCut={(e) => e.preventDefault()}
-                              onKeyDown={(e) => {
-                                const allowedKeys = [
-                                  "Backspace",
-                                  "ArrowLeft",
-                                  "ArrowRight",
-                                  "Tab",
-                                  "Delete",
-                                ];
-                                if (
-                                  !/^[0-9]$/.test(e.key) &&
-                                  !allowedKeys.includes(e.key)
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                            />
+                          <label className="block mt-4">
+                            Bank Account Number
+                          </label>
+                          <Field
+                            name="bankAccountNumber"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            minLength={9}
+                            maxLength={18}
+                            placeholder="XXXX-XXXX-8224"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/^[0-9]$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          />
 
-                            {errors.confirmBankAccountNumber &&
-                              touched.confirmBankAccountNumber && (
-                                <div className="text-red-500 text-sm">
-                                  {errors.confirmBankAccountNumber}
-                                </div>
-                              )}
-                          </div>
+                          {errors.bankAccountNumber &&
+                            touched.bankAccountNumber && (
+                              <div className="text-red-500 text-sm">
+                                {errors.bankAccountNumber}
+                              </div>
+                            )}
                         </div>
-                      )}
-                      <div className="flex items-center space-x-2 mt-4">
-                        <button
-                          type="submit"
-                          className="w-full bg-accent1 text-white py-2 rounded-full"
-                        >
-                          Pay | ${formData?.price || "0.00"}
-                        </button>
+                        <div>
+                          <label className="block mt-4">
+                            Confirm Bank Account Number
+                          </label>
+                          <Field
+                            name="confirmBankAccountNumber"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            maxLength={16}
+                            placeholder="XXXX-XXXX-8224"
+                            className="w-full border-b-2 focus:outline-none focus:border-blue-500"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
+                            onKeyDown={(e) => {
+                              const allowedKeys = [
+                                "Backspace",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Tab",
+                                "Delete",
+                              ];
+                              if (
+                                !/^[0-9]$/.test(e.key) &&
+                                !allowedKeys.includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          />
+
+                          {errors.confirmBankAccountNumber &&
+                            touched.confirmBankAccountNumber && (
+                              <div className="text-red-500 text-sm">
+                                {errors.confirmBankAccountNumber}
+                              </div>
+                            )}
+                        </div>
                       </div>
-                    </Form>
-                  );
-                }}
-              </Formik>
-            </div>
-          )}
-        </div>
+                    )}
+                    <div className="flex items-center space-x-2 mt-4">
+                      <button
+                        type="submit"
+                        className="w-full bg-accent1 text-white py-2 rounded-full"
+                      >
+                        Pay | ${formData?.price || "0.00"}
+                      </button>
+                    </div>
+                  </Form>
+                );
+              }}
+            </Formik>
+          </div>
+        )}
       </div>
+    </div>
     </div>
   );
 }

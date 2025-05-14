@@ -7,6 +7,7 @@ const PaymentSuccessCard = ({
   demandStatementFee,
   transferFee,
   condoResponse,
+  message,
 }) => {
   // Parse and calculate fees
   const demandFee = parseFloat(demandStatementFee) || 0;
@@ -52,11 +53,22 @@ const PaymentSuccessCard = ({
       <h3 className="text-lg font-bold text-center text-gray-800 mb-0">
         Request Submitted Successfully
       </h3>
-      <p className="text-gray-600 text-sm mb-6 text-center">
+      {/* <p className="text-gray-600 text-sm mb-6 text-center">
         Your request for a Resale Certificate has been submitted successfully. A
         confirmation for both your request and payment will be sent to the email
         provided.
+      </p> */}
+      <p className="text-gray-600 text-sm mb-6 text-center">
+        Your request for a{" "}
+        {message === "resale"
+          ? "Resale Certificate"
+          : message === "condo"
+          ? "Condo Questionnaire"
+          : "document"}{" "}
+        has been submitted successfully. A confirmation for both your request
+        and payment will be sent to the email provided.
       </p>
+
       <hr />
       {/* Payment Details */}
       <div className="text-left space-y-2 text-sm mt-4">
@@ -67,13 +79,7 @@ const PaymentSuccessCard = ({
           </span>
         </div>
         <div className="flex justify-between">
-          <span>Invoice Amount</span>
-          <span className="font-bold text-pvBlack">
-            ${parseFloat(paymentResponseData?.amount || 0).toFixed(2)}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span>Demand Statement Fees</span>
+          <span>Fees</span>
           <span className="font-bold text-pvBlack">
             ${demandStatementFee.toFixed(2)}
           </span>

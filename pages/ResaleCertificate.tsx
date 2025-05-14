@@ -12,12 +12,15 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_LEGALENTITY } from "../graphql/queries/LegalEntityQueries";
 import apiClient from "../apollo/apiClient";
 import { GET_ALL_LEGALENTITY_ADDRESS_MAPPING } from "../graphql/queries/LegalEntityAddressMappingQueries";
-import { CREATE_RESALE_CERTIFICATION_REQUEST } from "../graphql/mutations/ResaleCertificationMutations";
+import {
+  CREATE_RESALE_CERTIFICATION_REQUEST,
+  GET_PROPERTY_ID_BY_ADDRESS_ID,
+} from "../graphql/mutations/ResaleCertificationMutations";
 import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 import dynamic from "next/dynamic";
 
-const ReCAPTCHA = dynamic(() => import('react-google-recaptcha'), {
+const ReCAPTCHA = dynamic(() => import("react-google-recaptcha"), {
   ssr: false,
 }) as unknown as React.FC<{
   sitekey: string;
@@ -64,7 +67,9 @@ function ResaleCertificate() {
   const [demandStatementFee, setDemandStatementFee] = useState(0);
   const [transferFee, setTransferFee] = useState(0);
   const [condoResponse, setCondoResponse] = useState(null);
-  
+  const [selectedOrderType, setSelectedOrderType] = useState("Normal");
+  const [storePropertyId, setStorePropertyId] = useState("");
+
   // Google ReCAPTCHA key
   const siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
 
@@ -129,6 +134,51 @@ function ResaleCertificate() {
         },
       },
     });
+
+  const storedLegalEntityId = formik?.values?.association?.id;
+
+  const [PostAddressId, { data: getData }] = useMutation(
+    GET_PROPERTY_ID_BY_ADDRESS_ID,
+    {
+      onCompleted: (data) => {
+        const userLegalEntities =
+          data?.userMutations?.addressOrActivationCode?.data?.userProfile
+            ?.userLegalEntities || [];
+
+        const matchedEntity = userLegalEntities.find(
+          (entity) => entity.legalEntityId === storedLegalEntityId
+        );
+
+        const matchedUnit = matchedEntity?.userLegalEntityUnits?.find(
+          (unit) =>
+            unit.propertyAddress?.addressId === formik?.values?.address?.id
+        );
+
+        if (matchedUnit?.propertyId) {
+          setStorePropertyId(matchedUnit.propertyId);
+        } else {
+          console.warn("No matching propertyId found");
+        }
+      },
+      onError: (error) => {
+        console.error("Mutation error:", error);
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (formik?.values?.address?.id) {
+      PostAddressId({
+        variables: {
+          request: {
+            requestParam: {
+              addressId: formik?.values?.address.id,
+            },
+          },
+        },
+      });
+    }
+  }, [formik?.values?.address?.id]);
 
   /* GQL mutation calling for POST */
   const [
@@ -206,6 +256,7 @@ function ResaleCertificate() {
   // ResaleCertification submit logic
   const handleSubmit = async () => {
     const payload = {
+      documentType: "ResaleCertificate",
       amountCharged: parseFloat(formik?.values?.price),
       attachments: filesPdf?.map((x) => {
         const { __typename, contentType, userContext, ...rest } = x;
@@ -222,7 +273,7 @@ function ResaleCertificate() {
       closingDate: formik?.values?.closingDate
         ? formatDate(formik?.values?.closingDate)
         : null,
-      resaleRequestorType: formik?.values?.requestorType || "Escrow",
+      requestorType: formik?.values?.requestorType || "Escrow",
       escrowNumber: formik?.values?.escrowNumber,
       legalEntityCode: formik?.values?.association.code || "",
       legalEntityId: formik?.values?.association.id || "",
@@ -250,7 +301,7 @@ function ResaleCertificate() {
           number: formik?.values?.requesterPhone,
         },
       },
-      paymentData: {
+      paymentInformation: {
         accountName: paymentData?.accountName,
         accountNumber: paymentData?.accountNumber,
         accountType: paymentData?.accountType,
@@ -263,6 +314,10 @@ function ResaleCertificate() {
           : null,
         transactionDesc: paymentData?.transactionDesc,
         transactionId: paymentData?.transactionId,
+        transactionStatus: paymentData?.transactionStatus,
+        transactionDate: paymentData?.transactionDate,
+        additionalFee: paymentData?.additionalFee,
+        totalAmount: paymentData?.totalAmount,
       },
     };
     try {
@@ -276,9 +331,12 @@ function ResaleCertificate() {
           },
         },
       });
-      if (response?.data?.resaleCertificateMutation?.createResaleCertificate?.success) {
+      if (
+        response?.data?.documentRequestMasterMutation?.createDocumentRequest
+          ?.success
+      ) {
         setCondoResponse(
-          response?.data?.resaleCertificateMutation?.createResaleCertificate
+          response?.data?.documentRequestMasterMutation?.createDocumentRequest
         );
       }
     } catch (error) {
@@ -375,7 +433,8 @@ function ResaleCertificate() {
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-and-network",
   });
-  const orderTypeList = getAllOrderType?.demandStatementQuery?.OrderType;
+  const orderTypeList =
+    getAllOrderType?.documentRequestMasterQuery?.getAllOrderTypes;
 
   const handleProceedToPay = async () => {
     const isValid = await formik.validateForm();
@@ -389,13 +448,13 @@ function ResaleCertificate() {
   };
 
   useEffect(() => {
-    if (orderTypeList?.data?.orderTypesFees?.length > 0) {
-      const fees = orderTypeList.data.orderTypesFees[0];
-      const demandStatementFee = fees.demandFees || 0;
+    if (orderTypeList?.data?.orderTypes?.length > 0) {
+      const fees = orderTypeList.data.orderTypes[0];
+      const demandStatementFee = fees.fees || 0;
       const transferFee = fees.transferFees || 0;
 
-      setDemandStatementFee(demandStatementFee);
-      setTransferFee(transferFee);
+      // setDemandStatementFee(demandStatementFee);
+      // setTransferFee(transferFee);
       // Calculate the total price directly from the API data
       const totalAmount = (demandStatementFee + transferFee).toFixed(2);
       formik.setFieldValue("price", totalAmount);
@@ -410,16 +469,27 @@ function ResaleCertificate() {
   const handleReset = () => {
     formik.resetForm();
   };
-  // useEffect(() => {
-  //   const demandStatementFee = formik.values.orderType === "Rush" ? 200 : 100;
-  //   const transferFee = 10;
-  //   const totalAmount = (demandStatementFee + transferFee).toFixed(2);
-  //   formik.setFieldValue("price", totalAmount);
-  // }, [formik.values.orderType]);
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDate = tomorrow.toISOString().split("T")[0];
+
+  // Update the price when an order type is selected
+  const handleOrderTypeChange = (orderType) => {
+    setSelectedOrderType(orderType);
+
+    const selectedOrder = orderTypeList?.data?.orderTypes.find(
+      (order) => order.orderType === orderType
+    );
+    if (selectedOrder) {
+      const totalAmount = (
+        selectedOrder.fees + selectedOrder.transferFees
+      ).toFixed(2);
+      formik.setFieldValue("price", totalAmount);
+      setDemandStatementFee(selectedOrder.fees);
+      setTransferFee(selectedOrder.transferFees);
+    }
+  };
 
   // UI/UX display Code
   return (
@@ -928,29 +998,31 @@ function ResaleCertificate() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-1 md:grid-cols-6">
+                <div className="relative grid grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Order Type <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5 text-pvBlack">
-                    <label>
-                      <Field
-                        type="radio"
-                        name="orderType"
-                        value="Normal"
-                        className="mr-2"
-                      />
-                      Normal (3-5 business days)
-                    </label>
-                    <label>
-                      <Field
-                        type="radio"
-                        name="orderType"
-                        value="Rush"
-                        className="mr-2"
-                      />
-                      Rush (24-36 hours)
-                    </label>
+                  <div className="col-span-4 grid grid-cols-2 gap-5 text-pvBlack">
+                    {/* Dynamically render radio buttons based on the order types */}
+                    {orderTypeList?.data?.orderTypes?.map((order) => (
+                      <label
+                        key={order.orderType}
+                        className="flex items-center"
+                      >
+                        <Field
+                          type="radio"
+                          name="orderType"
+                          value={order.orderType}
+                          checked={selectedOrderType === order.orderType}
+                          onChange={() =>
+                            handleOrderTypeChange(order.orderType)
+                          }
+                          className="mr-2"
+                        />
+                        {order.orderTypeDisplayValue} (
+                        {order.processingDuration})
+                      </label>
+                    ))}
                   </div>
                 </div>
 
@@ -974,30 +1046,38 @@ function ResaleCertificate() {
                       </div>
                       <div className="mt-2">
                         {/* Show the breakdown for the pricing */}
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="text-accent2 font-karla">
-                            Demand Statement Fees
-                          </div>
-                          <div>
-                            {/* {formik.values.orderType === "Rush"
-                              ? "$200"
-                              : "$100"} */}
-                            $
-                            {orderTypeList?.data?.orderTypesFees[0]?.demandFees}
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="text-accent2 font-karla">
-                            + Transfer Fees
-                          </div>
-                          <div>
-                            $
-                            {
-                              orderTypeList?.data?.orderTypesFees[0]
-                                ?.transferFees
-                            }
-                          </div>
-                        </div>
+                        {selectedOrderType && (
+                          <>
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="text-accent2 font-karla">
+                                Fees
+                              </div>
+                              <div>
+                                $
+                                {
+                                  orderTypeList?.data?.orderTypes?.find(
+                                    (order) =>
+                                      order.orderType === selectedOrderType
+                                  )?.fees
+                                }
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="text-accent2 font-karla">
+                                + Transfer Fees
+                              </div>
+                              <div>
+                                $
+                                {
+                                  orderTypeList?.data?.orderTypes?.find(
+                                    (order) =>
+                                      order.orderType === selectedOrderType
+                                  )?.transferFees
+                                }
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                     <ReCAPTCHA sitekey={siteKey} />
@@ -1041,6 +1121,8 @@ function ResaleCertificate() {
             code: formik.values.association.code,
           }}
           addressId={formik.values.address.id}
+          message={"resale"}
+          propertyId={storePropertyId}
         />
       )}
     </>
