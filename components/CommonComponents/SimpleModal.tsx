@@ -18,11 +18,11 @@ export default function SimpleModal({
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-      onClick={onClose}
+      // onClick={onClose}
     >
       {/* Modal Box */}
       <div
-        className="bg-white rounded-xl shadow-lg w-full sm:w-[570px] p-6 relative"
+        className="bg-white rounded-xl shadow-lg w-full sm:max-w-570 p-6 relative mx-5"
         onClick={(e) => e.stopPropagation()} // Prevents closing when clicking inside modal
       >
         {/* Modal Header */}

@@ -34,6 +34,11 @@ import VerifyOTP from "../../components/Marketplace/VerifyOTP";
 import SuccessPopup from "../../components/Marketplace/SuccessPopup";
 import { classNames } from "../../components/shared/Utils";
 import { useBreadcrumbs } from "../../contexts/BreadCrumbContext";
+import { useQuery } from "@apollo/client";
+import { MARKET_PLACE_QUERY } from "../../graphql/queries/MarketPlace";
+import apiClient from "../../apollo/apiClient";
+import { NoDataFound } from "../../components/CommonComponents/DataNotFound";
+import CenteredLoader from "../../components/CommonComponents/CenterLoader";
 
 function MarketPlaceDetailView() {
   // state for router
@@ -68,19 +73,45 @@ function MarketPlaceDetailView() {
   // }, []);
 
   // ads detail API
+  // const {
+  //   data: adsData,
+  //   isLoading: adsDataLoading,
+  //   isError: adsDataError,
+  // } = useGetMarketplaceQuery(
+  //   {
+  //     "PageCriteria.EnablePage": false,
+  //     "RequestParam.MarketPlaceAdId": MarketPlace,
+  //   },
+  //   {
+  //     skip: !MarketPlace,
+  //   }
+  // );
+
   const {
-    data: adsData,
-    isLoading: adsDataLoading,
-    isError: adsDataError,
-  } = useGetMarketplaceQuery(
-    {
-      "PageCriteria.EnablePage": false,
-      "RequestParam.MarketPlaceAdId": MarketPlace,
+    data: adsDataGql,
+    loading: adsDataLoading,
+    error: adsDataError,
+    refetch,
+  } = useQuery(MARKET_PLACE_QUERY, {
+    client: apiClient,
+    fetchPolicy: "cache-first", // ✅ Change from "network-only"
+    nextFetchPolicy: "cache-and-network",
+    variables: {
+      request: {
+        pageCriteria: {
+          enablePage: false,
+          pageSize: 0,
+          skip: 0,
+        },
+        requestParam: {
+            marketPlaceAdId: MarketPlace,
+        },
+      },
     },
-    {
-      skip: !MarketPlace,
-    }
-  );
+    skip: !MarketPlace
+  });
+
+  const adsData=adsDataGql?.marketPlaceQuery?.getAllMarketPlaceAds
 
   // sold ad API
   const [
@@ -120,11 +151,11 @@ function MarketPlaceDetailView() {
 
   // useEffect for store detail of ads
   useEffect(() => {
-    if (adsData && adsData?.data?.getAllMarketPlaceAdItems?.length > 0) {
-      setaddDetail(adsData?.data?.getAllMarketPlaceAdItems[0]);
+    if (adsData && adsData?.data?.marketPlaceAds?.length > 0) {
+      setaddDetail(adsData?.data?.marketPlaceAds[0]);
       setisadofCurrentUser(
         JSON.parse(localStorage.getItem("userProfile"))?.userProfileId ===
-          adsData?.data?.getAllMarketPlaceAdItems[0]?.userContext
+          adsData?.data?.marketPlaceAds[0]?.userContext
             ?.createdByUserId
       );
     }
@@ -213,8 +244,15 @@ function MarketPlaceDetailView() {
       setBreadcrumbs([{ name: "PropVivo", href: "/" }, { name: "Marketplace" }]);
     }, [setBreadcrumbs]);
 
+
+    const swipCss = `.adsDetails .swiper-button-prev {left: auto;right: 50px;}
+    .adsDetails .mySwiper .swiper-slide {min-width: 100%;height: 75px;}
+    .adsDetails .swiper-thumbs .swiper-wrapper{flex-direction:}
+    .adsDetails .mySwiper {height: 400px; }`
+
   return (
     <>
+    <style>{swipCss}</style>
       <TopBanner
         backgroundImage="../img/Banner.jpg"
         title="Marketplace"
@@ -227,7 +265,9 @@ function MarketPlaceDetailView() {
         <div className="relative">
           <div className="container">
             <SubHeading text="Ad Details" />
-            {adsData?.statusCode === 200 ? (
+            {adsDataLoading ? (
+                <CenteredLoader />
+              ) : adsData?.data !== null ? (
               <div className="mt-9">
                 {/* <div className="flex items-center justify-between gap-3 p-5"> */}
                 {/* <div className='flex items-center gap-3'>
@@ -237,16 +277,17 @@ function MarketPlaceDetailView() {
 
                 <div className="">
                   {/* Description */}
-                  <div className="grid grid-cols-1 md:grid-cols-[54%_42%] gap-5 md:gap-10 adsDetails items-center max-w-[970px] mx-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-54-42 gap-5 md:gap-10 adsDetails items-center max-w-970 mx-auto">
                     <div className="flex md:grid grid-cols-10 flex-col-reverse gap-5">
                       <Swiper
                         onSwiper={setThumbsSwiper}
+                        direction="vertical"
                         spaceBetween={10}
-                        slidesPerView={6}
+                        slidesPerView={5}
                         freeMode={true}
                         watchSlidesProgress={true}
                         modules={[FreeMode, Navigation, Thumbs]}
-                        className="mySwiper rounded-md w-[75px] col-span-2"
+                        className="mySwiper rounded-md w-75 col-span-2"
                       >
                         {addDetail?.documents?.length > 0 &&
                           addDetail?.documents?.map((item, index) => {
@@ -304,7 +345,7 @@ function MarketPlaceDetailView() {
                       </Swiper>
                     </div>
 
-                    <div className="bg-white p-8 rounded-[10px]">
+                    <div className="bg-white p-8 rounded-lg">
                       {/* addDetail?.productStatus?.trim().replace(/\s+/g, "")?.toLowerCase() === "sold" ? addDetail?.soldPrice :  */}
 
                       <div className="flex items-center justify-between gap-1">
@@ -379,7 +420,7 @@ function MarketPlaceDetailView() {
                                 onClick={() => {
                                   setAdEdit(true);
                                 }}
-                                className="flex items-center bg-[#F7F7FE] justify-center w-10 h-10 border rounded text-gray-500 hover:bg-gray-100"
+                                className="flex items-center bg-marketplaceLightBlue justify-center w-10 h-10 border rounded text-gray-500 hover:bg-gray-100"
                               >
                                 <EditIconMarketPlace />
                               </button>
@@ -392,7 +433,7 @@ function MarketPlaceDetailView() {
                                     isDelete: true,
                                   });
                                 }}
-                                className="flex items-center  bg-[#F7F7FE] justify-center w-10 h-10 border rounded text-gray-500 hover:bg-gray-100"
+                                className="flex items-center  bg-marketplaceLightBlue justify-center w-10 h-10 border rounded text-gray-500 hover:bg-gray-100"
                               >
                                 <DeleteIconMarketPlace />
                               </button>
@@ -403,8 +444,8 @@ function MarketPlaceDetailView() {
                   </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-[10px] mt-11">
-                  <div className="flex items-center gap-3 font-medium text-22 text-black-b-250 font-outfit pb-5 border-b border-[#E8E8E8]">
+                <div className="bg-white p-6 rounded-lg mt-11">
+                  <div className="flex items-center gap-3 font-medium text-22 text-black-b-250 font-outfit pb-5 border-b border-gray-o-50">
                     <DescriptionIcon /> Description
                   </div>
                   <p className="mt-5 text-associationGray text-lg break-words font-karla">
@@ -482,6 +523,7 @@ function MarketPlaceDetailView() {
                           marketPlaceId={addDetail?.marketPlaceAdId}
                           inquiryId={inquiryId}
                           nextStep={() => setStep(3)}
+                          phoneNo={formData.step1.phoneNo}
                         />
                       </>
                     }
@@ -493,7 +535,11 @@ function MarketPlaceDetailView() {
                 )}
               </div>
             ) : (
-              <div>Data Not Found!!</div>
+              <NoDataFound
+                  headermessage="No Ad Found"
+                  message=""
+                  isBtn={false}
+                />
             )}
           </div>
         </div>
@@ -517,7 +563,7 @@ export function StatusPill(row, { value }) {
     <div className="flex">
       <span
         className={classNames(
-          "paddingXStatusPill text-sm py-1 capitalize leading-wide rounded-full",
+          "paddingXStatusPill text-sm py-1 px-2 capitalize leading-wide rounded-full",
           status.startsWith("available")
             ? "bg-lightGreen text-mediumShadeOfGreen"
             : null,

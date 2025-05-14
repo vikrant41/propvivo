@@ -391,11 +391,11 @@ function DemandStatement() {
           <SuccessSection />
         </div>
       ) : (
-        <div className="max-w-3xl mx-auto my-14">
+        <div className="max-w-3xl mx-auto my-14 px-5">
           <FormikProvider value={formik}>
             <Form className="">
               <div className="w-full space-y-6">
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Requestor Type <span className="text-red-500">*</span>
                   </label>
@@ -419,7 +419,7 @@ function DemandStatement() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Association Information{" "}
                     <span className="text-red-500">*</span>
@@ -540,12 +540,12 @@ function DemandStatement() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Requester Information{" "}
                     <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 grid grid-cols-2 gap-5">
+                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
                         <Field
@@ -692,11 +692,11 @@ function DemandStatement() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Buyer Information <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 grid grid-cols-2 gap-5">
+                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
                         <Field
@@ -835,11 +835,11 @@ function DemandStatement() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Closing Date <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 grid grid-cols-2 gap-5">
+                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
                         <Field
@@ -859,12 +859,12 @@ function DemandStatement() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Attachments
                   </label>
                   <div className="col-span-4">
-                    <div className="cursor-pointer text-accent1 flex items-center gap-2 relative">
+                    <div className="cursor-pointer text-accent1 hover:text-accent flex items-center gap-2 relative transition-all duration-300">
                       <AttchmentIcon /> Add Attachments
                       <input
                         type="file"
@@ -872,7 +872,7 @@ function DemandStatement() {
                         id="tb-file-upload"
                         accept=".pdf ,image/jpeg, image/jpg"
                         onChange={(e) => handleFileChange(e)}
-                        className="opacity-0 absolute top-0 left-0 cursor-pointer w-full"
+                        className="opacity-0 absolute top-0 left-0 cursor-pointer w-full invisible"
                       />
                     </div>
                     <ErrorMessage
@@ -903,11 +903,11 @@ function DemandStatement() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Order Type <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 grid grid-cols-2 gap-5 text-pvBlack">
+                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5 text-pvBlack">
                     <label>
                       <Field
                         type="radio"
@@ -929,7 +929,7 @@ function DemandStatement() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Amount Charged
                   </label>
@@ -944,7 +944,7 @@ function DemandStatement() {
                           value={formik.values.price}
                           disabled
                           placeholder="Enter Price"
-                          className="w-full bg-transparent pl-2 py-3 outline-none text-22 placeholder:text-accent2 text-pvBlack flex-1"
+                          className="w-full bg-transparent pl-2 py-1 outline-none text-22 font-medium placeholder:text-accent2 text-pvBlack flex-1"
                         />
                       </div>
                       <div className="mt-2">
@@ -974,9 +974,9 @@ function DemandStatement() {
                   </div>
                 </div>
               </div>
-              <div className="relative grid grid-cols-6 mt-10">
+              <div className="relative grid grid-cols-1 md:grid-cols-6 mt-10">
                 <div className="col-span-2"></div>
-                <div className="col-span-4 flex gap-2">
+                <div className="col-span-4 flex flex-col sm:flex-row gap-2">
                   <Button
                     type="submit"
                     className=""
@@ -985,7 +985,7 @@ function DemandStatement() {
                     Submit
                   </Button>
                   <button
-                    className="!text-accent2 border !border-associationLightgray !bg-white !shadow-none btn"
+                    className="!text-accent2 hover:!text-white border !border-associationLightgray !bg-white hover:!bg-pvBlack !shadow-none transition-all duration-300 justify-center btn"
                     type="button"
                     onClick={handleReset}
                   >

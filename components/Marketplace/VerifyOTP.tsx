@@ -3,9 +3,18 @@ import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 
 import { CustomTextField } from "./CustomTextField";
-import { useResendOtpMutation, useVerifyOtpMutation } from "../../slices/MarketPlace";
+import {
+  useResendOtpMutation,
+  useVerifyOtpMutation,
+} from "../../slices/MarketPlace";
 import { ArrowIcon, AssociationOtpIcon } from "../shared/Icons";
-
+import { useMutation } from "@apollo/client";
+import {
+  RESEND_OTP,
+  VERIFY_OTP,
+} from "../../graphql/mutations/MarketplaceMutations";
+import { generateBodyPayload } from "../../slices/apiSlice";
+import { requestSubType, requestType } from "../Helper/Helper";
 
 type Props = {
   hideModal?: () => void;
@@ -15,6 +24,7 @@ type Props = {
   setFormData: any;
   inquiryId: string;
   initialTime?: number;
+  phoneNo?: any;
 };
 
 function VerifyOTP({
@@ -24,56 +34,72 @@ function VerifyOTP({
   formData,
   nextStep,
   inquiryId,
+  phoneNo,
   initialTime = 180,
 }: Props) {
   const [isResendOtp, setisResendOtp] = useState(false);
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [isTimeUp, setIsTimeUp] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const [
     addOtp,
-    {
-      data: addInquiryResponse,
-      isLoading: addInquiryLoading,
-      isError: addInquiryError,
-      error: addInquiryErrorData,
-    },
-  ] = useVerifyOtpMutation();
-
+    { loading: addotpLoading, error: addotpErrorData, data: addotpResponse },
+  ] = useMutation(VERIFY_OTP);
   const [
     resendOtp,
     {
-      data: resendResponse,
-      isLoading: resendLoading,
-      isError: resendError,
-      error: resendErrorData,
+      loading: addResendOtpLoading,
+      error: addResendOtpErrorData,
+      data: addResendOtpResponse,
     },
-  ] = useResendOtpMutation();
+  ] = useMutation(RESEND_OTP);
 
   // formik validation schema
-  const validationSchema = () =>
-    Yup.object({
-      otp: Yup.string().required(
-        "Invalid One-Time-Password (OTP). Try again or re-generate new."
+ const validationSchema = (isTimeUp: boolean) =>
+  Yup.object({
+    otp: Yup.string()
+      .required("Invalid One-Time-Password (OTP).")
+      .matches(/^\d{6}$/, "Invalid One-Time-Password (OTP).")
+      .test(
+        "is-expired",
+        "OTP has expired. Please request a new OTP.",
+        () => !isTimeUp
       ),
-    });
+  });
+
+  
 
   //formik hook
   const formik = useFormik({
     initialValues: formData.step2,
-    validationSchema: !isResendOtp ? validationSchema : "",
+    // validationSchema: !isResendOtp ? validationSchema(isTimeUp) : undefined,
     // enableReinitialize: isEdit ? true : false,
     onSubmit: (values) => {
       handleSubmit(values);
     },
+    ...({ context: { isTimeUp } } as any),
   });
 
-  // function for submit form
+  function maskPhoneNumber(phoneNo: number | undefined): string {
+    if (!phoneNo) return "";
+    const phoneStr = phoneNo.toString();
+    return phoneStr.slice(0, -2).replace(/\d/g, "x") + phoneStr.slice(-2);
+  }
+
   const handleSubmit = (values) => {
+    setErrorMessage(null);
     if (isResendOtp) {
-      resendOtp({
-        enqiuryId: inquiryId,
+      const payload = {
+        enquiryId: inquiryId,
         marketPlaceAdId: marketPlaceId,
-      });
+      };
+      const finalPayload = generateBodyPayload(
+        requestSubType.Add,
+        requestType.MarketPlace,
+        payload
+      );
+      resendOtp({ variables: { request: finalPayload } });
       // .then((res)=>{
       //   if (response?.data?.statusCode === 200) {
       //     nextStep();
@@ -82,19 +108,32 @@ function VerifyOTP({
       setTimeLeft(initialTime);
       setIsTimeUp(false);
     } else {
-      addOtp({
-        enqiuryId: inquiryId,
+      const otpPayload = {
+        enquiryId: inquiryId,
         marketPlaceAdId: marketPlaceId,
         otp: values?.otp,
-      }).then((response: any) => {
-        if (response?.data?.statusCode === 200) {
-          nextStep();
-        }
-      });
+      };
+      const finalPayload = generateBodyPayload(
+        requestSubType.Add,
+        requestType.MarketPlace,
+        otpPayload
+      );
+      addOtp({ variables: { request: finalPayload } })
+        .then((response: any) => {
+          const success = response?.data?.marketPlaceMutation?.guestUserVerifyOTP?.success;
+          const msg = response?.data?.marketPlaceMutation?.guestUserVerifyOTP?.message;
+          if (success) {
+            nextStep();
+          } else {
+            setErrorMessage(msg || "Invalid One-Time-Password (OTP).");
+          }
+        })
+        .catch(() => {
+          setErrorMessage("Something went wrong. Please try again.");
+        });
+      
     }
   };
-
-  
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -118,7 +157,7 @@ function VerifyOTP({
       <FormikProvider value={formik}>
         <Form onSubmit={formik.handleSubmit} className="flex flex-col gap-3">
           <div className="font-karla text-associationGray text-lg">
-            OTP sent on xxxxxxxx90 Phone number.
+            OTP sent on {maskPhoneNumber(phoneNo)} Phone number.
           </div>
           <CustomTextField
             type="text"
@@ -127,13 +166,21 @@ function VerifyOTP({
             maxLength="50"
             required
             value={formik.values?.otp}
-            errors={
-              formik.touched.otp && formik.errors.otp && formik.errors.otp
-            }
+            errors={formik.touched.otp && formik.errors.otp}
             icon={<AssociationOtpIcon />}
           />
+         {errorMessage && (
+          <div
+            className={`text-xs font-medium text-red-500 -mt-2 mb-0`}
+          >
+            {errorMessage}
+          </div>
+        )}
+
           <div className="text-btnDarkBlue font-karla text-lg mb-4">
-            OTP will expire in {formatTime(timeLeft)} ms.
+            {isTimeUp
+              ? "OTP has expired. Please request a new OTP."
+              : `OTP will expire in ${formatTime(timeLeft)} minutes.`}
           </div>
 
           <div className="flex items-center gap-3">

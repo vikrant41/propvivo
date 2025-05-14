@@ -11,6 +11,8 @@ import PaymentLoader from "./PaymentLoader";
 import PaymentSuccessCard from "./PaymentSuccessCard";
 import PaymentFailed from "./PaymentFailed";
 import PaymentFailedTwice from "./PaymentFailedTwice";
+import { useRouter } from "next/router";
+import { ArrowBlueIcon } from "../shared/Icons";
 
 export default function PaymentCardForm({
   formData,
@@ -31,6 +33,7 @@ export default function PaymentCardForm({
   const [paymentResponseData, setPaymentResponseData] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
 
+  const router = useRouter();
   // Initial values for the form
   const initialValues = {
     paymentMethod: "card",
@@ -182,10 +185,7 @@ export default function PaymentCardForm({
       });
       if ("data" in response) {
         // Access the nested data
-        if (
-          response.data &&
-          response.data.data?.transactionStatus === "Success"
-        ) {
+        if (response.data && response.data.data?.transactionStatus === "Success") {
           setPaymentData(response.data.data);
           setRequestStatus(true);
           setPaymentStatus("success");
@@ -217,124 +217,129 @@ export default function PaymentCardForm({
 
   return (
     <div>
-      <div className="flex justify-between p-10 bg-gray-100">
-        <div className="flex flex-col justify-top ml-20">
-          <div className="text-black font-bold text-2xl my-4">
-            Request Details
-          </div>
-          <div className="my-1">
-            <span>Requester Type : </span>
-            <span>{formData?.requestorType}</span>
-          </div>
-          <div className="my-1">
-            <span>Association Name : </span>
-            <span>{formData?.associationName}</span>
-          </div>
-          <div className="my-1">
-            <span>Property Address : </span>
-            <span>{formData?.propertyAddress}</span>
-          </div>
-          <div className="my-1">
-            <span>Requester First Name : </span>
-            <span>{formData?.requesterFirstName}</span>
-          </div>
-          <div className="my-1">
-            <span>Requester Last Name : </span>
-            <span>{formData?.requesterLastName}</span>
-          </div>
-          <div className="my-1">
-            <span>Requester Company : </span>
-            <span>{formData?.requesterCompany}</span>
-          </div>
-          <div className="my-1">
-            <span>Requester Email Address : </span>
-            <span>{formData?.requesterEmail}</span>
-          </div>
-          <div className="my-1">
-            <span>Requester Phone Number : </span>
-            <span>{formData?.requesterPhone}</span>
-          </div>
-          <div className="my-1">
-            <span>Estimated Closing Date : </span>
-            <span>{formData?.closingDate}</span>
-          </div>
-          <div className="my-1">
-            <span>Order Type : </span>
-            <span>{formData?.orderType}</span>
-          </div>
-          <div className="my-1">
-            <span>Escrow Number : </span>
-            <span>{formData?.escrowNumber}</span>
-          </div>
-          <div className="my-1">
-            <span>Amount Charged : </span>
-            <span>{formData?.price}</span>
-          </div>
-        </div>
-        {/* Payment Card */}
-        {paymentStatus === "loading" ? (
-          <PaymentLoader />
-        ) : paymentStatus === "success" ? (
-          <PaymentSuccessCard
-            paymentResponseData={paymentResponseData}
-            demandStatementFee={demandStatementFee}
-            transferFee={transferFee}
-            condoResponse={condoResponse}
-            message={message}
-          />
-        ) : paymentStatus === "error" ? (
-          // retryCount >= 2 ? (
-          //   <PaymentFailedTwice
-          //     paymentResponseData={paymentResponseData}
-          //     demandStatementFee={demandStatementFee}
-          //     transferFee={transferFee}
-          //   />
-          // ) : (
-          retryCount >= 2 ? (
-            <PaymentFailedTwice
-              paymentResponseData={paymentResponseData}
-              demandStatementFee={demandStatementFee}
-              transferFee={transferFee}
-            />
-          ) : (
-            <PaymentFailed
-              handleRetryPayment={handleRetryPayment}
-              paymentResponseData={paymentResponseData}
-              demandStatementFee={demandStatementFee}
-              transferFee={transferFee}
-            />
-          )
-        ) : (
-          // )
-          <div className="w-full max-w-xl p-6 mr-20 bg-white rounded-md border">
-            <h3 className="text-lg font-bold">Select Payment Option</h3>
-            <p className="text-gray-600 text-sm">
-              All transactions are secure and encrypted
-            </p>
-            <div className="flex overflow-hidden mt-4 space-x-3">
-              <button
-                className={`flex items-center justify-start space-x-2 px-4 py-2 flex-1 rounded-md border-2 ${
-                  paymentMethod === "card"
-                    ? "bg-borderBg text-btnDarkBlue border-btnDarkBlue"
-                    : "bg-gray-200 text-black"
-                }`}
-                onClick={() => setPaymentMethod("card")}
-              >
-                <CardIcon />
-                <span>Card</span>
-              </button>
-              <button
-                className={`flex items-center justify-start space-x-2 px-4 py-2 flex-1 rounded-md border-2 ${
-                  paymentMethod === "bank"
-                    ? "bg-borderBg text-btnDarkBlue border-btnDarkBlue"
-                    : "bg-gray-200 text-black"
-                }`}
-                onClick={() => setPaymentMethod("bank")}
-              >
-                <BankIcon />
-                <span>Bank</span>
-              </button>
+      <div className="container">
+        <div className="flex flex-col md:flex-row gap-4 justify-between py-10">
+          <div className="flex flex-col justify-top">
+            <button
+              onClick={() => router.back()}
+              className="mb-5 flex items-center gap-3 text-sm text-accent1"
+            >
+              <ArrowBlueIcon className="rotate-180" /> Back to request
+            </button>
+            <h5>Request Details</h5>
+            <div className="my-1 text-base">
+              <span>Requester Type : </span>
+              <span>{formData?.requestorType}</span>
             </div>
+            <div className="my-1 text-base">
+              <span>Association Name : </span>
+              <span>{formData?.associationName}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Property Address : </span>
+              <span>{formData?.propertyAddress}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Requester First Name : </span>
+              <span>{formData?.requesterFirstName}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Requester Last Name : </span>
+              <span>{formData?.requesterLastName}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Requester Company : </span>
+              <span>{formData?.requesterCompany}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Requester Email Address : </span>
+              <span>{formData?.requesterEmail}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Requester Phone Number : </span>
+              <span>{formData?.requesterPhone}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Estimated Closing Date : </span>
+              <span>{formData?.closingDate}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Order Type : </span>
+              <span>{formData?.orderType}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Escrow Number : </span>
+              <span>{formData?.escrowNumber}</span>
+            </div>
+            <div className="my-1 text-base">
+              <span>Amount Charged : </span>
+              <span>{formData?.price}</span>
+            </div>
+          </div>
+          {/* Payment Card */}
+          {paymentStatus === "loading" ? (
+            <PaymentLoader />
+          ) : paymentStatus === "success" ? (
+            <PaymentSuccessCard
+              paymentResponseData={paymentResponseData}
+              demandStatementFee={demandStatementFee}
+              transferFee={transferFee}
+              condoResponse={condoResponse}
+              message={message}
+          />
+          ) : paymentStatus === "error" ? (
+            // retryCount >= 2 ? (
+            //   <PaymentFailedTwice
+            //     paymentResponseData={paymentResponseData}
+            //     demandStatementFee={demandStatementFee}
+            //     transferFee={transferFee}
+            //   />
+            // ) : (
+            retryCount >= 2 ? (
+              <PaymentFailedTwice
+                paymentResponseData={paymentResponseData}
+                demandStatementFee={demandStatementFee}
+                transferFee={transferFee}
+              />
+            ) : (
+              <PaymentFailed
+                handleRetryPayment={handleRetryPayment}
+                paymentResponseData={paymentResponseData}
+                demandStatementFee={demandStatementFee}
+                transferFee={transferFee}
+              />
+            )
+          ) : (
+            // )
+            <div className="w-full max-w-xl p-6 bg-white rounded-md border">
+              <h5 className="mb-1">Select Payment Option</h5>
+              <p className="text-associationGray text-base">
+                All transactions are secure and encrypted
+              </p>
+              <div className="flex overflow-hidden mt-4 space-x-3">
+                <button
+                  className={`flex items-center justify-start space-x-2 px-4 py-2 flex-1 rounded-md border-2 ${
+                    paymentMethod === "card"
+                      ? "bg-borderBg text-btnDarkBlue border-btnDarkBlue"
+                      : "bg-gray-200 text-black"
+                  }`}
+                  onClick={() => setPaymentMethod("card")}
+                >
+                  <CardIcon />
+                  <span>Card</span>
+                </button>
+                <button
+                  className={`flex items-center justify-start space-x-2 px-4 py-2 flex-1 rounded-md border-2 ${
+                    paymentMethod === "bank"
+                      ? "bg-borderBg text-btnDarkBlue border-btnDarkBlue"
+                      : "bg-gray-200 text-black"
+                  }`}
+                  onClick={() => setPaymentMethod("bank")}
+                >
+                  <BankIcon />
+                  <span>Bank</span>
+                </button>
+              </div>
 
             {/* Formik Form */}
             <Formik
@@ -824,6 +829,7 @@ export default function PaymentCardForm({
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

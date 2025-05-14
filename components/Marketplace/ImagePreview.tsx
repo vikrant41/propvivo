@@ -32,9 +32,9 @@ export const ImagePreview = ({ isOpen, onClose, images, title, currentImageIndex
                 onClick={onClose}
             ></div>
 
-            <div className="relative bg-white rounded-lg shadow-lg z-10 w-[600px] h-[600px] flex flex-col ">
+            <div className="relative bg-white rounded-lg shadow-lg z-10 w-full h-full max-w-xl flex flex-col" style={{maxHeight: "600px"}}>
                 {" "}
-                <div className="flex  items-center justify-between gap-4 py-3 md:py-3 px-4 md:px-4 bg-[#F9F9F9]">
+                <div className="flex  items-center justify-between gap-4 py-3 md:py-3 px-4 md:px-4 bg-popupBg">
                     <h3 className="text-black text-base break-all line-clamp-2">
                         {title}
                     </h3>
@@ -42,7 +42,7 @@ export const ImagePreview = ({ isOpen, onClose, images, title, currentImageIndex
                         <CloseIcon />
                     </div>
                 </div>
-                <div className="relative flex  mx-auto justify-center pt-1 items-center w-[500px] h-[500px]">
+                <div className="relative flex  mx-auto justify-center pt-1 items-center w-full h-full">
                     {" "}
                     {images && images.length > 0 && (
                         <Image
@@ -57,11 +57,11 @@ export const ImagePreview = ({ isOpen, onClose, images, title, currentImageIndex
                     )}
 
                 </div>
-                <div className="bg-[#F9F9F9] flex items-center justify-center gap-4 py-2 md:py-2 px-4 md:px-4">
+                <div className="bg-popupBg flex items-center justify-center gap-4 py-2 md:py-2 px-4 md:px-4">
 
                     {images && images.length > 0 && images.map((res, i) => {
                         return (
-                            <div className="w-[56px] h-[56px] cursor-pointer" key={i}>
+                            <div className="w-14 h-14 cursor-pointer" key={i}>
                                 {/* <img
                                     src={res?.uri}
                                     alt={"Loading"}

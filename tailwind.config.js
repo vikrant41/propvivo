@@ -12,6 +12,16 @@ module.exports = {
       screens: {
         'xl': '1200px',
       },
+      maxWidth: {
+        '970': '970px',
+        '570': '570px',
+      },
+      width: {
+        '75': '75px',
+      },
+      gridTemplateColumns: {
+        '54-42': '54% 42%',
+      },
       container: {
         center: true,
         padding: "15px",
@@ -58,6 +68,16 @@ module.exports = {
         borderBg:"#F3FAFF",
         borderColor: "#D5D7ED",
         gryTextColor:"#7A7D9C",
+        dropdownText: "#404a5f",
+        dropdownHover: "#E9F5FF",
+        popupBg: "#F9F9F9",
+        marketplaceLightBlue: "#F7F7FE",
+        marketplaceOrange: "#EC8431",
+        marketplaceBlue: "#47ABFF",
+        mediumShadeOfGreen: "#1E9932",
+        whitePink: "#FFF1F1",
+        pvRed: "#ED5757",
+        pvYellow: "#fec022",
         "gray-o": {
           600: "#CCCCCC",
           500: "#4E4F50",
