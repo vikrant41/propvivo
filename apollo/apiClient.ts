@@ -91,7 +91,7 @@ import {
             // },
             // Dynamically apply merge policy to all queries
             ...generateMergePolicies([
-              
+              "documentRequestMasterQuery",
             ]),
             // This applies a default merge policy for all queries dynamically
             // It merges incoming data with existing cached data instead of replacing it

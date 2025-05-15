@@ -19,6 +19,7 @@ import {
 import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 import dynamic from "next/dynamic";
+import { GET_ALL_REQUESTOR_TYPE } from "../graphql/queries/RequestorTypeQueries";
 
 const ReCAPTCHA = dynamic(() => import("react-google-recaptcha"), {
   ssr: false,
@@ -76,7 +77,7 @@ function ResaleCertificate() {
   // Resale Initial Values
   const formik = useFormik({
     initialValues: {
-      requestorType: "",
+      requestorType: "Escrow",
       associationName: "",
       association: {
         id: "",
@@ -273,7 +274,7 @@ function ResaleCertificate() {
       closingDate: formik?.values?.closingDate
         ? formatDate(formik?.values?.closingDate)
         : null,
-      requestorType: formik?.values?.requestorType || "Escrow",
+      requestorType: formik?.values?.requestorType,
       escrowNumber: formik?.values?.escrowNumber,
       legalEntityCode: formik?.values?.association.code || "",
       legalEntityId: formik?.values?.association.id || "",
@@ -310,7 +311,7 @@ function ResaleCertificate() {
         bankName: paymentData?.bankName,
         bankRoutingNumber: paymentData?.bankRoutingNumber,
         effectiveDate: paymentData?.effectiveDate
-          ? `${paymentData?.effectiveDate}Z`
+          ? paymentData?.effectiveDate
           : null,
         transactionDesc: paymentData?.transactionDesc,
         transactionId: paymentData?.transactionId,
@@ -436,6 +437,22 @@ function ResaleCertificate() {
   const orderTypeList =
     getAllOrderType?.documentRequestMasterQuery?.getAllOrderTypes;
 
+  // Get all requestor type query
+  const { data: getAllRequestorType } = useQuery(GET_ALL_REQUESTOR_TYPE, {
+    variables: {
+      request: {
+        requestParam: {},
+        requestSubType: "List",
+        requestType: "RequestorType",
+      },
+    },
+    client: apiClient,
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-and-network",
+  });
+  const getRequestorTypeList =
+    getAllRequestorType?.documentRequestMasterQuery?.getAllRequestorTypes;
+
   const handleProceedToPay = async () => {
     const isValid = await formik.validateForm();
     if (Object.keys(isValid).length === 0) {
@@ -514,9 +531,20 @@ function ResaleCertificate() {
                         name="requestorType"
                         className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                       >
-                        <option value="">Select</option>
+                        {/* <option value="">Select</option>
                         <option value="Escrow">Escrow Company</option>
-                        <option value="Other">Other</option>
+                        <option value="Other">Other</option> */}
+                        {/* Map over the fetched data to create options dynamically */}
+                        {getRequestorTypeList?.data?.requestorTypes?.map(
+                          (type) => (
+                            <option
+                              key={type.requestorType}
+                              value={type.requestorType}
+                            >
+                              {type.requestorTypeDisplayValue}
+                            </option>
+                          )
+                        )}
                       </Field>
                     </div>
                     <ErrorMessage
@@ -967,7 +995,7 @@ function ResaleCertificate() {
                         id="tb-file-upload"
                         accept=".pdf ,image/jpeg, image/jpg"
                         onChange={(e) => handleFileChange(e)}
-                        className="opacity-0 absolute top-0 left-0 cursor-pointer w-full invisible"
+                        className="opacity-0 absolute top-0 left-0 cursor-pointer w-full"
                       />
                     </div>
                     <ErrorMessage
@@ -1120,7 +1148,6 @@ function ResaleCertificate() {
             name: formik.values.association.name,
             code: formik.values.association.code,
           }}
-          addressId={formik.values.address.id}
           message={"resale"}
           propertyId={storePropertyId}
         />

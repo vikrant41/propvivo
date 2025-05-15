@@ -26,6 +26,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 import { p } from "graphql-ws/dist/common-DY-PBNYy";
+import { GET_ALL_REQUESTOR_TYPE } from "../graphql/queries/RequestorTypeQueries";
 
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
@@ -78,7 +79,7 @@ function DemandStatement() {
   // formik
   const formik = useFormik({
     initialValues: {
-      requestorType: "",
+      requestorType: "Escrow",
       association: {
         id: "",
         name: "",
@@ -360,6 +361,22 @@ function DemandStatement() {
   const orderTypeList =
     getAllOrderType?.documentRequestMasterQuery?.getAllOrderTypes;
 
+  // Get all requestor type query
+  const { data: getAllRequestorType } = useQuery(GET_ALL_REQUESTOR_TYPE, {
+    variables: {
+      request: {
+        requestParam: {},
+        requestSubType: "List",
+        requestType: "RequestorType",
+      },
+    },
+    client: apiClient,
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-and-network",
+  });
+  const getRequestorTypeList =
+    getAllRequestorType?.documentRequestMasterQuery?.getAllRequestorTypes;
+
   useEffect(() => {
     if (orderTypeList?.data?.orderTypes?.length > 0) {
       const fees = orderTypeList.data.orderTypes[0];
@@ -406,9 +423,17 @@ function DemandStatement() {
                         name="requestorType"
                         className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                       >
-                        <option value="">Select</option>
-                        <option value="Escrow">Escrow Company</option>
-                        <option value="Other">Other</option>
+                        {/* Map over the fetched data to create options dynamically */}
+                        {getRequestorTypeList?.data?.requestorTypes?.map(
+                          (type) => (
+                            <option
+                              key={type.requestorType}
+                              value={type.requestorType}
+                            >
+                              {type.requestorTypeDisplayValue}
+                            </option>
+                          )
+                        )}
                       </Field>
                     </div>
                     <ErrorMessage
@@ -870,9 +895,9 @@ function DemandStatement() {
                         type="file"
                         multiple
                         id="tb-file-upload"
-                        accept=".pdf ,image/jpeg, image/jpg"
+                        accept=".pdf, .jpg, .jpeg, .png,"
                         onChange={(e) => handleFileChange(e)}
-                        className="opacity-0 absolute top-0 left-0 cursor-pointer w-full invisible"
+                        className="opacity-0 absolute top-0 left-0 cursor-pointer w-full "
                       />
                     </div>
                     <ErrorMessage
