@@ -66,7 +66,7 @@ function CondoQuestionnaire() {
   // Condo InitialValues
   const formik = useFormik({
     initialValues: {
-      requestorType: "",
+      requestorType: "Escrow",
       associationName: "",
       association: {
         id: "",
@@ -414,7 +414,7 @@ function CondoQuestionnaire() {
         bankName: paymentData?.bankName,
         bankRoutingNumber: paymentData?.bankRoutingNumber,
         effectiveDate: paymentData?.effectiveDate
-          ? `${paymentData?.effectiveDate}Z`
+          ? paymentData?.effectiveDate
           : null,
         transactionDesc: paymentData?.transactionDesc,
         transactionId: paymentData?.transactionId,
@@ -950,7 +950,7 @@ function CondoQuestionnaire() {
                         id="tb-file-upload"
                         accept=".pdf ,image/jpeg, image/jpg"
                         onChange={(e) => handleFileChange(e)}
-                        className="opacity-0 absolute top-0 left-0 cursor-pointer w-full invisible"
+                        className="opacity-0 absolute top-0 left-0 cursor-pointer w-full"
                       />
                     </div>
                     <ErrorMessage
@@ -1104,9 +1104,8 @@ function CondoQuestionnaire() {
             name: formik.values.association.name,
             code: formik.values.association.code,
           }}
-          addressId={formik.values.address.id}
           message={"condo"}
-          propertyId = {storePropertyId}
+          propertyId={storePropertyId}
         />
       )}
     </>

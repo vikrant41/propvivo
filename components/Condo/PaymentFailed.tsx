@@ -36,23 +36,23 @@ const PaymentFailed = ({
       <div className="text-left space-y-2 text-sm mt-4">
         <div className="flex justify-between">
           <span>Invoice Amount</span>
-          <span>${paymentResponseData?.amount}</span>
+          <span className="text-black">${paymentResponseData?.amount}</span>
         </div>
         <div className="flex justify-between">
-          <span>Demand Statement Fees</span>
-          <span>${demandStatementFee.toFixed(2)}</span>
+          <span>Fees</span>
+          <span className="text-black">${demandStatementFee.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
           <span>Transfer Fee</span>
-          <span>${transferFee.toFixed(2)}</span>
+          <span className="text-black">${transferFee.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
           <span>Transaction Fee</span>
-          <span>${transaction.toFixed(2)}</span>
+          <span className="text-black">${transaction.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between font-semibold">
+        <div className="flex justify-between">
           <span>Total Paid Amount</span>
-          <span>${totalAmountPaid.toFixed(2)}</span>
+          <span className="text-black">${totalAmountPaid.toFixed(2)}</span>
         </div>
         <div className="flex justify-between font-semibold">
           <span>Status</span>
