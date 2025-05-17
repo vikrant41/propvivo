@@ -25,15 +25,23 @@ import { useBreadcrumbs } from "../contexts/BreadCrumbContext";
 import ReCAPTCHA from "react-google-recaptcha";
 import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
-import { p } from "graphql-ws/dist/common-DY-PBNYy";
 import { GET_ALL_REQUESTOR_TYPE } from "../graphql/queries/RequestorTypeQueries";
 
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
+  association: Yup.object().shape({
+    id: Yup.string().required("Association name is required"),
+    name: Yup.string().required("Association name is required"),
+    code: Yup.string().required("Association code is required"),
+  }),
   associationName: Yup.string()
     .min(3, "Association Name min length should be 3")
     .required("Association Name is Required"),
   propertyAddress: Yup.string().required("Address is Required"),
+  address: Yup.object().shape({
+    id: Yup.string().required("Address is required"),
+    name: Yup.string().required("Address is required"),
+  }),
   requesterFirstName: Yup.string()
     .matches(/^[a-zA-Z\s]*$/, "First Name can only contain letters and spaces")
     .min(3, "First Name min length should be 3")
@@ -455,9 +463,9 @@ function DemandStatement() {
                       placeholder={"Association Name"}
                       maxLength={50}
                       errors={
-                        formik.errors.associationName &&
-                        formik.touched.associationName &&
-                        formik.errors.associationName
+                        formik.errors.association?.id &&
+                        formik.touched.association?.id &&
+                        formik.errors.association?.id
                       }
                       searchAfterChar={3}
                       data={legalEntityList?.data?.legalEntities?.map((res) => {
@@ -481,8 +489,17 @@ function DemandStatement() {
                         };
                       })}
                       selectionAllow={true}
-                      onChangeValue={(values) => {
+                      onChangeValue={(values, id) => {
                         formik.setFieldValue("associationName", values);
+                      }}
+                      onManualInputChange={(text) => {
+                        formik.setFieldValue("association", {
+                          id: "",
+                          name: "",
+                          code: "",
+                        });
+                        formik.setFieldTouched("association.id", true);
+                        formik.validateField("association.id");
                       }}
                       handleSetValue={(x) => {
                         formik.setFieldValue("association", {
@@ -490,6 +507,8 @@ function DemandStatement() {
                           name: x?.name,
                           code: x?.code,
                         });
+                        formik.setFieldTouched("association.id", true);
+                        formik.validateField("association.id");
                       }}
                       selectedValue={
                         formik?.values?.associationName
@@ -503,9 +522,9 @@ function DemandStatement() {
                       placeholder={"Property Address"}
                       maxLength={50}
                       errors={
-                        formik.errors.propertyAddress &&
-                        formik.touched.propertyAddress &&
-                        formik.errors.propertyAddress
+                        formik.errors.address?.id &&
+                        formik.touched.address?.id &&
+                        formik.errors.address?.id
                       }
                       searchAfterChar={3}
                       data={LegalEntityAddressMappingList?.data?.legalEntityPropertyAddresses?.map(
@@ -533,6 +552,14 @@ function DemandStatement() {
                       onChangeValue={(values) => {
                         formik.setFieldValue("propertyAddress", values);
                       }}
+                      onManualInputChange={(text) => {
+                        formik.setFieldValue("address", {
+                          id: "",
+                          name: "",
+                        });
+                        formik.setFieldTouched("address.id", true);
+                        formik.validateField("address.id");
+                      }}
                       handleSetValue={(x) => {
                         formik.setFieldValue("country", {
                           id: x?.coutryId,
@@ -555,6 +582,8 @@ function DemandStatement() {
                           name: x?.address1,
                         });
                         formik.setFieldValue("address2", x?.address2);
+                        formik.setFieldTouched("address.id", true);
+                        formik.validateField("address.id");
                       }}
                       selectedValue={
                         formik?.values?.associationName

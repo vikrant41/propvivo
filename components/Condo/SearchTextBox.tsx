@@ -13,6 +13,7 @@ interface SearchTextBoxProps {
   selectionAllow?: boolean;
   selectedValue?: string;
   handleSetValue: (x: any) => void;
+  onManualInputChange?: (text: string) => void;
 }
 
 const SearchTextBox = ({
@@ -30,6 +31,7 @@ const SearchTextBox = ({
   handleSetValue = () => {
     return;
   },
+  onManualInputChange,
 }: SearchTextBoxProps) => {
   const [text, setText] = useState(selectedValue !== "" ? selectedValue : "");
   const [lineId, setlineId] = useState("");
@@ -73,7 +75,9 @@ const SearchTextBox = ({
             onClick={() => setShowData(true)}
             value={text}
             onChange={(e) => {
-              setText(e.target.value);
+              const newText = e.target.value;
+              setText(newText);
+              onManualInputChange?.(newText);
             }}
             onFocus={() => setShowData(true)}
             onBlur={() => !selectionAllow && setShowData(false)}
