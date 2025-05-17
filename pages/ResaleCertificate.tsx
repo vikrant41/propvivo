@@ -32,7 +32,16 @@ const ReCAPTCHA = dynamic(() => import("react-google-recaptcha"), {
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
   associationName: Yup.string().required("Association Name is Required"),
+  association: Yup.object().shape({
+    id: Yup.string().required("Association name is required"),
+    name: Yup.string().required("Association name is required"),
+    code: Yup.string().required("Association code is required"),
+  }),
   propertyAddress: Yup.string().required("Address is Required"),
+  address: Yup.object().shape({
+    id: Yup.string().required("Address is required"),
+    name: Yup.string().required("Address is required"),
+  }),
   requesterFirstName: Yup.string()
     .min(3, "First Name min length should be 3")
     .required("First Name is Required"),
@@ -566,9 +575,9 @@ function ResaleCertificate() {
                       placeholder={"Association Name"}
                       maxLength={50}
                       errors={
-                        formik.errors.associationName &&
-                        formik.touched.associationName &&
-                        formik.errors.associationName
+                        formik.errors.association?.id &&
+                        formik.touched.association?.id &&
+                        formik.errors.association?.id
                       }
                       searchAfterChar={3}
                       data={legalEntityList?.data?.legalEntities?.map((res) => {
@@ -595,12 +604,23 @@ function ResaleCertificate() {
                       onChangeValue={(values) => {
                         formik.setFieldValue("associationName", values);
                       }}
+                      onManualInputChange={(text) => {
+                        formik.setFieldValue("association", {
+                          id: "",
+                          name: "",
+                          code: "",
+                        });
+                        formik.setFieldTouched("association.id", true);
+                        formik.validateField("association.id");
+                      }}
                       handleSetValue={(x) => {
                         formik.setFieldValue("association", {
                           id: x?.id,
                           name: x?.name,
                           code: x?.code,
                         });
+                        formik.setFieldTouched("association.id", true);
+                        formik.validateField("association.id");
                       }}
                       selectedValue={
                         formik?.values?.associationName
@@ -614,9 +634,9 @@ function ResaleCertificate() {
                       placeholder={"Property Address"}
                       maxLength={50}
                       errors={
-                        formik.errors.propertyAddress &&
-                        formik.touched.propertyAddress &&
-                        formik.errors.propertyAddress
+                        formik.errors.address?.id &&
+                        formik.touched.address?.id &&
+                        formik.errors.address?.id
                       }
                       searchAfterChar={3}
                       data={LegalEntityAddressMappingList?.data?.legalEntityPropertyAddresses?.map(
@@ -644,6 +664,14 @@ function ResaleCertificate() {
                       onChangeValue={(values) => {
                         formik.setFieldValue("propertyAddress", values);
                       }}
+                      onManualInputChange={(text) => {
+                        formik.setFieldValue("address", {
+                          id: "",
+                          name: "",
+                        });
+                        formik.setFieldTouched("address.id", true);
+                        formik.validateField("address.id");
+                      }}
                       handleSetValue={(x) => {
                         formik.setFieldValue("country", {
                           id: x?.coutryId,
@@ -666,6 +694,8 @@ function ResaleCertificate() {
                           name: x?.address1,
                         });
                         formik.setFieldValue("address2", x?.address2);
+                        formik.setFieldTouched("address.id", true);
+                        formik.validateField("address.id");
                       }}
                       selectedValue={
                         formik?.values?.associationName

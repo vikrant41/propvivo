@@ -13,7 +13,9 @@ import {
   ONE_TIME_PAYMENT_REQUEST,
   VALIDATE_CARD_NUMBER,
 } from "../../graphql/mutations/OneTimePaymentMutations";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_ALL_ACCOUNT_TYPE_REQUEST } from "../../graphql/queries/AccountTypeQueries";
+import apiClient from "../../apollo/apiClient";
 
 export default function PaymentCardForm({
   formData,
@@ -133,6 +135,22 @@ export default function PaymentCardForm({
       .required("Zip code is required"),
   });
 
+    const { data: accountTypeList, loading: accountTypeLoading } = useQuery(
+    GET_ALL_ACCOUNT_TYPE_REQUEST,
+    {
+      variables: {
+        request: {
+          requestParam: {},
+          requestSubType: "List",
+          requestType: "MyPayments",
+        },
+      },
+      client: apiClient,
+      fetchPolicy: "cache-first",
+      nextFetchPolicy: "cache-and-network",
+      skip: !(paymentMethod == "bank"),
+    }
+  );
   // oneTime Payment api calling
   // const [
   //   AddOneTimePaymentRequest,
