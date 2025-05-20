@@ -373,7 +373,7 @@ function DemandStatement() {
   const { data: getAllRequestorType } = useQuery(GET_ALL_REQUESTOR_TYPE, {
     variables: {
       request: {
-        requestParam: {},
+        requestParam: {documentType: "DemandStatement",},
         requestSubType: "List",
         requestType: "RequestorType",
       },

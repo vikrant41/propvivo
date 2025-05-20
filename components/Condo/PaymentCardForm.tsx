@@ -135,7 +135,7 @@ export default function PaymentCardForm({
       .required("Zip code is required"),
   });
 
-    const { data: accountTypeList, loading: accountTypeLoading } = useQuery(
+  const { data: accountTypeList, loading: accountTypeLoading } = useQuery(
     GET_ALL_ACCOUNT_TYPE_REQUEST,
     {
       variables: {
@@ -239,7 +239,7 @@ export default function PaymentCardForm({
         const transactionData =
           response.data.paymentMutation.oneTimePayment.data;
         setPaymentResponseData(transactionData);
-        
+
         if (transactionData.transactionStatus === "Success") {
           // Payment was successful, update state
           setPaymentData(transactionData);
@@ -616,10 +616,21 @@ export default function PaymentCardForm({
                                 <Field
                                   as="select"
                                   name="accountType"
+                                  loading = {accountTypeLoading}
                                   className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                                 >
-                                  <option value="Checking">Checking</option>
-                                  <option value="Saving">Saving</option>
+                                  {/* <option value="Checking">Checking</option>
+                                  <option value="Saving">Saving</option> */}
+                                  {accountTypeList?.paymentQuery?.getAllAccountType?.data?.accountTypes?.map(
+                                    (type) => (
+                                      <option
+                                        key={type.accountType}
+                                        value={type.accountType}
+                                      >
+                                        {type.accountTypeDisplayValue}
+                                      </option>
+                                    )
+                                  )}
                                 </Field>
                               </div>
                               {errors.accountType && touched.accountType && (

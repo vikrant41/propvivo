@@ -86,7 +86,7 @@ function ResaleCertificate() {
   // Resale Initial Values
   const formik = useFormik({
     initialValues: {
-      requestorType: "Escrow",
+      requestorType: "Buyer",
       associationName: "",
       association: {
         id: "",
@@ -447,10 +447,10 @@ function ResaleCertificate() {
     getAllOrderType?.documentRequestMasterQuery?.getAllOrderTypes;
 
   // Get all requestor type query
-  const { data: getAllRequestorType } = useQuery(GET_ALL_REQUESTOR_TYPE, {
+  const { data: getAllRequestorType, loading: requestorTypeDataLoading } = useQuery(GET_ALL_REQUESTOR_TYPE, {
     variables: {
       request: {
-        requestParam: {},
+        requestParam: {documentType: "ResaleCertificate",},
         requestSubType: "List",
         requestType: "RequestorType",
       },
@@ -538,6 +538,7 @@ function ResaleCertificate() {
                       <Field
                         as="select"
                         name="requestorType"
+                        loading = {requestorTypeDataLoading}
                         className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                       >
                         {/* <option value="">Select</option>

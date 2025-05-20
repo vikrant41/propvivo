@@ -105,11 +105,11 @@ const PaymentSuccessCard = ({
         <div className="flex justify-between">
           <span>Paid On</span>
           <span className="font-bold text-pvBlack">
-            {paymentResponseData?.effectiveDate ||
-            paymentResponseData?.transactionDate
+            {paymentResponseData?.transactionDate ||
+            paymentResponseData?.effectiveDate
               ? formatDateWithTime(
-                  paymentResponseData.effectiveDate ||
-                    paymentResponseData.transactionDate
+                  paymentResponseData.transactionDate ||
+                    paymentResponseData.effectiveDate
                 )
               : "-"}
           </span>
