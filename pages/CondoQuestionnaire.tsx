@@ -75,7 +75,7 @@ function CondoQuestionnaire() {
   // Condo InitialValues
   const formik = useFormik({
     initialValues: {
-      requestorType: "Escrow",
+      requestorType: "Lender",
       associationName: "",
       association: {
         id: "",
@@ -287,7 +287,7 @@ function CondoQuestionnaire() {
   const { data: getAllRequestorType } = useQuery(GET_ALL_REQUESTOR_TYPE, {
     variables: {
       request: {
-        requestParam: {},
+        requestParam: {documentType: "CondoQuestionnaire",},
         requestSubType: "List",
         requestType: "RequestorType",
       },
@@ -486,6 +486,8 @@ function CondoQuestionnaire() {
         selectedOrder.fees + selectedOrder.transferFees
       ).toFixed(2);
       formik.setFieldValue("price", totalAmount);
+      setDemandStatementFee(selectedOrder.fees);
+      setTransferFee(selectedOrder.transferFees);
     }
   };
   return (
