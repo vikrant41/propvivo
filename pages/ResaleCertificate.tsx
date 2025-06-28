@@ -20,6 +20,7 @@ import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 import dynamic from "next/dynamic";
 import { GET_ALL_REQUESTOR_TYPE } from "../graphql/queries/RequestorTypeQueries";
+import { GET_PROPERTY_ID_REQUEST } from "../graphql/mutations/OneTimePaymentMutations";
 
 const ReCAPTCHA = dynamic(() => import("react-google-recaptcha"), {
   ssr: false,
@@ -147,21 +148,71 @@ function ResaleCertificate() {
 
   const storedLegalEntityId = formik?.values?.association?.id;
 
-  const [PostAddressId, { data: getData }] = useMutation(
-    GET_PROPERTY_ID_BY_ADDRESS_ID,
+  // const [PostAddressId, { data: getData }] = useMutation(
+  //   GET_PROPERTY_ID_BY_ADDRESS_ID,
+  //   {
+  //     onCompleted: (data) => {
+  //       const userLegalEntities =
+  //         data?.userMutations?.addressOrActivationCode?.data?.userProfile
+  //           ?.userLegalEntities || [];
+
+  //       const matchedEntity = userLegalEntities.find(
+  //         (entity) => entity.legalEntityId === storedLegalEntityId
+  //       );
+
+  //       const matchedUnit = matchedEntity?.userLegalEntityUnits?.find(
+  //         (unit) =>
+  //           unit.propertyAddress?.addressId === formik?.values?.address?.id
+  //       );
+
+  //       if (matchedUnit?.propertyId) {
+  //         setStorePropertyId(matchedUnit.propertyId);
+  //       } else {
+  //         console.warn("No matching propertyId found");
+  //       }
+  //     },
+  //     onError: (error) => {
+  //       console.error("Mutation error:", error);
+  //     },
+  //   }
+  // );
+
+  // useEffect(() => {
+  //   if (formik?.values?.address?.id) {
+  //     PostAddressId({
+  //       variables: {
+  //         request: {
+  //           requestParam: {
+  //             addressId: formik?.values?.address.id,
+  //           },
+  //         },
+  //       },
+  //     });
+  //   }
+  // }, [formik?.values?.address?.id]);
+
+  const { data: unitsResponse, error: unitsError } = useQuery(
+    GET_PROPERTY_ID_REQUEST,
     {
+      variables: {
+        request: {
+          requestParam: {
+            addressId: formik?.values?.address?.id,
+            legalEntityId: formik?.values?.association?.id,
+          },
+        },
+      },
+      skip: !formik?.values?.address?.id, // only run when addressId is present
+      client: apiClient, // optional, if using multiple clients
+      fetchPolicy: "cache-first",
+      nextFetchPolicy: "cache-and-network",
       onCompleted: (data) => {
-        const userLegalEntities =
-          data?.userMutations?.addressOrActivationCode?.data?.userProfile
-            ?.userLegalEntities || [];
+        const unitList = data?.userQueries?.getUnits?.data?.unitData || [];
 
-        const matchedEntity = userLegalEntities.find(
-          (entity) => entity.legalEntityId === storedLegalEntityId
-        );
-
-        const matchedUnit = matchedEntity?.userLegalEntityUnits?.find(
+        const matchedUnit = unitList.find(
           (unit) =>
-            unit.propertyAddress?.addressId === formik?.values?.address?.id
+            unit.addressId === formik?.values?.address?.id &&
+            unit.legalEntityId === storedLegalEntityId
         );
 
         if (matchedUnit?.propertyId) {
@@ -171,24 +222,10 @@ function ResaleCertificate() {
         }
       },
       onError: (error) => {
-        console.error("Mutation error:", error);
+        console.error("Query error:", error);
       },
     }
   );
-
-  useEffect(() => {
-    if (formik?.values?.address?.id) {
-      PostAddressId({
-        variables: {
-          request: {
-            requestParam: {
-              addressId: formik?.values?.address.id,
-            },
-          },
-        },
-      });
-    }
-  }, [formik?.values?.address?.id]);
 
   /* GQL mutation calling for POST */
   const [
@@ -447,18 +484,19 @@ function ResaleCertificate() {
     getAllOrderType?.documentRequestMasterQuery?.getAllOrderTypes;
 
   // Get all requestor type query
-  const { data: getAllRequestorType, loading: requestorTypeDataLoading } = useQuery(GET_ALL_REQUESTOR_TYPE, {
-    variables: {
-      request: {
-        requestParam: {documentType: "ResaleCertificate",},
-        requestSubType: "List",
-        requestType: "RequestorType",
+  const { data: getAllRequestorType, loading: requestorTypeDataLoading } =
+    useQuery(GET_ALL_REQUESTOR_TYPE, {
+      variables: {
+        request: {
+          requestParam: { documentType: "ResaleCertificate" },
+          requestSubType: "List",
+          requestType: "RequestorType",
+        },
       },
-    },
-    client: apiClient,
-    fetchPolicy: "cache-first",
-    nextFetchPolicy: "cache-and-network",
-  });
+      client: apiClient,
+      fetchPolicy: "cache-first",
+      nextFetchPolicy: "cache-and-network",
+    });
   const getRequestorTypeList =
     getAllRequestorType?.documentRequestMasterQuery?.getAllRequestorTypes;
 
@@ -538,7 +576,7 @@ function ResaleCertificate() {
                       <Field
                         as="select"
                         name="requestorType"
-                        loading = {requestorTypeDataLoading}
+                        loading={requestorTypeDataLoading}
                         className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                       >
                         {/* <option value="">Select</option>

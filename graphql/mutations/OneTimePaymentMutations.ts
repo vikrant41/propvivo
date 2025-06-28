@@ -40,3 +40,27 @@ export const VALIDATE_CARD_NUMBER = gql`
     }
   }
 `;
+
+export const GET_PROPERTY_ID_REQUEST = gql`
+  query getUnits($request: GetAllUnitsRequestInput!) {
+    userQueries {
+      getUnits(request: $request) {
+        message
+        statusCode
+        success
+        data {
+          unitData {
+            addressId
+            fullAddress
+            isAddressActive
+            legalEntityId
+            propertyId
+            propertyNumber
+            unitId
+            userId
+          }
+        }
+      }
+    }
+  }
+`;
