@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import {
   CallGreenIcon,
-  DocShapeIcon,
   FaCall,
   FaEnvelope,
   FaPencil,
@@ -14,32 +13,110 @@ import {
   TimeGreenIcon,
 } from "../shared/Icons";
 import { Button } from "../CommonComponents/Button";
-import SocialIcons from "../CommonComponents/SocialIcons";
 import SocialContactIcon from "../CommonComponents/SocialContactIcon";
+import { useMutation } from "@apollo/client";
+import { CONTACT_US_REQUEST } from "../../graphql/mutations/ContactUsMutations";
+import ThankYouModal from "../CommonModals/ThankYouModal";
+import CenteredLoader from "../CommonComponents/CenterLoader";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useToast } from "../UI/ToastContext";
 
 const validationSchema = Yup.object({
-  name: Yup.string().required("Please enter Name"),
+  name: Yup.string()
+    .min(3, "Name must be at least 3 characters")
+    .required("Name is required"),
   email: Yup.string()
     .email("Please enter a valid email address")
-    .required("Please enter Email"),
+    .required("Email is required"),
+  phone: Yup.string()
+    .min(10, "Contact number length should be 10")
+    .required("Contact number is required"),
+  reason: Yup.string()
+    .required("Reason for contact is required")
+    .matches(/^(?!.*\s{2,})[^\s][\s\S]*[^\s]$/, "White space not allowed"),
+  doc: Yup.string()
+    .trim()
+    .min(3, "Please specify the document or description.")
+    .required("Document description is required.")
+    .matches(
+      /^(?!\s*$).+$/,
+      "Document description cannot be empty or just spaces."
+    ),
+  recaptcha: Yup.string().required("Please verify that you are not a robot"),
 });
 
 const initialValues: any = {
   name: "",
   email: "",
+  phone: "",
+  reason: "",
+  doc: "",
+  recaptcha: "",
 };
 
 const ContactSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSubmit = (
+  // Google ReCAPTCHA key
+  const captchaSiteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
+  const { showToast } = useToast();
+
+  const [
+    PostContactEnquiryRequest,
+    {
+      data: contactUsEnquiryResponse,
+      loading: contactUsEnquiryResponseLoading,
+      error: error,
+    },
+  ] = useMutation(CONTACT_US_REQUEST, {
+    onCompleted: () => {
+      // refetch();
+    },
+  });
+
+  const handleSubmit = async (
     values: any,
     { resetForm }: { resetForm: () => void }
   ) => {
-    // console.log(values);
-    setIsModalOpen(true);
+    const rawPhoneNumber = values.phone.replace(/\D/g, "");
     resetForm();
+
+    const payLoad = {
+      contactReason: values?.reason,
+      email: values?.email,
+      message: values?.doc,
+      name: values?.name,
+      phoneNumber: rawPhoneNumber,
+    };
+
+    try {
+      const response = await PostContactEnquiryRequest({
+        variables: {
+          request: { requestParam: payLoad },
+          requestSubType: "Add",
+          requestType: "ContactUs",
+        },
+      });
+      if (
+        response?.data?.contactUsMutations?.createContractUs?.statusCode === 200
+      ) {
+        setIsModalOpen(true);
+      } else {
+        showToast("error", "Something went wrong while creating Case Type.");
+      }
+    } catch (error) {
+      showToast(
+        "error",
+        error?.graphQLErrors?.[0]?.extensions?.message || error?.message
+      );
+    } finally {
+      // setIsLoading(false);
+    }
   };
+
+  if (contactUsEnquiryResponseLoading) {
+    return <CenteredLoader />;
+  }
 
   return (
     <>
@@ -109,91 +186,172 @@ const ContactSection = () => {
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
                   >
-                    <Form className="">
-                      <div className="w-full space-y-6">
-                        <div className="relative">
-                          <div className="flex items-center border-b border-gray-o-60">
-                            <FaUser className="ml-1" />
-                            <Field
-                              type="text"
-                              id="name"
+                    {({ setFieldValue }) => (
+                      <Form className="">
+                        <div className="w-full space-y-6">
+                          <div className="relative">
+                            <div className="flex items-center border-b border-gray-o-60">
+                              <FaUser className="ml-1" />
+                              <Field
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Name / Company Name"
+                                className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            </div>
+                            <ErrorMessage
                               name="name"
-                              placeholder="Name / Company Name"
-                              className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              component="div"
+                              className="text-sm text-red-500 absolute"
                             />
                           </div>
-                          <ErrorMessage
-                            name="name"
-                            component="div"
-                            className="text-red-500 absolute"
-                          />
-                        </div>
 
-                        <div className="relative">
-                          <div className="flex items-center border-b border-gray-o-60">
-                            <FaCall className="ml-1" />
-                            <Field
-                              type="text"
-                              id="phone"
+                          <div className="relative">
+                            <div className="flex items-center border-b border-gray-o-60">
+                              <FaCall className="ml-1" />
+                              <Field
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                placeholder="Contact Number"
+                                className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                                onChange={(e) => {
+                                  const input = e.target.value.replace(
+                                    /\D/g,
+                                    ""
+                                  );
+                                  const formattedPhone =
+                                    input.length <= 10
+                                      ? input
+                                      : input.slice(0, 10);
+
+                                  // Format phone number as (XXX) XXX-XXXX if 10 digits are entered
+                                  let phoneFormatted = formattedPhone;
+                                  if (formattedPhone.length === 10) {
+                                    phoneFormatted = `(${formattedPhone.slice(
+                                      0,
+                                      3
+                                    )}) ${formattedPhone.slice(
+                                      3,
+                                      6
+                                    )}-${formattedPhone.slice(6, 10)}`;
+                                  }
+
+                                  setFieldValue("phone", phoneFormatted);
+                                }}
+                                onKeyDown={(e) => {
+                                  const allowedKeys = [
+                                    "Backspace",
+                                    "Tab",
+                                    "ArrowLeft",
+                                    "ArrowRight",
+                                    "Delete",
+                                  ];
+                                  if (
+                                    !/^[0-9]$/.test(e.key) &&
+                                    !allowedKeys.includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                            </div>
+                            <ErrorMessage
                               name="phone"
-                              placeholder="Phone"
-                              className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              component="div"
+                              className="text-sm text-red-500 absolute"
                             />
                           </div>
-                        </div>
 
-                        <div className="relative">
-                          <div className="flex items-center border-b border-gray-o-60">
-                            <FaEnvelope className="ml-1" />
-                            <Field
-                              type="email"
-                              id="email"
+                          <div className="relative">
+                            <div className="flex items-center border-b border-gray-o-60">
+                              <FaEnvelope className="ml-1" />
+                              <Field
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Email ID"
+                                className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            </div>
+                            <ErrorMessage
                               name="email"
-                              placeholder="Email ID"
-                              className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              component="div"
+                              className="text-sm text-red-500 absolute"
                             />
                           </div>
-                          <ErrorMessage
-                            name="email"
-                            component="div"
-                            className="text-red-500 absolute"
-                          />
-                        </div>
 
-                        <div className="relative">
-                          <div className="flex items-center border-b border-gray-o-60">
-                            <FaToggle className="ml-1" />
-                            <Field
-                              type="text"
-                              id="reason"
+                          <div className="relative">
+                            <div className="flex items-center border-b border-gray-o-60">
+                              <FaToggle className="ml-1" />
+                              <Field
+                                type="text"
+                                id="reason"
+                                name="reason"
+                                placeholder="Reason for Contact"
+                                className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            </div>
+                            <ErrorMessage
                               name="reason"
-                              placeholder="Reason for Contact"
-                              className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              component="div"
+                              className="text-sm text-red-500 absolute"
                             />
                           </div>
-                        </div>
 
-                        <div className="relative">
-                          <div className="flex items-center border-b border-gray-o-60">
-                            <FaPencil className="ml-1" />
-                            <Field
-                              type="text"
-                              id="doc"
+                          <div className="relative">
+                            <div className="flex items-center border-b border-gray-o-60">
+                              <FaPencil className="ml-1" />
+                              <Field
+                                type="text"
+                                id="doc"
+                                name="doc"
+                                placeholder="Which documents you need?"
+                                className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              />
+                            </div>
+                            <ErrorMessage
                               name="doc"
-                              placeholder="Which documents you need?"
-                              className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                              component="div"
+                              className="text-sm text-red-500 absolute"
                             />
                           </div>
-                        </div>
+                          <div className="pt-4">
+                            <ReCAPTCHA
+                              sitekey={captchaSiteKey}
+                              onChange={(value) =>
+                                setFieldValue("recaptcha", value)
+                              }
+                            />
+                            <ErrorMessage
+                              name="recaptcha"
+                              component="div"
+                              className="text-sm text-red-500 absolute"
+                            />
+                          </div>
 
-                        <Button type="submit" className="!mt-11">
-                          Submit Inquiry
-                        </Button>
-                      </div>
-                    </Form>
+                          <Button
+                            type="submit"
+                            disabled={contactUsEnquiryResponseLoading}
+                            className="!mt-8"
+                          >
+                            {contactUsEnquiryResponseLoading
+                              ? "Submitting..."
+                              : "Submit Inquiry"}
+                          </Button>
+                        </div>
+                      </Form>
+                    )}
                   </Formik>
                 </div>
               </div>
+              {isModalOpen && (
+                <ThankYouModal
+                  isOpen={isModalOpen}
+                  onClose={() => setIsModalOpen(false)}
+                />
+              )}
             </div>
           </div>
         </div>

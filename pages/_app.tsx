@@ -10,16 +10,19 @@ import { Provider } from "react-redux";
 import { store } from "../stores";
 import { ApolloProvider } from "@apollo/client";
 import apiClient from "../apollo/apiClient";
+import { ToastProvider } from "../components/UI/ToastContext";
 
 function MyApp({ Component, pageProps }) {
   return (
     <ApolloProvider client={apiClient}>
       <Provider store={store}>
-        <Layout>
-          <BreadcrumbProvider>
-            <Component {...pageProps} />
-          </BreadcrumbProvider>
-        </Layout>
+        <ToastProvider>
+          <Layout>
+            <BreadcrumbProvider>
+              <Component {...pageProps} />
+            </BreadcrumbProvider>
+          </Layout>
+        </ToastProvider>
       </Provider>
     </ApolloProvider>
   );
