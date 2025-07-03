@@ -264,12 +264,6 @@ export default function PaymentCardForm({
   const handleRetryPayment = () => {
     setPaymentStatus("idle");
     setRetryCount(retryCount + 1);
-    // if (retryCount < 2) {
-    //   setPaymentStatus("loading");
-    //   setRetryCount(retryCount + 1);
-    // } else {
-    //   setPaymentStatus("failedTwice");
-    // }
   };
 
   return (
@@ -283,7 +277,7 @@ export default function PaymentCardForm({
             >
               <ArrowBlueIcon className="rotate-180" /> Back to request
             </button>
-            <h5>Request Details</h5>
+            <h5>Request Details</h5> 
             <div className="my-1 text-base">
               <span>Requester Type : </span>
               <span>{formData?.requestorType}</span>
@@ -410,7 +404,7 @@ export default function PaymentCardForm({
                   setFieldValue,
                 }) => {
                   return (
-                    <Form>
+                    <Form autoComplete="off">
                       {paymentMethod === "card" && (
                         <div className="mt-4 space-y-2 text-black">
                           <div className="">
@@ -436,6 +430,9 @@ export default function PaymentCardForm({
                                   e.preventDefault();
                                 }
                               }}
+                              onPaste={(e) => e.preventDefault()}
+                              onCopy={(e) => e.preventDefault()}
+                              onCut={(e) => e.preventDefault()}
                             />
                             {errors.accountHolderName &&
                               touched.accountHolderName && (
