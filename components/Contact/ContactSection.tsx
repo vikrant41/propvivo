@@ -42,7 +42,7 @@ const validationSchema = Yup.object({
       /^(?!\s*$).+$/,
       "Document description cannot be empty or just spaces."
     ),
-  recaptcha: Yup.string().required("Please verify that you are not a robot"),
+  // recaptcha: Yup.string().required("Please verify that you are not a robot"),
 });
 
 const initialValues: any = {
