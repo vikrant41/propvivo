@@ -9,6 +9,30 @@ export const CREATE_DEMAND_REQUEST = gql`
         success
         data {
           documentRequestId
+          paymentReceipt {
+            containerName
+            contentType
+            fileExtension
+            fileName
+            filePath
+            fileSize
+            folderName
+            mediaId
+            mediaType
+            subFolderName
+            thumbnailPath
+            thumbnailUri
+            uri
+            userContext {
+              createdByUserId
+              createdByUserName
+              createdOn
+              modifiedByUserId
+              modifiedByUserName
+              modifiedOn
+              profilePicture
+            }
+          }
         }
       }
     }

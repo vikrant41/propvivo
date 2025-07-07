@@ -26,6 +26,8 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { GET_ALL_ORDER_TYPE } from "../graphql/queries/OrderTypeQueries";
 import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 import { GET_ALL_REQUESTOR_TYPE } from "../graphql/queries/RequestorTypeQueries";
+import PaymentCardForm from "../components/Condo/PaymentCardForm";
+import { GET_PROPERTY_ID_REQUEST } from "../graphql/mutations/OneTimePaymentMutations";
 
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
@@ -80,6 +82,13 @@ function DemandStatement() {
   const [filesPdf, setFilesPdf] = useState<any>([]);
   const [isPayment, setIsPayment] = useState(false);
   const [requestStatus, setRequestStatus] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
+  const [paymentData, setPaymentData] = useState(null);
+  const [demandStatementFee, setDemandStatementFee] = useState(0);
+  const [transferFee, setTransferFee] = useState(0);
+  const [condoResponse, setCondoResponse] = useState(null);
+  const [storePropertyId, setStorePropertyId] = useState("");
+  const [selectedOrderType, setSelectedOrderType] = useState("Normal");
 
   // Google ReCAPTCHA key
   const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
@@ -131,6 +140,7 @@ function DemandStatement() {
     },
     validationSchema,
     onSubmit: (values) => {
+      setFormData(values);
       handleSubmit();
     },
   });
@@ -180,7 +190,7 @@ function DemandStatement() {
       legalEntityId: formik?.values?.association.id || "",
       legalEntityName: formik?.values?.association.name,
       orderType: formik?.values?.orderType || "Normal",
-      paymentStatus: "Pending",
+      paymentStatus: "Completed",
       propertyAddress: {
         city: formik?.values?.city?.name || "",
         cityId: formik?.values?.city?.name || "",
@@ -202,6 +212,24 @@ function DemandStatement() {
           number: formik?.values?.requesterPhone,
         },
       },
+      paymentInformation: {
+        accountName: paymentData?.accountName,
+        accountNumber: paymentData?.accountNumber,
+        accountType: paymentData?.accountType,
+        amount: paymentData?.amount,
+        amountCurrency: paymentData?.amountCurrency,
+        bankName: paymentData?.bankName,
+        bankRoutingNumber: paymentData?.bankRoutingNumber,
+        effectiveDate: paymentData?.effectiveDate
+          ? paymentData?.effectiveDate
+          : null,
+        transactionDesc: paymentData?.transactionDesc,
+        transactionId: paymentData?.transactionId,
+        transactionStatus: paymentData?.transactionStatus,
+        transactionDate: paymentData?.transactionDate,
+        additionalFee: paymentData?.additionalFee,
+        totalAmount: paymentData?.totalAmount,
+      },
     };
     try {
       // Await the GraphQL mutation request
@@ -218,7 +246,9 @@ function DemandStatement() {
         response?.data?.documentRequestMasterMutation?.createDocumentRequest
           ?.statusCode === 200
       ) {
-        setRequestStatus(true);
+        setCondoResponse(
+          response?.data?.documentRequestMasterMutation?.createDocumentRequest
+        );
       }
     } catch (error) {
       console.log(
@@ -300,8 +330,16 @@ function DemandStatement() {
   };
 
   //Change status isPayment
-  const handleProceedToPay = () => {
-    setIsPayment(true);
+  // const handleProceedToPay = () => {
+  //   setIsPayment(true);
+  // };
+  const handleProceedToPay = async () => {
+    const isValid = await formik.validateForm();
+    if (Object.keys(isValid).length === 0) {
+      setFormData(formik.values);
+      // formik.submitForm();
+      setIsPayment(true);
+    }
   };
 
   //GQL Query Calling for legalEntity
@@ -373,7 +411,7 @@ function DemandStatement() {
   const { data: getAllRequestorType } = useQuery(GET_ALL_REQUESTOR_TYPE, {
     variables: {
       request: {
-        requestParam: {documentType: "DemandStatement",},
+        requestParam: { documentType: "DemandStatement" },
         requestSubType: "List",
         requestType: "RequestorType",
       },
@@ -391,11 +429,57 @@ function DemandStatement() {
       const demandStatementFee = fees.fees || 0;
       const transferFee = fees.transferFees || 0;
 
+      setDemandStatementFee(demandStatementFee);
+      setTransferFee(transferFee);
       // Calculate the total price directly from the API data
       const totalAmount = (demandStatementFee + transferFee).toFixed(2);
       formik.setFieldValue("price", totalAmount);
     }
   }, [orderTypeList]);
+
+  const storedLegalEntityId = formik?.values?.association?.id;
+
+  const { data: unitsResponse, error: unitsError } = useQuery(
+    GET_PROPERTY_ID_REQUEST,
+    {
+      variables: {
+        request: {
+          requestParam: {
+            addressId: formik?.values?.address?.id,
+            legalEntityId: formik?.values?.association?.id,
+          },
+        },
+      },
+      skip: !formik?.values?.address?.id,
+      client: apiClient,
+      fetchPolicy: "cache-first",
+      nextFetchPolicy: "cache-and-network",
+      onCompleted: (data) => {
+        const unitList = data?.userQueries?.getUnits?.data?.unitData || [];
+
+        const matchedUnit = unitList.find(
+          (unit) =>
+            unit.addressId === formik?.values?.address?.id &&
+            unit.legalEntityId === storedLegalEntityId
+        );
+
+        if (matchedUnit?.propertyId) {
+          setStorePropertyId(matchedUnit.propertyId);
+        } else {
+          console.warn("No matching propertyId found");
+        }
+      },
+      onError: (error) => {
+        console.error("Query error:", error);
+      },
+    }
+  );
+  useEffect(() => {
+    // Clear propertyId when address changes
+    if (formik?.values?.address?.id) {
+      setStorePropertyId(undefined);
+    }
+  }, [formik?.values?.address?.id]);
 
   // Reset Demand Form
   const handleReset = () => {
@@ -404,21 +488,38 @@ function DemandStatement() {
     formik.setFieldValue("price", currentPrice);
   };
 
+  const handlePaymentSuccess = () => {
+    formik.submitForm();
+  };
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDate = tomorrow.toISOString().split("T")[0];
 
+  // Update the price when an order type is selected
+  const handleOrderTypeChange = (orderType) => {
+    setSelectedOrderType(orderType);
+
+    // Find the selected order type from the list and calculate total
+    const selectedOrder = orderTypeList?.data?.orderTypes.find(
+      (order) => order.orderType === orderType
+    );
+    if (selectedOrder) {
+      const totalAmount = (
+        selectedOrder.fees + selectedOrder.transferFees
+      ).toFixed(2);
+      formik.setFieldValue("price", totalAmount);
+      setDemandStatementFee(selectedOrder.fees);
+      setTransferFee(selectedOrder.transferFees);
+    }
+  };
+
   return (
     <>
       <TopBanner backgroundImage="./img/Banner.jpg" title="Demand Statement" />
-      {requestStatus ? (
-        <div>
-          <SuccessSection />
-        </div>
-      ) : (
+      {!isPayment ? (
         <div className="max-w-3xl mx-auto my-14 px-5">
           <FormikProvider value={formik}>
-            <Form className="">
+            <Form autoComplete="off" className="">
               <div className="w-full space-y-6">
                 <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
@@ -962,28 +1063,31 @@ function DemandStatement() {
                     Order Type <span className="text-red-500">*</span>
                   </label>
                   <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5 text-pvBlack">
-                    <label>
-                      <Field
-                        type="radio"
-                        name="orderType"
-                        value="Normal"
-                        className="mr-2"
-                      />
-                      Normal (3-5 business days)
-                    </label>
-                    <label>
-                      <Field
-                        type="radio"
-                        name="orderType"
-                        value="Rush"
-                        className="mr-2"
-                      />
-                      Rush (24-36 hours)
-                    </label>
+                    {/* Dynamically render radio buttons based on the order types */}
+                    {orderTypeList?.data?.orderTypes?.map((order) => (
+                      <label
+                        key={order.orderType}
+                        className="flex items-center"
+                      >
+                        <Field
+                          type="radio"
+                          name="orderType"
+                          value={order.orderType}
+                          checked={selectedOrderType === order.orderType}
+                          onChange={() =>
+                            handleOrderTypeChange(order.orderType)
+                          }
+                          className="mr-2"
+                        />
+                        {order.orderTypeDisplayValue} (
+                        {order.processingDuration})
+                      </label>
+                    ))}
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-1 md:grid-cols-6">
+                {/* Amount Charged Section */}
+                <div className="relative grid grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Amount Charged
                   </label>
@@ -1003,25 +1107,38 @@ function DemandStatement() {
                       </div>
                       <div className="mt-2">
                         {/* Show the breakdown for the pricing */}
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="text-accent2 font-karla">
-                            Demand Statement Fees
-                          </div>
-                          <div>
-                            {/* {formik.values.orderType === "Rush"
-                                              ? "$200"
-                                              : "$100"} */}
-                            ${orderTypeList?.data?.orderTypes[0]?.fees}
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="text-accent2 font-karla">
-                            + Transfer Fees
-                          </div>
-                          <div>
-                            ${orderTypeList?.data?.orderTypes[0]?.transferFees}
-                          </div>
-                        </div>
+                        {selectedOrderType && (
+                          <>
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="text-accent2 font-karla">
+                                Fees
+                              </div>
+                              <div>
+                                $
+                                {
+                                  orderTypeList?.data?.orderTypes?.find(
+                                    (order) =>
+                                      order.orderType === selectedOrderType
+                                  )?.fees
+                                }
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="text-accent2 font-karla">
+                                + Transfer Fees
+                              </div>
+                              <div>
+                                $
+                                {
+                                  orderTypeList?.data?.orderTypes?.find(
+                                    (order) =>
+                                      order.orderType === selectedOrderType
+                                  )?.transferFees
+                                }
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                     <ReCAPTCHA sitekey={captcha_siteKey} />
@@ -1050,6 +1167,23 @@ function DemandStatement() {
             </Form>
           </FormikProvider>
         </div>
+      ) : (
+        <PaymentCardForm
+          formData={formData}
+          setRequestStatus={setRequestStatus}
+          setPaymentData={setPaymentData}
+          onPaymentSuccess={handlePaymentSuccess}
+          condoResponse={condoResponse}
+          demandStatementFee={demandStatementFee}
+          transferFee={transferFee}
+          associationDetails={{
+            id: formik.values.association.id,
+            name: formik.values.association.name,
+            code: formik.values.association.code,
+          }}
+          message={"demand"}
+          propertyId={storePropertyId}
+        />
       )}
     </>
   );
