@@ -367,16 +367,15 @@ function CondoQuestionnaire() {
   //   }
   // }, [formik?.values?.address?.id]);
 
-
-    const { data: unitsResponse, error: unitsError } = useQuery(
+  const { data: unitsResponse, error: unitsError } = useQuery(
     GET_PROPERTY_ID_REQUEST,
     {
       variables: {
         request: {
-          requestParam:{
+          requestParam: {
             addressId: formik?.values?.address?.id,
             legalEntityId: formik?.values?.association?.id,
-          }
+          },
         },
       },
       skip: !formik?.values?.address?.id, // only run when addressId is present
@@ -405,12 +404,11 @@ function CondoQuestionnaire() {
   );
 
   useEffect(() => {
-  // Clear propertyId when address changes
-  if (formik?.values?.address?.id) {
-    setStorePropertyId(undefined);
-  }
-}, [formik?.values?.address?.id]);
-
+    // Clear propertyId when address changes
+    if (formik?.values?.address?.id) {
+      setStorePropertyId(undefined);
+    }
+  }, [formik?.values?.address?.id]);
 
   const handleSubmit = async () => {
     // Formulate payload for the GraphQL request
@@ -545,7 +543,7 @@ function CondoQuestionnaire() {
       {!isPayment ? (
         <div className="max-w-3xl mx-auto my-14 px-5">
           <FormikProvider value={formik}>
-            <Form className="">
+            <Form autoComplete="off" className="">
               <div className="w-full space-y-6">
                 <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">

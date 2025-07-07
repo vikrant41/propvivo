@@ -64,6 +64,8 @@ const PaymentSuccessCard = ({
           ? "Resale Certificate"
           : message === "condo"
           ? "Condo Questionnaire"
+          : message === "demand"
+          ? "Demand Statement"
           : "document"}{" "}
         has been submitted successfully. A confirmation for both your request
         and payment will be sent to the email provided.

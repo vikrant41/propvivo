@@ -271,13 +271,15 @@ export default function PaymentCardForm({
       <div className="container">
         <div className="flex flex-col md:flex-row gap-4 justify-between py-10">
           <div className="flex flex-col justify-top">
-            <button
-              onClick={() => router.back()}
-              className="mb-5 flex items-center gap-3 text-sm text-accent1"
-            >
-              <ArrowBlueIcon className="rotate-180" /> Back to request
-            </button>
-            <h5>Request Details</h5> 
+            {!paymentProcessing && (
+              <button
+                onClick={() => router.back()}
+                className="mb-5 flex items-center gap-3 text-sm text-accent1"
+              >
+                <ArrowBlueIcon className="rotate-180" /> Back to request
+              </button>
+            )}
+            <h5>Request Details</h5>
             <div className="my-1 text-base">
               <span>Requester Type : </span>
               <span>{formData?.requestorType}</span>
@@ -613,7 +615,7 @@ export default function PaymentCardForm({
                                 <Field
                                   as="select"
                                   name="accountType"
-                                  loading = {accountTypeLoading}
+                                  loading={accountTypeLoading}
                                   className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                                 >
                                   {/* <option value="Checking">Checking</option>
