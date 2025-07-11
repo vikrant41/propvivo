@@ -1,47 +1,27 @@
 import React, { useEffect, useState } from "react";
-import {
-  ArrowBlueIcon,
-  ArrowIcon,
-  SearchIcon,
-} from "../components/shared/Icons";
+import { ArrowBlueIcon, SearchIcon } from "../components/shared/Icons";
 import { useRouter } from "next/router";
-import { allPosts } from "./api/posts";
+import { GET_ALL_BLOGS } from "../graphql/queries/GetAllBlogsQueries";
+import { useQuery } from "@apollo/client";
+import apiClient from "../apollo/apiClient";
+import { convertUTCToLocalDate } from "../Utils/Utils";
+import CenteredLoader from "../components/CommonComponents/CenterLoader";
+import { debounce } from "../components/Util/intex";
 
-const blog = () => {
-  const router = useRouter();
-  const [category, setCategory] = useState<string | null>(null);
-  const [tag, setTag] = useState<string | null>(null);
+const Blog = () => {
+  // all state management
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [showAll, setShowAll] = useState(false);
-
-  const filteredPosts = allPosts.filter((post) => {
-    const matchesCategory = category ? post.category === category : true;
-    const matchesTag = tag ? post.tags.includes(tag) : true;
-    const matchesSearch =
-      searchTerm === "" ||
-      post?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post?.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesTag && matchesSearch;
-  });
-
-  const uniqueCategories = Array.from(
-    new Set(allPosts.map((post) => post.category))
-  );
-  const uniqueTags = Array.from(new Set(allPosts.map((post) => post.tags)));
-
-  const categoryCounts = allPosts.reduce((acc, post) => {
-    acc[post.category] = (acc[post.category] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const tagCounts = allPosts.reduce((acc, post) => {
-    acc[post.tags] = (acc[post.tags] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const visibleTags = showAll ? uniqueTags : uniqueTags.slice(0, 2);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const [isMobile, setIsMobile] = useState(false);
+  const router = useRouter();
+
+  // Debounced search handler
+  const debouncedHandleSearch = debounce((text: string) => {
+    setDebouncedSearchTerm(text);
+  }, 1000);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,6 +33,65 @@ const blog = () => {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // -----------GET ALL BLOGS -------------------
+  const {
+    data: getAllBlogsData,
+    loading: getAllBlogsDataLoading,
+    refetch,
+  } = useQuery(GET_ALL_BLOGS, {
+    variables: {
+      request: {
+        pageCriteria: { enablePage: false, pageSize: 0, skip: 0 },
+        requestParam: {
+          isCorporate: true,
+          filterByKeyword: debouncedSearchTerm,
+          blogCategory: selectedCategory || null,
+          keyword: selectedTags.join(",") || null,
+        },
+        requestSubType: "List",
+        requestType: "GlobalSearch",
+      },
+    },
+    client: apiClient,
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-and-network",
+  });
+
+  // Loading state handling
+  if (getAllBlogsDataLoading) {
+    return <CenteredLoader />;
+  }
+
+  // Check if we have data
+  const blogs = getAllBlogsData?.blogQueries?.getAllBlog?.data?.blogs || [];
+  const categories =
+    getAllBlogsData?.blogQueries?.getAllBlog?.data?.categories || [];
+  const keywords =
+    getAllBlogsData?.blogQueries?.getAllBlog?.data?.keywords || [];
+
+  // Handle category selection
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    refetch();
+  };
+
+  // Handle tag (keyword) selection
+  const handleTagSelect = (tag: string) => {
+    setSelectedTags((prevTags) =>
+      prevTags.includes(tag)
+        ? prevTags.filter((t) => t !== tag)
+        : [...prevTags, tag]
+    );
+    refetch();
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    debouncedHandleSearch(value);
+  };
 
   return (
     <section className="py-9 md:py-16 relative">
@@ -72,7 +111,7 @@ const blog = () => {
                   className="px-4 py-3 pr-10 rounded-md flex-1 placeholder:text-accent2 text-pvBlack focus-visible:ring-1 focus-visible:outline-none"
                   placeholder="Enter Keyword"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={handleSearchChange}
                 />
                 <SearchIcon className="absolute top-1/2 -translate-y-1/2 right-4" />
               </div>
@@ -82,74 +121,51 @@ const blog = () => {
             <div className="mb-10">
               <h5 className="font-medium">Categories</h5>
               <ul className="divide-y">
-                <li
-                  className={`cursor-pointer py-4 hover:text-accent1 transition-all duration-200 ${
-                    !category ? "text-accent1" : "text-pvBlack"
-                  }`}
-                  onClick={() => setCategory(null)}
-                >
-                  All Categories ({allPosts.length})
-                </li>
-                {uniqueCategories.map((cat) => (
+                {categories.map((cat) => (
                   <li
-                    key={cat}
-                    className={`cursor-pointer py-4 hover:text-accent1 transition-all duration-200 ${
-                      category === cat ? " text-accent1" : "text-pvBlack"
+                    key={cat.blogCategory}
+                    className={`cursor-pointer py-4 hover:text-accent1 transition-all duration-200 text-pvBlack ${
+                      selectedCategory === cat.blogCategory ? "font-bold" : ""
                     }`}
-                    onClick={() => setCategory(cat)}
+                    onClick={() => handleCategorySelect(cat.blogCategory)}
                   >
-                    {cat} ({categoryCounts[cat]})
+                    {cat.displayBlogCategory} ({cat.blogCount})
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Tag Filter */}
-            <div className="">
+            {/* Tag Filter (Keywords) */}
+            <div className="mb-10">
               <h5 className="font-medium">Tags</h5>
-              <ul className="">
-                <li
-                  className={`cursor-pointer font-normal px-3 py-1 inline-block transition-all duration-300 bg-accent1 hover:bg-accent text-white rounded-md mr-2 mb-2 ${
-                    !tag ? "bg-accent" : ""
-                  }`}
-                  onClick={() => setTag(null)}
-                >
-                  All Tags ({allPosts.length})
-                </li>
-                {visibleTags.map((t) => (
+              <ul>
+                {keywords.map((keyword) => (
                   <li
-                    key={t}
+                    key={keyword.keyword}
                     className={`cursor-pointer font-normal px-3 py-1 inline-block transition-all duration-300 bg-accent1 hover:bg-accent text-white rounded-md mr-2 mb-2 ${
-                      tag === t ? "bg-accent" : ""
+                      selectedTags.includes(keyword.keyword)
+                        ? "bg-accent"
+                        : "bg-accent1"
                     }`}
-                    onClick={() => setTag(t)}
+                    onClick={() => handleTagSelect(keyword.keyword)}
                   >
-                    {t} ({tagCounts[t]})
+                    {keyword.keyword} ({keyword.blogCount})
                   </li>
                 ))}
               </ul>
-
-              {uniqueTags.length > 3 && (
-                <button
-                  className="mt-2 text-accent1 transition-all duration-300 underline hover:text-accent"
-                  onClick={() => setShowAll(!showAll)}
-                >
-                  {showAll ? "Show Less" : "Show More"}
-                </button>
-              )}
             </div>
           </div>
 
           <div className="flex-1">
             <div className="grid md:grid-cols-2 gap-x-9 gap-y-10 md:gap-y-15">
-              {filteredPosts.length > 0 ? (
-                filteredPosts.map((post) => (
-                  <div key={post.id} className="">
+              {blogs.length > 0 ? (
+                blogs.map((post) => (
+                  <div key={post.blogId}>
                     <div className="relative">
-                      {post.blogimg ? (
+                      {post.blogImg ? (
                         <img
-                          src={post.blogimg}
-                          alt={post.title || "PropVivo Blog Image"}
+                          src={post.blogImg}
+                          alt={post.title || "Blog Image"}
                           className="rounded-3xl object-cover w-full"
                         />
                       ) : (
@@ -159,17 +175,14 @@ const blog = () => {
                         />
                       )}
                       <p className="text-pvBlack bg-white rounded-md px-2 py-1 absolute top-3 left-3">
-                        {post.date}
+                        {convertUTCToLocalDate(post?.userContext?.createdOn)}
                       </p>
                     </div>
                     <div className="my-5">
                       <h5
                         onClick={() =>
                           router.push({
-                            pathname: `/blog/${post.title}`,
-                            // query:{
-                            //   title:post.title
-                            // }
+                            pathname: `/blog/${post.blogId}`,
                           })
                         }
                         className="mb-3 font-medium cursor-pointer hover:text-accent1 transition-all duration-500"
@@ -178,11 +191,10 @@ const blog = () => {
                       </h5>
                       <div
                         dangerouslySetInnerHTML={{
-                          __html: post.content
-                            ? post.content.length > 50
-                              ? `${post.content.substring(0, 50)} ...`
-                              : post.content
-                            : "",
+                          __html:
+                            post.description?.length > 50
+                              ? `${post.description.substring(0, 50)} ...`
+                              : post.description,
                         }}
                       ></div>
                     </div>
@@ -190,15 +202,12 @@ const blog = () => {
                     <div
                       onClick={() =>
                         router.push({
-                          pathname: `/blog/${post.title}`,
-                          // query:{
-                          //   title:post.title
-                          // }
+                          pathname: `/blog/${post.blogId}`,
                         })
                       }
                       className="group flex items-center gap-2 uppercase underline text-accent1 cursor-pointer"
                     >
-                      Read More{" "}
+                      Read More
                       <ArrowBlueIcon className="group-hover:translate-x-1 transition-all duration-300" />
                     </div>
                   </div>
@@ -214,4 +223,4 @@ const blog = () => {
   );
 };
 
-export default blog;
+export default Blog;

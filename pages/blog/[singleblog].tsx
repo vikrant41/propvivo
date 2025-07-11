@@ -1,19 +1,22 @@
-import { GetStaticPaths, GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { allPosts } from "../api/posts";
 import { ArrowBlueIcon } from "../../components/shared/Icons";
+import { GET_ALL_BLOGS } from "../../graphql/queries/GetAllBlogsQueries";
+import apiClient from "../../apollo/apiClient";
+import { convertUTCToLocalDate } from "../../Utils/Utils";
+import CenteredLoader from "../../components/CommonComponents/CenterLoader";
 
 interface BlogProps {
   post: {
-    id: string;
+    blogId: string;
     title: string;
-    blogimg: string;
-    date: string;
+    blogImg: string;
     description: string;
-    category: string;
-    tags: string;
     content: string;
-  };
+    userContext: {
+      createdOn: string;
+    };
+  } | null;
 }
 
 const SingleBlog = ({ post }: BlogProps) => {
@@ -21,19 +24,40 @@ const SingleBlog = ({ post }: BlogProps) => {
 
   // If the page isn't generated yet, fallback to loading state
   if (router.isFallback) {
-    return <div>Loading...</div>;
+    return <CenteredLoader />;
+  }
+
+  // If no post found
+  if (!post) {
+    return (
+      <div className="container mx-auto py-10">
+        <button
+          onClick={() => router.push("/blog")}
+          className="text-pvBlack mb-5 flex items-center gap-3"
+        >
+          <ArrowBlueIcon className="rotate-180" /> Back to Blogs
+        </button>
+        <div className="text-center py-10">
+          <h1 className="text-2xl font-bold mb-4">Blog Post Not Found</h1>
+          <p className="text-gray-600">The blog post you're looking for doesn't exist.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto py-10 singleContent">
-      <button onClick={() => router.push("/blog")} className="text-pvBlack mb-5 flex items-center gap-3">
+      <button
+        onClick={() => router.push("/blog")}
+        className="text-pvBlack mb-5 flex items-center gap-3"
+      >
         <ArrowBlueIcon className="rotate-180" /> Back to Blogs
       </button>
       <div className="flex flex-col gap-y-2">
         <div className="relative mb-5">
-          {post.blogimg ? (
+          {post.blogImg ? (
             <img
-              src={`../${post.blogimg}`}
+              src={post.blogImg}
               alt={post.title || "PropVivo Blog Image"}
               className="rounded-3xl object-cover w-full max-h-96"
             />
@@ -45,43 +69,61 @@ const SingleBlog = ({ post }: BlogProps) => {
           )}
         </div>
         <h1 className="lg:text-4xl mb-4">{post.title}</h1>
-        <p className="text-blue-o-600">{post.date}</p>
-        {/* <p>{post.description}</p> */}
+        <p className="text-blue-o-600">{convertUTCToLocalDate(post.userContext?.createdOn)}</p>
+        
+        {post.description && (
+          <p className="text-gray-600 mb-6">{post.description}</p>
+        )}
 
-        <div
-          className="text-gray-700 mb-6"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        ></div>
+        {post.content && (
+          <div
+            className="text-gray-700 mb-6"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          ></div>
+        )}
       </div>
     </div>
   );
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  // Generate paths for each blog post
-  const paths = allPosts.map((post) => ({
-    params: { singleblog: post.title },
-  }));
-
-  return {
-    paths,
-    fallback: true, // Fallback to dynamic generation if not pre-rendered
-  };
-};
-
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const { singleblog } = context.params;
-  const post = allPosts.find((p) => p.title === singleblog);
 
-  if (!post) {
-    return { notFound: true };
+  try {
+    // Fetch all blogs to find the specific one
+    const { data } = await apiClient.query({
+      query: GET_ALL_BLOGS,
+      variables: {
+        request: {
+          pageCriteria: { enablePage: false, pageSize: 0, skip: 0 },
+          requestParam: {
+            isCorporate: true,
+            filterByKeyword: null,
+            blogCategory: null,
+            keyword: null,
+          },
+          requestSubType: "List",
+          requestType: "GlobalSearch",
+        },
+      },
+    });
+
+    const blogs = data?.blogQueries?.getAllBlog?.data?.blogs || [];
+    const post = blogs.find((blog: any) => blog.blogId === singleblog);
+
+    return {
+      props: {
+        post: post || null,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching blog post:", error);
+    return {
+      props: {
+        post: null,
+      },
+    };
   }
-
-  return {
-    props: {
-      post,
-    },
-  };
 };
 
 export default SingleBlog;
