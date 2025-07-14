@@ -21,6 +21,7 @@ import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 import dynamic from "next/dynamic";
 import { GET_ALL_REQUESTOR_TYPE } from "../graphql/queries/RequestorTypeQueries";
 import { GET_PROPERTY_ID_REQUEST } from "../graphql/mutations/OneTimePaymentMutations";
+import { containerName } from "../components/Helper/Helper";
 
 const ReCAPTCHA = dynamic(() => import("react-google-recaptcha"), {
   ssr: false,
@@ -255,7 +256,7 @@ function ResaleCertificate() {
             variables: {
               request: {
                 requestParam: {
-                  containerName: "resale",
+                  containerName: containerName.ResaleCertificate,
                   formFiles: validFiles,
                 },
                 requestSubType: "Upload",
@@ -521,16 +522,17 @@ function ResaleCertificate() {
     if (!isPayment && formData) {
       // Restore all form values
       Object.keys(formData).forEach((key) => {
-        if (key !== 'attachments') { // Skip attachments as they're handled separately
+        if (key !== "attachments") {
+          // Skip attachments as they're handled separately
           formik.setFieldValue(key, formData[key]);
         }
       });
-      
+
       // Restore files if they exist
       if (formData.attachments && formData.attachments.length > 0) {
         setFilesPdf(formData.attachments);
       }
-      
+
       // Restore selected order type
       if (formData.orderType) {
         setSelectedOrderType(formData.orderType);
@@ -544,8 +546,8 @@ function ResaleCertificate() {
       const demandStatementFee = fees.fees || 0;
       const transferFee = fees.transferFees || 0;
 
-      // setDemandStatementFee(demandStatementFee);
-      // setTransferFee(transferFee);
+      setDemandStatementFee(demandStatementFee);
+      setTransferFee(transferFee);
       // Calculate the total price directly from the API data
       const totalAmount = (demandStatementFee + transferFee).toFixed(2);
       formik.setFieldValue("price", totalAmount);
@@ -1059,7 +1061,8 @@ function ResaleCertificate() {
 
                 <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
-                    Closing Date <span className="text-red-500">*</span>
+                    Estimated Closing Date{" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
