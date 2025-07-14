@@ -8,6 +8,7 @@ import ThankYouModal from "../CommonModals/ThankYouModal";
 import CenteredLoader from "../CommonComponents/CenterLoader";
 import { useToast } from "../UI/ToastContext";
 import { CONTACT_US_REQUEST } from "../../graphql/mutations/ContactUsMutations";
+import ReCAPTCHA from "react-google-recaptcha";
 
 // Validation Schema for the form fields
 const validationSchema = Yup.object({
@@ -37,7 +38,7 @@ const RequestDoc = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   const { showToast } = useToast();
-
+  const captchaSiteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
   // GraphQL Mutation for requesting documents
   const [
     requestDocument,
@@ -152,7 +153,7 @@ const RequestDoc = () => {
                           <ErrorMessage
                             name="name"
                             component="div"
-                            className="text-red-500 absolute"
+                            className="text-sm text-red-500 absolute"
                           />
                         </div>
 
@@ -224,7 +225,7 @@ const RequestDoc = () => {
                           <ErrorMessage
                             name="email"
                             component="div"
-                            className="text-red-500 absolute"
+                            className="text-sm text-red-500 absolute"
                           />
                         </div>
 
@@ -242,7 +243,21 @@ const RequestDoc = () => {
                           <ErrorMessage
                             name="doc"
                             component="div"
-                            className="text-red-500 absolute"
+                            className="text-sm text-red-500 absolute"
+                          />
+                        </div>
+
+                        <div className="pt-4">
+                          <ReCAPTCHA
+                            sitekey={captchaSiteKey}
+                            onChange={(value) =>
+                              setFieldValue("recaptcha", value)
+                            }
+                          />
+                          <ErrorMessage
+                            name="recaptcha"
+                            component="div"
+                            className="text-sm text-red-500 absolute"
                           />
                         </div>
 

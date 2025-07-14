@@ -70,9 +70,12 @@ const SingleBlog = ({ post }: BlogProps) => {
         </div>
         <h1 className="lg:text-4xl mb-4">{post.title}</h1>
         <p className="text-blue-o-600">{convertUTCToLocalDate(post.userContext?.createdOn)}</p>
-        
+
         {post.description && (
-          <p className="text-gray-600 mb-6">{post.description}</p>
+          <div
+            className="text-gray-600 mb-6"
+            dangerouslySetInnerHTML={{ __html: post.description }}
+          ></div>
         )}
 
         {post.content && (

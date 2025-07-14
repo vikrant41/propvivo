@@ -39,9 +39,11 @@ const SearchTextBox = ({
   const [showData, setShowData] = useState(false);
   const ref = useRef(null);
 
-  // useEffect(() => {
-  //   selectedValue ? setText(selectedValue): setText("");
-  // }, [selectedValue]);
+  useEffect(() => {
+    if (selectedValue !== undefined) {
+      setText(selectedValue);
+    }
+  }, [selectedValue]);
 
   useEffect(() => {
     onChangeValue(text, lineId);
