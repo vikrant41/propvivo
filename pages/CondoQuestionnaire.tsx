@@ -19,6 +19,7 @@ import { BULK_UPLOAD_REQUESTS } from "../graphql/mutations/MediaMutations";
 import { GET_ALL_REQUESTOR_TYPE } from "../graphql/queries/RequestorTypeQueries";
 import { GET_PROPERTY_ID_BY_ADDRESS_ID } from "../graphql/mutations/ResaleCertificationMutations";
 import { GET_PROPERTY_ID_REQUEST } from "../graphql/mutations/OneTimePaymentMutations";
+import { containerName } from "../components/Helper/Helper";
 
 const validationSchema = Yup.object({
   requestorType: Yup.string().required("Requestor Type is Required"),
@@ -164,7 +165,7 @@ function CondoQuestionnaire() {
             variables: {
               request: {
                 requestParam: {
-                  containerName: "resale",
+                  containerName: containerName.CondoQuestionnaire,
                   formFiles: validFiles,
                 },
                 requestSubType: "Upload",
