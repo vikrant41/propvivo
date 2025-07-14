@@ -511,6 +511,33 @@ function ResaleCertificate() {
     }
   };
 
+  // Handle going back to form from payment
+  const handleBackToForm = () => {
+    setIsPayment(false);
+  };
+
+  // Restore form data when going back from payment
+  useEffect(() => {
+    if (!isPayment && formData) {
+      // Restore all form values
+      Object.keys(formData).forEach((key) => {
+        if (key !== 'attachments') { // Skip attachments as they're handled separately
+          formik.setFieldValue(key, formData[key]);
+        }
+      });
+      
+      // Restore files if they exist
+      if (formData.attachments && formData.attachments.length > 0) {
+        setFilesPdf(formData.attachments);
+      }
+      
+      // Restore selected order type
+      if (formData.orderType) {
+        setSelectedOrderType(formData.orderType);
+      }
+    }
+  }, [isPayment, formData]);
+
   useEffect(() => {
     if (orderTypeList?.data?.orderTypes?.length > 0) {
       const fees = orderTypeList.data.orderTypes[0];
@@ -532,6 +559,9 @@ function ResaleCertificate() {
   // Reset Demand Form
   const handleReset = () => {
     formik.resetForm();
+    setFormData(null);
+    setFilesPdf([]);
+    setSelectedOrderType("Normal");
   };
 
   const tomorrow = new Date();
@@ -737,8 +767,8 @@ function ResaleCertificate() {
                         formik.validateField("address.id");
                       }}
                       selectedValue={
-                        formik?.values?.associationName
-                          ? formik?.values?.associationName
+                        formik?.values?.propertyAddress
+                          ? formik?.values?.propertyAddress
                           : ""
                       }
                     />
@@ -1219,6 +1249,7 @@ function ResaleCertificate() {
           }}
           message={"resale"}
           propertyId={storePropertyId}
+          onBackToForm={handleBackToForm}
         />
       )}
     </>

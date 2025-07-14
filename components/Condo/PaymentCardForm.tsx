@@ -28,6 +28,7 @@ export default function PaymentCardForm({
   associationDetails,
   message,
   propertyId,
+  onBackToForm,
 }) {
   // ALL HOOKS
   const [paymentMethod, setPaymentMethod] = useState("card");
@@ -273,7 +274,7 @@ export default function PaymentCardForm({
           <div className="flex flex-col justify-top">
             {!paymentProcessing && (
               <button
-                onClick={() => router.back()}
+                onClick={onBackToForm}
                 className="mb-5 flex items-center gap-3 text-sm text-accent1"
               >
                 <ArrowBlueIcon className="rotate-180" /> Back to request
