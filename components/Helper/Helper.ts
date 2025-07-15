@@ -75,30 +75,30 @@ export const requestType = {
   OneTimePayment:"OneTimePayment",
   CardValidate:"CardValidate",
 };
- 
-export const containerName = {
+ export const containerName = {
   APVendor: "apvendor",
-  SocialPoll: "SocialPost",
-  SocialEvent: "SocialPost",
-  election: "Election",
-  SocialAnnouncement: "SocialPost",
-  BoardMember: "BoardMember",
-  meeting: "Meeting",
-  Committee: "Committee",
-  feedback: "Feedback",
-  MarketPlace: "MarketPlace",
-  Violation: "CaseDocument",
-  CaseNotes: "CaseDocument",
-  ARCRequest: "CaseDocument",
-  FormBuilder: "FormBuilder",
-  DocumentLibrary: "DocumentLibrary",
-  ServiceRequest: "CaseDocument",
-  BoardTask: "CaseDocument",
-  Meeting:"Meeting",
-  Reimbursement:"CaseDocument",
-  ResaleCertificate:"CaseDocument",
-  DemandRequest:"CaseDocument",
-  CondoQuestionnaire:"CaseDocument"
+  SocialPoll: "socialpost",
+  SocialEvent: "socialpost",
+  election: "election",
+  SocialAnnouncement: "socialpost",
+  BoardMember: "boardmember",
+  meeting: "meeting",
+  Committee: "committee",
+  feedback: "feedback",
+  MarketPlace: "marketplace",
+  Violation: "casedocument",
+  CaseNotes: "casedocument",
+  ARCRequest: "casedocument",
+  FormBuilder: "formbuilder",
+  DocumentLibrary: "documentlibrary",
+  ServiceRequest: "casedocument",
+  BoardTask: "casedocument",
+  Meeting: "meeting",
+  Reimbursement: "casedocument",
+  ResaleCertificate: "casedocument",
+  DemandRequest: "casedocument",
+  CondoQuestionnaire: "casedocument"
 };
+
  
  
