@@ -48,32 +48,76 @@ const validationSchema = Yup.object({
   requesterFirstName: Yup.string()
     .matches(/^[a-zA-Z\s]*$/, "First Name can only contain letters and spaces")
     .min(3, "First Name min length should be 3")
-    .required("First Name is Required"),
+    .when("requestorType", {
+      is: (val) => val !== "Homeowner",
+      then: (schema) => schema.required("First Name is Required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   requesterLastName: Yup.string()
     .matches(/^[a-zA-Z\s]*$/, "Last Name can only contain letters and spaces")
-    .required("Last Name is Required"),
-  requesterCompany: Yup.string().required("Company Name is Required"),
-  escrowNumber: Yup.string().required("Escrow Number is Required"),
+    .when("requestorType", {
+      is: (val) => val !== "Homeowner",
+      then: (schema) => schema.required("Last Name is Required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  // requesterCompany: Yup.string().when("requestorType", {
+  //   is: (val) => val !== "Homeowner" && val !== "RealEstateManager",
+  //   then: (schema) => schema.required("Company Name is Required"),
+  //   otherwise: (schema) => schema.notRequired(),
+  // }),
+  escrowNumber: Yup.string().when("requestorType", {
+    is: (val) => val !== "Homeowner",
+    then: (schema) => schema.required("Escrow Number is Required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   requesterEmail: Yup.string()
     .email("Invalid email")
-    .required("Email is Required"),
+    .when("requestorType", {
+      is: (val) => val !== "Homeowner",
+      then: (schema) => schema.required("Email is Required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   requesterPhone: Yup.string()
     .matches(/^[0-9]{10}$/, "Phone number length should be 10")
-    .required("Phone Number is Required"),
-
-  buyerPhone: Yup.string()
-    .matches(/^[0-9]{10}$/, "Phone number length should be 10")
-    .required("Phone Number is Required"),
-
+    .when("requestorType", {
+      is: (val) => val !== "Homeowner",
+      then: (schema) => schema.required("Phone Number is Required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   buyerFirstName: Yup.string()
     .matches(/^[a-zA-Z\s]*$/, "First Name can only contain letters and spaces")
     .min(3, "First Name min length should be 3")
-    .required("First Name is Required"),
+    .when("requestorType", {
+      is: (val) => val !== "Homeowner",
+      then: (schema) => schema.required("First Name is Required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   buyerLastName: Yup.string()
     .matches(/^[a-zA-Z\s]*$/, "Last Name can only contain letters and spaces")
-    .required("Last Name is Required"),
-  buyerEmail: Yup.string().email("Invalid email").required("Email is Required"),
-  closingDate: Yup.date().required("Closing Date is Required"),
+    .when("requestorType", {
+      is: (val) => val !== "Homeowner",
+      then: (schema) => schema.required("Last Name is Required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  buyerEmail: Yup.string()
+    .email("Invalid email")
+    .when("requestorType", {
+      is: (val) => val !== "Homeowner",
+      then: (schema) => schema.required("Email is Required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  buyerPhone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Phone number length should be 10")
+    .when("requestorType", {
+      is: (val) => val !== "Homeowner",
+      then: (schema) => schema.required("Phone Number is Required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  closingDate: Yup.date().when("requestorType", {
+    is: (val) => val !== "Homeowner",
+    then: (schema) => schema.required("Closing Date is Required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   orderType: Yup.string().required("Order Type is Required"),
 });
 
@@ -346,6 +390,9 @@ function DemandStatement() {
   // Handle going back to form from payment
   const handleBackToForm = () => {
     setIsPayment(false);
+    if (condoResponse) {
+      handleReset();
+    }
   };
 
   // Restore form data when going back from payment
@@ -353,22 +400,44 @@ function DemandStatement() {
     if (!isPayment && formData) {
       // Restore all form values
       Object.keys(formData).forEach((key) => {
-        if (key !== 'attachments') { // Skip attachments as they're handled separately
+        if (key !== "attachments") {
+          // Skip attachments as they're handled separately
           formik.setFieldValue(key, formData[key]);
         }
       });
-      
+
       // Restore files if they exist
       if (formData.attachments && formData.attachments.length > 0) {
         setFilesPdf(formData.attachments);
       }
-      
+
       // Restore selected order type
       if (formData.orderType) {
         setSelectedOrderType(formData.orderType);
       }
     }
   }, [isPayment, formData]);
+
+  // Clear fields when requestorType changes
+  useEffect(() => {
+    if (formik?.values?.requestorType === "Homeowner") {
+      // Clear requester and buyer fields when switching to Homeowner
+      formik.setFieldValue("requesterFirstName", "");
+      formik.setFieldValue("requesterLastName", "");
+      formik.setFieldValue("requesterCompany", "");
+      formik.setFieldValue("escrowNumber", "");
+      formik.setFieldValue("requesterEmail", "");
+      formik.setFieldValue("requesterPhone", "");
+      formik.setFieldValue("buyerFirstName", "");
+      formik.setFieldValue("buyerLastName", "");
+      formik.setFieldValue("buyerEmail", "");
+      formik.setFieldValue("buyerPhone", "");
+      formik.setFieldValue("closingDate", "");
+    } else if (formik?.values?.requestorType === "RealEstateManager") {
+      // Clear company name if switching to RealEstateManager
+      formik.setFieldValue("requesterCompany", "");
+    }
+  }, [formik?.values?.requestorType]);
 
   //GQL Query Calling for legalEntity
   const { data: getAllLegalEntityData, loading: loadinglegalEntityList } =
@@ -724,300 +793,273 @@ function DemandStatement() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-1 md:grid-cols-6">
-                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
-                    Requester Information{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
+                {/* Requester Information */}
+                {formik?.values?.requestorType !== "Homeowner" && (
+                  <div className="relative grid grid-cols-1 md:grid-cols-6">
+                    <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
+                      Requester Information{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div>
+                        <div className="flex items-center border-b border-gray-o-60">
+                          <Field
+                            type="text"
+                            name="requesterFirstName"
+                            placeholder="First Name"
+                            className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          />
+                        </div>
+                        <ErrorMessage
                           name="requesterFirstName"
-                          placeholder="First Name"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          component="div"
+                          className="text-red-500 text-sm"
                         />
                       </div>
-                      <ErrorMessage
-                        name="requesterFirstName"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
+                      <div>
+                        <div className="flex items-center border-b border-gray-o-60">
+                          <Field
+                            type="text"
+                            name="requesterLastName"
+                            placeholder="Last Name"
+                            className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          />
+                        </div>
+                        <ErrorMessage
                           name="requesterLastName"
-                          placeholder="Last Name"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          component="div"
+                          className="text-red-500 text-sm"
                         />
                       </div>
-                      <ErrorMessage
-                        name="requesterLastName"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
-                    </div>
 
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
-                          name="requesterCompany"
-                          placeholder="Company Name"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
-                      </div>
-                      <ErrorMessage
-                        name="requesterCompany"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
-                          name="escrowNumber"
-                          placeholder="Escrow Number"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        />
-                      </div>
-                      <ErrorMessage
-                        name="escrowNumber"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="email"
+                      <div>
+                        <div className="flex items-center border-b border-gray-o-60">
+                          <Field
+                            type="email"
+                            name="requesterEmail"
+                            placeholder="Email Address"
+                            className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          />
+                        </div>
+                        <ErrorMessage
                           name="requesterEmail"
-                          placeholder="Email Address"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          component="div"
+                          className="text-red-500 text-sm"
                         />
                       </div>
-                      <ErrorMessage
-                        name="requesterEmail"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field name="requesterPhone">
-                          {({ field, form }) => {
-                            const formatPhone = (value) => {
-                              const cleaned = value
-                                .replace(/\D/g, "")
-                                .slice(0, 10);
-                              const match = cleaned.match(
-                                /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                      <div>
+                        <div className="flex items-center border-b border-gray-o-60">
+                          <Field name="requesterPhone">
+                            {({ field, form }) => {
+                              const formatPhone = (value) => {
+                                const cleaned = value
+                                  .replace(/\D/g, "")
+                                  .slice(0, 10);
+                                const match = cleaned.match(
+                                  /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                                );
+                                if (!match) return value;
+                                let formatted = "";
+                                if (match[1]) formatted = `(${match[1]}`;
+                                if (match[2]) formatted += `) ${match[2]}`;
+                                if (match[3]) formatted += `-${match[3]}`;
+                                return formatted;
+                              };
+                              const handleChange = (e) => {
+                                const input = e.target.value;
+                                const cleaned = input
+                                  .replace(/\D/g, "")
+                                  .slice(0, 10);
+                                form.setFieldValue(field.name, cleaned);
+                              };
+                              const handleKeyDown = (e) => {
+                                const allowedKeys = [
+                                  "Backspace",
+                                  "ArrowLeft",
+                                  "ArrowRight",
+                                  "Tab",
+                                  "Delete",
+                                ];
+                                if (
+                                  !/[0-9]/.test(e.key) &&
+                                  !allowedKeys.includes(e.key)
+                                ) {
+                                  e.preventDefault();
+                                }
+                              };
+                              return (
+                                <input
+                                  {...field}
+                                  value={formatPhone(field.value || "")}
+                                  onChange={handleChange}
+                                  onKeyDown={handleKeyDown}
+                                  placeholder="Phone Number"
+                                  inputMode="numeric"
+                                  maxLength={14}
+                                  className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                                />
                               );
-                              if (!match) return value;
-                              let formatted = "";
-                              if (match[1]) formatted = `(${match[1]}`;
-                              if (match[2]) formatted += `) ${match[2]}`;
-                              if (match[3]) formatted += `-${match[3]}`;
-                              return formatted;
-                            };
-
-                            const handleChange = (e) => {
-                              const input = e.target.value;
-                              const cleaned = input
-                                .replace(/\D/g, "")
-                                .slice(0, 10);
-                              form.setFieldValue(field.name, cleaned); // save raw value
-                            };
-
-                            const handleKeyDown = (e) => {
-                              const allowedKeys = [
-                                "Backspace",
-                                "ArrowLeft",
-                                "ArrowRight",
-                                "Tab",
-                                "Delete",
-                              ];
-                              if (
-                                !/[0-9]/.test(e.key) &&
-                                !allowedKeys.includes(e.key)
-                              ) {
-                                e.preventDefault();
-                              }
-                            };
-
-                            return (
-                              <input
-                                {...field}
-                                value={formatPhone(field.value || "")}
-                                onChange={handleChange}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Phone Number"
-                                inputMode="numeric"
-                                maxLength={14}
-                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                              />
-                            );
-                          }}
-                        </Field>
+                            }}
+                          </Field>
+                        </div>
+                        <ErrorMessage
+                          name="requesterPhone"
+                          component="div"
+                          className="text-red-500 text-sm"
+                        />
                       </div>
-                      <ErrorMessage
-                        name="requesterPhone"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
+                      {formik?.values?.requestorType !==
+                        "RealEstateManager" && (
+                        <div>
+                          <div className="flex items-center border-b border-gray-o-60">
+                            <Field
+                              type="text"
+                              name="requesterCompany"
+                              placeholder="Company Name"
+                              className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                            />
+                          </div>
+                          {/* <ErrorMessage
+                            name="requesterCompany"
+                            component="div"
+                            className="text-red-500 text-sm"
+                          /> */}
+                        </div>
+                      )}
+                      <div>
+                        <div className="flex items-center border-b border-gray-o-60">
+                          <Field
+                            type="text"
+                            name="escrowNumber"
+                            placeholder="Escrow Number"
+                            className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          />
+                        </div>
+                        <ErrorMessage
+                          name="escrowNumber"
+                          component="div"
+                          className="text-red-500 text-sm"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="relative grid grid-cols-1 md:grid-cols-6">
-                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
-                    Buyer Information <span className="text-red-500">*</span>
-                  </label>
-                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
+                )}
+                {/* Buyer Information */}
+                {formik?.values?.requestorType !== "Homeowner" && (
+                  <div className="relative grid grid-cols-1 md:grid-cols-6">
+                    <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
+                      Buyer Information <span className="text-red-500">*</span>
+                    </label>
+                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div>
+                        <div className="flex items-center border-b border-gray-o-60">
+                          <Field
+                            type="text"
+                            name="buyerFirstName"
+                            placeholder="First Name"
+                            className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          />
+                        </div>
+                        <ErrorMessage
                           name="buyerFirstName"
-                          placeholder="First Name"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          component="div"
+                          className="text-red-500 text-sm"
                         />
                       </div>
-                      <ErrorMessage
-                        name="buyerFirstName"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="text"
+                      <div>
+                        <div className="flex items-center border-b border-gray-o-60">
+                          <Field
+                            type="text"
+                            name="buyerLastName"
+                            placeholder="Last Name"
+                            className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          />
+                        </div>
+                        <ErrorMessage
                           name="buyerLastName"
-                          placeholder="Last Name"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          component="div"
+                          className="text-red-500 text-sm"
                         />
                       </div>
-                      <ErrorMessage
-                        name="buyerLastName"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        <Field
-                          type="email"
+                      <div>
+                        <div className="flex items-center border-b border-gray-o-60">
+                          <Field
+                            type="email"
+                            name="buyerEmail"
+                            placeholder="Email Address"
+                            className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          />
+                        </div>
+                        <ErrorMessage
                           name="buyerEmail"
-                          placeholder="Email Address"
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                          component="div"
+                          className="text-red-500 text-sm"
                         />
                       </div>
-                      <ErrorMessage
-                        name="buyerEmail"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center border-b border-gray-o-60">
-                        {/* <Field
-                          name="buyerPhone"
-                          placeholder="Phone Number"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          minLength={10}
-                          maxLength={10}
-                          onKeyDown={(e) => {
-                            const allowedKeys = [
-                              "Backspace",
-                              "ArrowLeft",
-                              "ArrowRight",
-                              "Tab",
-                              "Delete",
-                            ];
-                            if (
-                              !/[0-9]/.test(e.key) &&
-                              !allowedKeys.includes(e.key)
-                            ) {
-                              e.preventDefault();
-                            }
-                          }}
-                          className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                        /> */}
-                        <Field name="buyerPhone">
-                          {({ field, form }) => {
-                            const formatPhone = (value) => {
-                              const cleaned = value
-                                .replace(/\D/g, "")
-                                .slice(0, 10);
-                              const match = cleaned.match(
-                                /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                      <div>
+                        <div className="flex items-center border-b border-gray-o-60">
+                          <Field name="buyerPhone">
+                            {({ field, form }) => {
+                              const formatPhone = (value) => {
+                                const cleaned = value
+                                  .replace(/\D/g, "")
+                                  .slice(0, 10);
+                                const match = cleaned.match(
+                                  /^(\d{0,3})(\d{0,3})(\d{0,4})$/
+                                );
+                                if (!match) return value;
+                                let formatted = "";
+                                if (match[1]) formatted = `(${match[1]}`;
+                                if (match[2]) formatted += `) ${match[2]}`;
+                                if (match[3]) formatted += `-${match[3]}`;
+                                return formatted;
+                              };
+                              const handleChange = (e) => {
+                                const input = e.target.value;
+                                const cleaned = input
+                                  .replace(/\D/g, "")
+                                  .slice(0, 10);
+                                form.setFieldValue(field.name, cleaned);
+                              };
+                              const handleKeyDown = (e) => {
+                                const allowedKeys = [
+                                  "Backspace",
+                                  "ArrowLeft",
+                                  "ArrowRight",
+                                  "Tab",
+                                  "Delete",
+                                ];
+                                if (
+                                  !/[0-9]/.test(e.key) &&
+                                  !allowedKeys.includes(e.key)
+                                ) {
+                                  e.preventDefault();
+                                }
+                              };
+                              return (
+                                <input
+                                  {...field}
+                                  value={formatPhone(field.value)}
+                                  onChange={handleChange}
+                                  onKeyDown={handleKeyDown}
+                                  placeholder="Phone Number"
+                                  inputMode="numeric"
+                                  maxLength={14}
+                                  className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
+                                />
                               );
-                              if (!match) return value;
-                              let formatted = "";
-                              if (match[1]) formatted = `(${match[1]}`;
-                              if (match[2]) formatted += `) ${match[2]}`;
-                              if (match[3]) formatted += `-${match[3]}`;
-                              return formatted;
-                            };
-
-                            const handleChange = (e) => {
-                              const input = e.target.value;
-                              const cleaned = input
-                                .replace(/\D/g, "")
-                                .slice(0, 10);
-                              form.setFieldValue(field.name, cleaned);
-                            };
-
-                            const handleKeyDown = (e) => {
-                              const allowedKeys = [
-                                "Backspace",
-                                "ArrowLeft",
-                                "ArrowRight",
-                                "Tab",
-                                "Delete",
-                              ];
-                              if (
-                                !/[0-9]/.test(e.key) &&
-                                !allowedKeys.includes(e.key)
-                              ) {
-                                e.preventDefault();
-                              }
-                            };
-
-                            return (
-                              <input
-                                {...field}
-                                value={formatPhone(field.value)}
-                                onChange={handleChange}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Phone Number"
-                                inputMode="numeric"
-                                maxLength={14}
-                                className="w-full bg-transparent py-2 outline-none text-17 placeholder:text-accent2 text-pvBlack"
-                              />
-                            );
-                          }}
-                        </Field>
+                            }}
+                          </Field>
+                        </div>
+                        <ErrorMessage
+                          name="buyerPhone"
+                          component="div"
+                          className="text-red-500 text-sm"
+                        />
                       </div>
-                      <ErrorMessage
-                        name="buyerPhone"
-                        component="div"
-                        className="text-red-500 text-sm"
-                      />
                     </div>
                   </div>
-                </div>
+                )}
 
                 <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
