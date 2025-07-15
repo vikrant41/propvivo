@@ -293,38 +293,49 @@ export default function PaymentCardForm({
               <span>Property Address : </span>
               <span>{formData?.propertyAddress}</span>
             </div>
-            <div className="my-1 text-base">
-              <span>Requester First Name : </span>
-              <span>{formData?.requesterFirstName}</span>
-            </div>
-            <div className="my-1 text-base">
-              <span>Requester Last Name : </span>
-              <span>{formData?.requesterLastName}</span>
-            </div>
-            <div className="my-1 text-base">
-              <span>Requester Company : </span>
-              <span>{formData?.requesterCompany}</span>
-            </div>
-            <div className="my-1 text-base">
-              <span>Requester Email Address : </span>
-              <span>{formData?.requesterEmail}</span>
-            </div>
-            <div className="my-1 text-base">
-              <span>Requester Phone Number : </span>
-              <span>{formData?.requesterPhone}</span>
-            </div>
-            <div className="my-1 text-base">
-              <span>Estimated Closing Date : </span>
-              <span>{formData?.closingDate}</span>
-            </div>
+            {/* Conditionally show requester fields */}
+            {formData?.requestorType !== "Homeowner" && (
+              <>
+                <div className="my-1 text-base">
+                  <span>Requester First Name : </span>
+                  <span>{formData?.requesterFirstName}</span>
+                </div>
+                <div className="my-1 text-base">
+                  <span>Requester Last Name : </span>
+                  <span>{formData?.requesterLastName}</span>
+                </div>
+                {formData?.requestorType !== "RealEstateManager" && (
+                  <div className="my-1 text-base">
+                    <span>Requester Company : </span>
+                    <span>{formData?.requesterCompany}</span>
+                  </div>
+                )}
+                <div className="my-1 text-base">
+                  <span>Requester Email Address : </span>
+                  <span>{formData?.requesterEmail}</span>
+                </div>
+                <div className="my-1 text-base">
+                  <span>Requester Phone Number : </span>
+                  <span>{formData?.requesterPhone}</span>
+                </div>
+                <div className="my-1 text-base">
+                  <span>Estimated Closing Date : </span>
+                  <span>{formData?.closingDate}</span>
+                </div>
+              </>
+            )}
             <div className="my-1 text-base">
               <span>Order Type : </span>
               <span>{formData?.orderType}</span>
             </div>
-            <div className="my-1 text-base">
-              <span>Escrow Number : </span>
-              <span>{formData?.escrowNumber}</span>
-            </div>
+            {/* Only show Escrow Number if present and not Homeowner */}
+            {formData?.requestorType !== "Homeowner" &&
+              formData?.escrowNumber && (
+                <div className="my-1 text-base">
+                  <span>Escrow Number : </span>
+                  <span>{formData?.escrowNumber}</span>
+                </div>
+              )}
             <div className="my-1 text-base">
               <span>Amount Charged : </span>
               <span>{formData?.price}</span>
