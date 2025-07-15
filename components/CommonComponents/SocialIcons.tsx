@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const socialIcons = [
   { id: 1, link: 'https://www.facebook.com/Propvivo', icon: <FbIcon /> },
-  { id: 2, link: '', icon: <XIcon /> }, 
+  { id: 2, link: 'https://x.com/propvivo', icon: <XIcon /> }, 
   { id: 3, link: 'https://www.instagram.com/propvivo/?hl=en', icon: <InstagramIcon /> },
 ];
 

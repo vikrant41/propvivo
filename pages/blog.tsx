@@ -162,9 +162,9 @@ const Blog = () => {
                 blogs.map((post) => (
                   <div key={post.blogId}>
                     <div className="relative">
-                      {post.blogImg ? (
+                      {post.document?.uri ? (
                         <img
-                          src={post.blogImg}
+                          src={post.document?.uri}
                           alt={post.title || "Blog Image"}
                           className="rounded-3xl object-cover w-full"
                         />
