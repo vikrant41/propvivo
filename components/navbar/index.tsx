@@ -68,7 +68,7 @@ const Navbar = () => {
   }, []);
 
   const [openDocuments, setOpenDocuments] = useState(false);
-const [openSocials, setOpenSocials] = useState(false);
+  const [openSocials, setOpenSocials] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -103,7 +103,7 @@ const [openSocials, setOpenSocials] = useState(false);
             style={{ transitionProperty: "opacity, max-height, transform" }}
           >
             <ul
-              className={`flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-7 w-full lg:w-auto`}
+              className={`flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-4 w-full lg:w-auto`}
             >
               <li className="cursor-pointer relative navbar_link font-outfit font-medium">
                 <Link href="/" passHref>
@@ -147,6 +147,18 @@ const [openSocials, setOpenSocials] = useState(false);
                   </a>
                 </Link>
               </li>
+              <li className="cursor-pointer relative navbar_link font-outfit font-medium">
+                <Link href="/RequestProposal" passHref>
+                  <a
+                    className={
+                      router.pathname === "/RequestProposal" ? "active" : ""
+                    }
+                    onClick={handleLinkClick}
+                  >
+                    Request for Proposal
+                  </a>
+                </Link>
+              </li>
               <li className="relative group navbar_link font-outfit font-medium">
                 <div
                   className="flex justify-between items-center gap-x-1 hasSubmenu cursor-pointer w-full"
@@ -163,7 +175,8 @@ const [openSocials, setOpenSocials] = useState(false);
                 </div>
 
                 <ul
-                  className={`relative lg:absolute left-0 lg:mt-3 w-full lg:w-52 bg-accent lg:shadow-lg rounded-md lg:border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 lg:invisible group-hover:visible lg:-translate-y-4 group-hover:translate-y-0 transition-all duration-200 lg:p-2 ${isMobile && openDocuments
+                  className={`relative lg:absolute left-0 lg:mt-3 w-full lg:w-52 bg-accent lg:shadow-lg rounded-md lg:border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 lg:invisible group-hover:visible lg:-translate-y-4 group-hover:translate-y-0 transition-all duration-200 lg:p-2 ${
+                    isMobile && openDocuments
                       ? "max-h-96 opacity-100 visible mt-4"
                       : "max-h-0 opacity-0 invisible lg:group-hover:max-h-max lg:group-hover:visible lg:group-hover:opacity-100"
                   }`}
@@ -226,7 +239,7 @@ const [openSocials, setOpenSocials] = useState(false);
 
                 <ul
                   className={`relative lg:absolute left-0 lg:mt-3 w-full lg:w-52 bg-accent lg:shadow-lg rounded-md lg:border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 lg:invisible group-hover:visible lg:-translate-y-4 group-hover:translate-y-0 transition-all duration-200 lg:p-2 ${
-                    isMobile && openSocials 
+                    isMobile && openSocials
                       ? "max-h-96 opacity-100 visible mt-4"
                       : "max-h-0 opacity-0 invisible lg:group-hover:max-h-max lg:group-hover:visible lg:group-hover:opacity-100"
                   }`}
