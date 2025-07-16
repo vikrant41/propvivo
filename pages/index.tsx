@@ -1,22 +1,24 @@
 import CommunitySection from "../components/Home/CommunitySection";
-import CorePillars from "../components/Home/CorePillars";
 import FeatureOffer from "../components/Home/FeatureOffer";
 import HeroSection from "../components/Home/HeroSection";
 import KeyBenefitMain from "../components/Home/KeyBenefitMain";
 import Newsletter from "../components/Home/Newsletter";
-import RequestDoc from "../components/Home/RequestDoc";
+import OnboardingSteps from "../components/Home/OnboardingSteps";
 import Testimonials from "../components/Home/Testimonials";
+import ThreeCorePillars from "../components/Home/ThreeCorePillars";
 
 const IndexPage = () => {
   return (
     <>
      <HeroSection />
-     <CorePillars />
+     {/* <CorePillars /> */}
      <KeyBenefitMain />
-     <RequestDoc />
+     {/* <RequestDoc /> */}
+     <ThreeCorePillars />
      <FeatureOffer />
-     <CommunitySection />
      <Testimonials />
+     <OnboardingSteps />
+     <CommunitySection />
      <Newsletter />
     </>
   );

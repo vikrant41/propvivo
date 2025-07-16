@@ -58,7 +58,7 @@ const SingleBlog = ({ post }: BlogProps) => {
           {post.blogImg ? (
             <img
               src={post.blogImg}
-              alt={post.title || "PropVivo Blog Image"}
+              alt={post.title || "propVIVO Blog Image"}
               className="rounded-3xl object-cover w-full max-h-96"
             />
           ) : (

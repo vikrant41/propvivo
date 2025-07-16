@@ -6,7 +6,7 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}",
     "./app/**/*.{js,jsx,ts,tsx}",
   ],
-  plugins: [],
+  plugins: [require('@tailwindcss/line-clamp')],
   theme: {
     extend: {
       screens: {
@@ -54,7 +54,7 @@ module.exports = {
         pvBlack: "#1B1B1B",
         accent: "#21263C",
         accent1: "#4790CD",
-        accent2: "#7A7D9C",
+        accent2: "#6B6B6B",
         lightGreen: "#98CA3C",
         pvOrange: "#F38928",
         pvLightBlue: "#F6F9FF",

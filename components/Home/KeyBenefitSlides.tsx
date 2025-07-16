@@ -179,11 +179,15 @@ const KeyBenefitSlides: React.FC<propsType> = ({
         >
           {icon}
           <h4>{title}</h4>
-          <div className="self-stretch">
+          {/* <div className="self-stretch">
             {description?.split("<br/>").map((text, index) => (
               <p key={index}>{text.trim()}</p>
             ))}
-          </div>
+          </div> */}
+          <div
+            className="self-stretch space-y-2 text-sm text-gray-600"
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
           <div className="mt-8">
             <Button>Explore Platform</Button>
           </div>

@@ -150,7 +150,7 @@ h6 {
 }
 
 /*about css*/
-.teamSlider:after {
+.teamSlider:before, .teamSlider:after {
   background: linear-gradient(
     270deg,
     rgba(246, 249, 255, 0.75) 0%,
@@ -335,7 +335,7 @@ h6 {
 }
 
 @media (max-width: 767px) {
-  .teamSlider:after {
+  .teamSlider:before, .teamSlider:after {
     max-width: 90px;
   }
   .timeline:before {

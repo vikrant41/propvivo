@@ -435,7 +435,7 @@ function ResaleCertificate() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { name: "PropVivo", href: "/" },
+      { name: "propVIVO", href: "/" },
       { name: "Request Document" },
       { name: "Resale Certificate" },
     ]);
@@ -1199,11 +1199,11 @@ function ResaleCertificate() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-6">
-                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
+                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2 mb-3 md:mb-0">
                     Order Type <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 grid grid-cols-2 gap-5 text-pvBlack">
+                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-5 text-pvBlack">
                     {/* Dynamically render radio buttons based on the order types */}
                     {orderTypeList?.data?.orderTypes?.map((order) => (
                       <label

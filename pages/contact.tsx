@@ -7,7 +7,7 @@ const contact = () => {
   const { setBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
-    setBreadcrumbs([{ name: "PropVivo", href: "/" }, { name: "Contact Us" }]);
+    setBreadcrumbs([{ name: "propVIVO", href: "/" }, { name: "Contact Us" }]);
   }, [setBreadcrumbs]);
 
   return (

@@ -1,5 +1,10 @@
 import React from "react";
-import { KeyFeature1, KeyFeature2, KeyFeature3, KeyFeature4 } from "../shared/Icons";
+import {
+  KeyFeature1,
+  KeyFeature2,
+  KeyFeature3,
+  KeyFeature4,
+} from "../shared/Icons";
 
 const Timeline = () => {
   return (
@@ -53,7 +58,6 @@ const Timeline = () => {
               </p>
             </div>
           </li>
-
         </ul>
       </div>
     </>

@@ -41,6 +41,7 @@ const RequestProposal = () => {
   // all state management
   const [formData, setFormData] = useState<any>(null);
   const [condoResponse, setCondoResponse] = useState(null);
+  const { setBreadcrumbs } = useBreadcrumbs();
 
   // Google ReCAPTCHA key
   const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
@@ -129,9 +130,16 @@ const RequestProposal = () => {
     }
   };
 
+  useEffect(() => {
+      setBreadcrumbs([
+        { name: "propVIVO", href: "/" },
+        { name: "Request for Proposal" },
+      ]);
+    }, [setBreadcrumbs]);
+
   return (
     <>
-      <TopBanner backgroundImage="./img/Banner.jpg" title="Demand Statement" />
+      <TopBanner backgroundImage="./img/Banner.jpg" title="Request for Proposal" />
       <div className="max-w-3xl mx-auto my-14 px-5">
         <FormikProvider value={formik}>
           <Form autoComplete="off" className="">

@@ -5,7 +5,7 @@ import { CallBlueIcon } from "../shared/Icons";
 const ServiceBtns = () => {
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-4 pt-5">
+      <div className="flex flex-col md:flex-row justify-center gap-4 pt-5">
         <Button>Request a Proposal</Button>
         <Button variant="secondary">
           <CallBlueIcon /> Contact Us for Custom Solutions

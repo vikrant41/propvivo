@@ -4,7 +4,7 @@ import { Button } from "../CommonComponents/Button";
 const CommunitySection = () => {
   return (
     <>
-      <section className="py-9 md:py-20 relative bg-pvLightBlue ">
+      <section className="py-9 md:py-22 md:pb-40 relative bg-pvLightBlue ">
         <div className="after:absolute after:bg-accent/60 after:top-0 after:left-0 after:w-full after:h-full after:z-10">
           <img
             src="./img/CommunityBg.jpg"
@@ -12,12 +12,13 @@ const CommunitySection = () => {
           />
         </div>
         <div className="container relative z-10">
-          <div className="flex flex-col justify-center gap-5 text-center">
+          <div className="flex flex-col justify-center text-center">
             <h2 className="text-white leading-tight">
               Ready to Transform Your Community? <br />
               Let's Get Started...
             </h2>
-            <div className="flex justify-center">
+            <p className="text-white text-lg" >Join 100+ of communities that have already transformed their management experience with propVIVO.</p>
+            <div className="flex justify-center mt-5">
               <Button>Request for Proposal</Button>
             </div>
           </div>

@@ -7,7 +7,7 @@ const services = () => {
   const { setBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
-    setBreadcrumbs([{ name: "PropVivo", href: "/" }, { name: "Services" }]);
+    setBreadcrumbs([{ name: "propVIVO", href: "/" }, { name: "Services" }]);
   }, [setBreadcrumbs]);
 
   return (

@@ -9,7 +9,7 @@ const technology = () => {
   const { setBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
-    setBreadcrumbs([{ name: "PropVivo", href: "/" }, { name: "Technology" }]);
+    setBreadcrumbs([{ name: "propVIVO", href: "/" }, { name: "Technology" }]);
   }, [setBreadcrumbs]);
 
   return (

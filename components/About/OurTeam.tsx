@@ -136,8 +136,9 @@ const OurTeam = () => {
     dots: false,
     arrows: true,
     infinite: true,
+    centerMode: true,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 4.5,
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
@@ -207,7 +208,7 @@ const OurTeam = () => {
           </div>
         </div>
 
-        <div className="teamSlider padLeft overflow-x-hidden relative after:absolute after:right-0 after:top-0 after:w-full after:h-full after:z-10">
+        <div className="teamSlider overflow-x-hidden relative before:absolute after:absolute before:rotate-180 before:left-0 after:right-0 before:top-0 after:top-0 before:w-full after:w-full before:h-full after:h-full before:z-20 after:z-10">
           <Slider {...settings}>
             {teamData.map((data, index) => (
               <div key={index} className="">
