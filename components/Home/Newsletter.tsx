@@ -28,7 +28,7 @@ const Newsletter = () => {
 
   return (
     <>
-      <section className="relative pt-4 bg-pvLightBlue after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/2 after:bg-accent ">
+      <section className="relative bg-pvLightBlue after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/2 after:bg-accent pt-4 mxl:pt-0 mxl:-mt-24">
         <div className="container relative z-10">
           <div className="bg-accent1 rounded-2xl relative overflow-hidden">
             <NewsletterTopShape className="absolute top-0" />
@@ -53,16 +53,19 @@ const Newsletter = () => {
                         id="email"
                         name="email"
                         placeholder="Enter your email address"
-                        className="w-full bg-white pl-3 py-4 md:py-3 outline-none text-17 placeholder:text-accent2 rounded-full text-base font-outfit"
+                        className="w-full bg-white pl-3 py-2 outline-none text-17 placeholder:text-accent2 rounded-full text-base font-outfit"
                       />
                       <ErrorMessage
                         name="email"
                         component="div"
-                        className="text-red-500 absolute -bottom-8"
+                        className="text-red-500 mxl:absolute mxl:-bottom-8"
                       />
                     </div>
 
-                    <Button type="submit" className="border border-white md:border-inherit md:border-0 w-full md:w-auto">
+                    <Button
+                      type="submit"
+                      className="border border-white md:border-inherit md:border-0 w-full md:w-auto h-10 !px-5"
+                    >
                       Subscribe
                     </Button>
                   </Form>

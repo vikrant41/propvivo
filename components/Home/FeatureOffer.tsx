@@ -14,41 +14,49 @@ const featureData = [
     id: 0,
     icon: <FeatureIcon1 />,
     title: "Document Management",
-    description: "Manage all documents online to ensure successful governance.",
+    description:
+      "Centralized document storage with secure access control and version tracking.",
+    featureImg: "./img/featureImage1.png",
   },
   {
     id: 1,
     icon: <FeatureIcon2 />,
-    title: "Board Task",
+    title: "Task Management",
     description:
-      "Track all board task/projects to provide real time updates on progress.",
+      "Streamlined board task tracking with automated workflows and deadlines.",
+    featureImg: "./img/featureImage2.png",
   },
   {
     id: 2,
     icon: <FeatureIcon3 />,
-    title: "Financial Management",
+    title: "Financial Dashboard",
     description:
-      "All financial data / reports are available online for homeowners and board members.",
+      "Real-time financial reporting with budget tracking and expense management.",
+    featureImg: "./img/featureImage3.png",
   },
   {
     id: 3,
     icon: <FeatureIcon4 />,
-    title: "Call & Email Tracking",
+    title: "Communication Hub",
     description:
-      "Track all calls and emails online via our portal, including recorded phone calls.",
+      "Integrated call and email tracking with response time analytics.",
+    featureImg: "./img/featureImage4.png",
   },
   {
     id: 4,
     icon: <FeatureIcon5 />,
-    title: "Architecture Request",
-    description: "Manage improvement of your homes/unit online.",
+    title: "Analytics & Reports",
+    description:
+      "Streamlined board task tracking with automated workflows and deadlines.",
+    featureImg: "./img/featureImage5.png",
   },
   {
     id: 5,
     icon: <FeatureIcon6 />,
-    title: "Meetings",
+    title: "Meeting Management",
     description:
-      "Coordinate, Organize, Take meeting minutes and items to track completely online.",
+      "Real-time financial reporting with budget tracking and expense management.",
+    featureImg: "./img/featureImage6.png",
   },
 ];
 
@@ -56,10 +64,10 @@ const FeatureOffer = () => {
   return (
     <>
       <section className="py-9 md:py-16 relative bg-pvLightBlue">
-        <img
+        {/* <img
           src="./img/mapShape.png"
           className="absolute top-0 left-0 right-0 w-full h-full"
-        />
+        /> */}
         <div className="container relative">
           <SectionTitle
             subtitle="FEATURES"
@@ -69,12 +77,17 @@ const FeatureOffer = () => {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {featureData.map((feature, index) => (
-              <div key={index} className="bg-white rounded-lg p-6">
-                <div className="flex items-center gap-x-3 border-b border-gray-o-50 pb-5 mb-5">
-                  {feature.icon}
-                  <h5 className="mb-0">{feature.title}</h5>
+              <div key={index} className="bg-white rounded-lg p-6 flex flex-col justify-between gap-5">
+                <div>
+                  <div className="flex items-center gap-x-3 pb-5">
+                    {feature.icon}
+                    <h5 className="mb-0">{feature.title}</h5>
+                  </div>
+                  <div>{feature.description}</div>
                 </div>
-                <div>{feature.description}</div>
+                <div>
+                  <img src={feature.featureImg} className="" />
+                </div>
               </div>
             ))}
           </div>

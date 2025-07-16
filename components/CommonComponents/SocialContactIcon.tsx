@@ -1,11 +1,11 @@
 import React from 'react';
-import { FbGreenIcon, FbIcon, InstagramIcon, InstaGreenIcon, XGreenIcon, XIcon } from '../shared/Icons';
+import { FbColoredIcon, FbGreenIcon, FbIcon, InstagramColoredIcon, InstagramIcon, InstaGreenIcon, XColoredIcon, XGreenIcon, XIcon } from '../shared/Icons';
 import Link from 'next/link';
 
 const socialIcons = [
-  { id: 1, link: 'https://www.facebook.com/Propvivo', icon: <FbGreenIcon /> },
-  { id: 2, link: '', icon: <XGreenIcon /> }, 
-  { id: 3, link: 'https://www.instagram.com/propvivo/?hl=en', icon: <InstaGreenIcon /> },
+  { id: 1, link: 'https://www.facebook.com/Propvivo', icon: <FbColoredIcon /> },
+  { id: 2, link: '', icon: <XColoredIcon /> }, 
+  { id: 3, link: 'https://www.instagram.com/propvivo/?hl=en', icon: <InstagramColoredIcon /> },
 ];
 
 const SocialContactIcon = () => {

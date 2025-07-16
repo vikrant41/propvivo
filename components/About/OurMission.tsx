@@ -15,21 +15,20 @@ const ourMissionData = [
     id: 0,
     icon: <MissionIcon1 />,
     title: "Technology Transparency",
-    description: "At Propvivo, our mission is simple yet profound",
+    description: "Empowering informed decisions through real-time data access and complete transparency.",
   },
   {
     id: 1,
     icon: <MissionIcon2 />,
     title: "Data-Driven Insights",
-    description:
-      "At Propvivo, our mission is simple yet profound",
+    description: "Leveraging actionable insights to enhance visibility and simplify community operations",
   },
   {
     id: 2,
     icon: <MissionIcon3 />,
-    title: "Service Level Agreements (SLAs)",
+    title: "Operational Excellence",
     description:
-      "At Propvivo, our mission is simple yet profiund: to revolutionize HOA management through cutting-edge technology.",
+      "Delivering dependable, high-quality service with defined turnaround times and measurable outcomes.",
   },
 ];
 
@@ -56,11 +55,12 @@ const OurMission = () => {
                   </div>
                 </div>
                 <p>
-                  At Propvivo, our mission is simple yet profound: to
-                  revolutionize HOA management through cutting-edge technology
-                  and a commitment to transparency. We believe managing
-                  communities should be easy, so we built an intuitive,
-                  data-driven platform for HOAs and homeowners.
+                  At propVIVO, our mission is to modernize HOA management
+                  through intelligent automation, real-time transparency, and
+                  tailored digital solutions. We empower communities with a
+                  platform that simplifies operations, enhances accountability,
+                  and delivers smarter, faster results for boards and homeowners
+                  alike.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-4 my-7">
@@ -81,7 +81,6 @@ const OurMission = () => {
                 </div>
 
                 <Button>Join Us on Our Journey</Button>
-
               </div>
             </div>
           </div>

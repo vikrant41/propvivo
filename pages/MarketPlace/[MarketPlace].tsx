@@ -241,7 +241,7 @@ function MarketPlaceDetailView() {
   const { setBreadcrumbs } = useBreadcrumbs();
   
     useEffect(() => {
-      setBreadcrumbs([{ name: "PropVivo", href: "/" }, { name: "Marketplace" }]);
+      setBreadcrumbs([{ name: "propVIVO", href: "/" }, { name: "Marketplace" }]);
     }, [setBreadcrumbs]);
 
 

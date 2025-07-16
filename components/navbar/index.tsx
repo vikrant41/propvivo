@@ -189,6 +189,7 @@ const Navbar = () => {
                             ? "bg-accent1 rounded-md"
                             : ""
                         }`}
+                        onClick={handleLinkClick}
                       >
                         Resale Certificate
                       </a>
@@ -202,6 +203,7 @@ const Navbar = () => {
                             ? "bg-accent1 rounded-md"
                             : ""
                         }`}
+                        onClick={handleLinkClick}
                       >
                         Demand Request
                       </a>
@@ -215,6 +217,7 @@ const Navbar = () => {
                             ? "bg-accent1 rounded-md"
                             : ""
                         }`}
+                        onClick={handleLinkClick}
                       >
                         Condo Questionnaire
                       </a>
@@ -252,6 +255,7 @@ const Navbar = () => {
                             ? "bg-accent1 rounded-md"
                             : ""
                         }`}
+                        onClick={handleLinkClick}
                       >
                         Blog
                       </a>
@@ -265,6 +269,7 @@ const Navbar = () => {
                             ? "bg-accent1 rounded-md"
                             : ""
                         }`}
+                        onClick={handleLinkClick}
                       >
                         Marketplace
                       </a>

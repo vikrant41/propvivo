@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
               <div>
                 <Link href="/" passHref>
                   <a>
-                    <img src="/PropVIVO.png" className="propvivoLogo" />
+                    <img src="/PropVIVO.png" className="max-w-48" />
                   </a>
                 </Link>
                 <div className="flex gap-x-8 text-sm mt-5">
@@ -101,19 +101,6 @@ const Footer: React.FC = () => {
                       }
                     >
                       Technology
-                    </a>
-                  </Link>
-                </li>
-                <li className="cursor-pointer relative">
-                  <Link href="/industries" passHref>
-                    <a
-                      className={
-                        router.pathname === "/industries"
-                          ? "active text-lightGreen"
-                          : "transition-all duration-300"
-                      }
-                    >
-                      Industries
                     </a>
                   </Link>
                 </li>
@@ -229,7 +216,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="border-t border-white/20 py-4 md:py-5 gap-4 flex flex-col lg:flex-row justify-between">
           <p className="text-white/70 mb-0">
-            Copyright &#169; PropVIVO 2024 | All Right Reserved
+            Copyright &#169; propVIVO 2025 | All Right Reserved
           </p>
           <p className="text-white/70 mb-0">
             Best viewed with IE 11, Firefox 76+, Safari 11+, Chrome 83+, Edge

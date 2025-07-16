@@ -52,21 +52,10 @@ const OurStory = () => {
               </div>
               <div className="md:col-span-4">
                 <p>
-                  Propvivo was founded to solve the inefficiencies in HOA
-                  management. With outdated systems causing delays and
-                  compliance issues, we set out to create a technology platform
-                  that streamlines communication, automates tasks, and offers
-                  real-time insights.
+                  propVIVO was founded to address inefficiencies in HOA management caused by outdated systems. Delays, compliance issues, and fragmented communication inspired us to create a modern platform that simplifies operations and enhances transparency. 
                 </p>
                 <p>
-                  In response, we developed a technology platform designed to
-                  streamline these processes.{" "}
-                </p>
-                <p>
-                  With automated tasks, centralized communication, and real-time
-                  data, Propvivo empowers HOAs to operate smoothly, ensuring
-                  faster resolutions and better transparency for all
-                  stakeholders.
+                  Our technology streamlines processes with automated tasks, centralized communication, and real-time data, empowering HOAs to operate efficiently while ensuring faster resolutions and greater accountability for all stakeholders. 
                 </p>
               </div>
             </div>
@@ -75,9 +64,7 @@ const OurStory = () => {
               <div className="flex flex-col items-center justify-center text-center">
                 <h4 className="font-medium">Our Key Milestones</h4>
                 <p>
-                  Celebrating our journey of innovation and impact, We take
-                  pride in the progress we've made to enhance HOA management.
-                  Here are the significant achievements that define our success.
+                  Celebrating a journey of innovation and impact, we take pride in the progress we’ve made to transform HOA management. These achievements highlight our commitment to excellence:
                 </p>
               </div>
               <div className="grid md:grid-cols-3 gap-8">

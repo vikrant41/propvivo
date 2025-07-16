@@ -10,6 +10,9 @@ import SectionTitle from "../CommonComponents/SectionTitle";
 import KeyBenefitSlides from "./KeyBenefitSlides";
 
 import KeyBenefitImg1 from "../../public/img/AccountingDashboard.png";
+import KeyBenefitImg2 from "../../public/img/AccountingDashboard2.png";
+import KeyBenefitImg3 from "../../public/img/AccountingDashboard3.png";
+import SubHeading from "../CommonComponents/SubHeading";
 
 function SampleNextArrow(props) {
   const { className, style, onClick } = props;
@@ -44,24 +47,42 @@ const KeyBenefitMain = (props) => {
       imageSrc: KeyBenefitImg1,
       icon: <TechnologyTransparencyIcon />,
       title: "Technology Transparency",
-      description:
-        "Gain real-time visibility into every aspect of your community's management with our transparent platform. HOA boards and managers can easily track operations, financials, and communications, ensuring accountability and informed decisions. <br/>Gives Visibility That Empowers Your Community. Replaces Blind Spots with Full Visibility for Your Community. <br/>Easy to Use by enhanced Technology!",
+      description: `
+      <p>Experience unmatched clarity in HOA management through our transparent, real-time platform. Monitor operations, financials, and communications with ease — promoting accountability and smarter decisions.</p>
+      <ul class="list-disc pl-5 mt-2 space-y-2">
+        <li><strong>Empowers communities with complete visibility</strong></li>
+        <li>Eliminates blind spots for enhanced oversight</li>
+        <li>User-friendly design powered by advanced technology</li>
+      </ul>
+    `,
     },
     {
       id: 1,
-      imageSrc: KeyBenefitImg1,
+      imageSrc: KeyBenefitImg2,
       icon: <DataDrivenIcon />,
       title: "Data-Driven Insights",
-      description:
-        "Gain real-time visibility into every aspect of your community's management with our transparent platform. HOA boards and managers can easily track operations, financials, and communications, ensuring accountability and informed decisions. <br/>Gives Visibility That Empowers Your Community. Replaces Blind Spots with Full Visibility for Your Community. <br/>Easy to Use by enhanced Technology!",
+      description: `
+      <p>Gain real-time visibility into every aspect of your community's management with our transparent platform. HOA boards and managers can effortlessly track operations, financials, and communications to ensure accountability and informed decisions. </p>
+      <ul class="list-disc pl-5 mt-2 space-y-2">
+        <li><strong>Empowers Communities with Full Transparency </strong></li>
+        <li>Eliminates blind spots with comprehensive visibility.</li>
+        <li>Intuitive and easy to use with advanced technology.</li>
+      </ul>
+    `,
     },
     {
       id: 2,
-      imageSrc: KeyBenefitImg1,
+      imageSrc: KeyBenefitImg3,
       icon: <SLAsIcon />,
       title: "Service Level Agreements (SLAs)",
-      description:
-        "Gain real-time visibility into every aspect of your community's management with our transparent platform. HOA boards and managers can easily track operations, financials, and communications, ensuring accountability and informed decisions. <br/>Gives Visibility That Empowers Your Community. Replaces Blind Spots with Full Visibility for Your Community. <br/>Easy to Use by enhanced Technology!",
+      description: `
+      <p>Achieve clarity and reliability with our robust SLAs. Our platform ensures seamless service tracking for HOA operations, enhancing efficiency and accountability at every level. </p>
+      <ul class="list-disc pl-5 mt-2 space-y-2">
+        <li><strong>Delivers Consistent and Measurable Results </strong></li>
+        <li>Replaces ambiguity with clear service benchmarks. </li>
+        <li>Designed for ease of use and precision. </li>
+      </ul>
+    `,
     },
   ];
 
@@ -86,14 +107,24 @@ const KeyBenefitMain = (props) => {
 
   return (
     <>
-      <section className="pt-3 pb-14 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-96 after:bg-pvLightBlue after:-z-10">
+      <section className="py-14 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-96 after:bg-pvLightBlue after:-z-10">
         <div className="container">
           <div className="flex flex-col items-center justify-center">
-            <SectionTitle
-              subtitle="WHY PROPVIVO"
-              title="Key Benefits"
-              content="Choose a trusted partner that blends industry-leading expertise with cutting-edge technology to provide tailored solutions for all your property management challenges. Experience unparalleled reliability, personalized support, and seamless processes designed to elevate efficiency and community satisfaction."
-            />
+            <div className="text-center mb-9 md:mb-12">
+              <SubHeading text="WHY PROPVIVO" />
+              <h4 className="leading-snug pt-2 mb-1">
+                Your Modern, Transparent, and Reliable HOA Partner
+              </h4>
+              <div className="mx-auto mt-5 space-y-2">
+                <p>
+                  Partner with a leader that combines expertise with advanced
+                  technology to deliver customized solutions for your property
+                  management needs. Enjoy unmatched reliability, tailored
+                  support, and streamlined processes that boost efficiency and
+                  enhance community satisfaction.
+                </p>
+              </div>
+            </div>
 
             <div className="slider-container KeyBenefitSlider">
               <Slider {...settings}>

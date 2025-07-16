@@ -85,43 +85,34 @@ const Testimonials = () => {
       id: 0,
       star: 5,
       description:
-        "Customer Support team is awesome. Solved my doubt in just a minute.",
+        "We recently moved out and had some issue with our HOA payments. Ashish in the team was very helpful as he was able to understand the situation and help to drive the issue to closure timely. Thanks to the team!",
       authorImg: "./img/authorImg.png",
-      authorName: "Elina Gilbert",
+      authorName: "Lan Yao",
       authorDetails: "Home Owner, Spring Vallry",
     },
     {
       id: 1,
       star: 4,
       description:
-        "Technology improved delinquency rates, compliance tracking.",
-      authorImg: "./img/authorImg.png",
-      authorName: "James Anderson",
+        "Had unresolved fees since takeover. I called and somebody answered. The guy Paul actually called back like he said he would and announced all late fees were taken care of as requested. Yeah!",
+      authorImg: "./img/authorImg2.png",
+      authorName: "Zac Jackson",
       authorDetails: "Home Owner, SA Association",
     },
     {
       id: 2,
       star: 5,
       description:
-        "Customer Support team is awesome. Solved my doubt in just a minute.",
-      authorImg: "./img/authorImg.png",
-      authorName: "Elina Gilbert",
-      authorDetails: "Home Owner, Spring Vallry",
-    },
-    {
-      id: 3,
-      star: 4,
-      description:
-        "Technology improved delinquency rates, compliance tracking.",
-      authorImg: "./img/authorImg.png",
-      authorName: "James Anderson",
-      authorDetails: "Home Owner, SA Association",
+        "Propvivo is a great HOA management company. They have a great digital solution for associations. The people are professional, honest, very knowledgeable about anything HOA. They are flexible and can tailor their solutions to the individual needs of each HOA.",
+      authorImg: "./img/authorImg3.png",
+      authorName: "Steven Bathiche",
+      authorDetails: "Board Member, Aspire Association",
     },
   ];
 
   return (
     <>
-      <section className="py-9 md:py-16 relative bg-pvLightBlue TestimonialWrap">
+      <section className="py-9 md:py-16 relative TestimonialWrap">
         <style>{css1}</style>
         <img
           src="./img/mapShape.png"
@@ -134,7 +125,7 @@ const Testimonials = () => {
             <SectionTitle
               subtitle="CUSTOMER TESTIMONIALS"
               title="Loved by Users Like You"
-              content="1000+ Associations have switched to PropVivo Platform and many more to count on."
+              content="100+ Associations have switched to propVIVO Platform and many more to count on."
             />
           </div>
 
@@ -168,7 +159,7 @@ const Testimonials = () => {
                     </svg>
                   ))}
                 </div>
-                <p>{props.description}</p>
+                <p className="line-clamp-3 overflow-hidden">{props.description}</p>
                 <div className="flex items-center gap-4">
                   <img
                     src={props.authorImg}

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { Button } from "../CommonComponents/Button";
 import {
   CheckboxIcon,
+  DataDrivenShapeIcon,
   FbColoredIcon,
   InstagramColoredIcon,
   LinkedInColoredIcon,
@@ -46,13 +47,20 @@ const DataDriven = (props) => {
   }, []);
 
   return (
-    <section className=" bg-pvLightBlue overflow-hidden">
+    <section
+      className=" bg-pvLightBlue relative py-12 md:py-16 bg-no-repeat bg-right-bottom"
+      style={{ backgroundImage: `url(./img/datadrivenMain.png)` }}
+    >
+      <DataDrivenShapeIcon className="absolute -bottom-20 left-0 w-48 md:w-auto pointer-events-none" />
       <div className="relative">
-        <div className="">
+        <div className="container relative">
           <div className="flex flex-col lg:flex-row">
-            <div className="space-y-4 md:space-y-5 lg:w-1/2 padLeft py-9 md:py-16 pl-4 lg:pl-0">
+            <div className="space-y-4 md:space-y-5 lg:w-1/2 ">
               <h2>Data-Driven Insights</h2>
-              <div style={{ maxWidth: isMobile ? "100%" : "540px" }} className="padLeft">
+              <div
+                style={{ maxWidth: isMobile ? "100%" : "540px" }}
+                className="padLeft"
+              >
                 <p>
                   Turning data into actionable insights, our property management
                   platform empowers decision-makers with real-time performance
@@ -79,19 +87,15 @@ const DataDriven = (props) => {
                 </Button>
               </div>
             </div>
-            <div
-              className="relative lg:w-1/2 pt-3 lg:pt-12 pb-10 lg:pb-16 pl-4 lg:pl-20 pr-4 lg:pr-0 bg-bottom bg-no-repeat"
-              style={{ backgroundImage: `url(./img/datadrivenMain.png)` }}
-            >
+            <div className="relative lg:w-1/2 bg-bottom bg-no-repeat">
               <div className="relative z-10">
-                <img src="./img/dataProcessImg.png" />
-                <div className="grid grid-cols-12 items-start justify-between gap-5 md:gap-10 pt-7">
-                  <div className="mt-6 col-span-2 hidden md:block">
+                <div className="flex items-start gap-8 mb-4">
+                  <img src="./img/dataProcessImg.png" />
+                  <div className="hidden md:block relative bottom-6">
                     <img src="./img/dataBulbImg.png" />
-                    <img src="./img/databelowBlub.png" className="-ml-3 mt-1" />
                   </div>
-                  <img src="./img/dataMainTwoImg.png" className="w-full col-span-12 md:col-span-10" />
                 </div>
+                <img src="./img/dataMainTwoImg.png" className="" />
               </div>
               {/* <img src="./img/datadrivenMain.png" className="w-full h-full absolute top-0 right-0" /> */}
             </div>

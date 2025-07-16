@@ -7,7 +7,7 @@ const valuesData = [
     bgColor: "#FFF1EE",
     icon: <OurValuesIcon1 />,
     title: "Customer-Centricity",
-    description: "We prioritize your needs and strive to provide seamless experiences that exceed expectations",
+    description: "We put your needs first, delivering seamless experiences that consistently exceed expectations.achievements highlight our commitment to excellence:",
   },
   {
     id: 1,
@@ -15,7 +15,7 @@ const valuesData = [
     icon: <OurValuesIcon2 />,
     title: "Innovation",
     description:
-      "Leveraging the latest technology, we create forward-thinking solutions for today's challenges",
+      "Harnessing cutting-edge technology, we craft solutions that address today’s challenges with forward-thinking approaches.",
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ const valuesData = [
     icon: <OurValuesIcon3 />,
     title: "Transparency",
     description:
-      "With clear communication and openness, we foster trust and ensure clarity in all interactions",
+      "Clear communication and openness foster trust and ensure clarity in every interaction.",
   },
   {
     id: 3,
@@ -31,7 +31,7 @@ const valuesData = [
     icon: <OurValuesIcon4 />,
     title: "Accountability",
     description:
-      "Our commitment to responsibility guides our actions and keeps us aligned with our promises to clients",
+      "Guided by responsibility, we stay true to our promises, ensuring reliability and trustworthiness in all we do.",
   },
 ];
 

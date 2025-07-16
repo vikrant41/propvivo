@@ -175,7 +175,7 @@ function CondoQuestionnaire() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { name: "PropVivo", href: "/" },
+      { name: "propVIVO", href: "/" },
       { name: "Request Document" },
       { name: "Condo Questionnaire" },
     ]);
@@ -1198,7 +1198,7 @@ function CondoQuestionnaire() {
                   </div>
                 </div>
 
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Amount Charged
                   </label>

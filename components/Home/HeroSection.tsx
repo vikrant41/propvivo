@@ -2,18 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Button } from "../CommonComponents/Button";
 import {
-  CheckboxIcon,
-  FbColoredIcon,
-  InstagramColoredIcon,
-  LinkedInColoredIcon,
+  HoaIcon,
+  MoneyIcon,
+  StaredIcon,
+  StarIcon,
   TopLeftIcon1,
   TopLeftIcon2,
   TopLeftIcon3,
   VideoIcon,
-  XColoredIcon,
   YellowBorderIcon,
 } from "../shared/Icons";
-import SubHeading from "../CommonComponents/SubHeading";
 import Link from "next/link";
 
 const HeroSection = () => {
@@ -32,26 +30,26 @@ const HeroSection = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const socialIcons = [
-    {
-      id: 1,
-      link: "https://www.instagram.com/propvivo/?hl=en",
-      icon: <InstagramColoredIcon />,
-    },
-    {
-      id: 2,
-      link: "https://www.facebook.com/Propvivo",
-      icon: <FbColoredIcon />,
-    },
-    { id: 3, link: "", icon: <LinkedInColoredIcon /> },
-    { id: 4, link: "", icon: <XColoredIcon /> },
-  ];
+  // const socialIcons = [
+  //   {
+  //     id: 1,
+  //     link: "https://www.instagram.com/propvivo/?hl=en",
+  //     icon: <InstagramColoredIcon />,
+  //   },
+  //   {
+  //     id: 2,
+  //     link: "https://www.facebook.com/Propvivo",
+  //     icon: <FbColoredIcon />,
+  //   },
+  //   { id: 3, link: "", icon: <LinkedInColoredIcon /> },
+  //   { id: 4, link: "", icon: <XColoredIcon /> },
+  // ];
 
   return (
     <section className="py-9 lg:py-16 bg-pvLightBlue">
       <div className="relative">
         <div className="">
-          <div className="flex flex-col lg:flex-row gap-5">
+          <div className="flex flex-col lg:flex-row gap-3">
             <div className="space-y-4 md:space-y-5 lg:w-1/2 px-8 xl:pr-0 xl:pl-0 padLeft">
               {/* <SubHeading
                 text="SINCE 2013"
@@ -80,27 +78,39 @@ const HeroSection = () => {
               </h1>
               <div
                 className="padLeft"
-                style={{
-                  // maxWidth: !isMobile ? "540px" : "auto",
-                  maxWidth: isMobile ? "100%" : "540px",
-                }}
+                style={
+                  {
+                    // maxWidth: !isMobile ? "540px" : "auto",
+                    // maxWidth: isMobile ? "100%" : "540px",
+                  }
+                }
               >
                 <p>
-                  Streamline operations, reduce delinquencies, ensure
-                  compliance, and experience HOA management like never before.
-                  With a suite of powerful tools and intuitive features,
-                  simplify your day-to-day tasks, improve and deliver a seamless
-                  experience to your community.
+                  <strong>
+                    Streamline operations, ensure transparency, and elevate
+                    community living
+                  </strong>{" "}
+                  with our comprehensive HOA management platform designed to
+                  make community board members, efficient, and effective
+                  experience to build a great HOA community today.
                 </p>
               </div>
-              <div className="flex flex-col md:flex-row gap-y-2 md:gap-x-7 pt-3 pb-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 md:gap-x-2 pt-3 pb-2">
                 <div className="flex items-center gap-x-2 text-pvBlack">
-                  <CheckboxIcon />
-                  No credit card required
+                  <HoaIcon />
+                  Trusted by 100+ HOAs Since 2013
                 </div>
                 <div className="flex items-center gap-x-2 text-pvBlack">
-                  <CheckboxIcon />
-                  15-day free trial
+                  <StarIcon />
+                  Trusted with a 4.8 Rating
+                </div>
+                {/* <div className="flex items-center gap-x-2 text-pvBlack">
+                  <StaredIcon />
+                  Get Started in 24 Hours
+                </div> */}
+                <div className="flex items-center gap-x-2 text-pvBlack">
+                  <MoneyIcon />
+                  No Setup Fees, Cancel Anytime.
                 </div>
               </div>
               <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-4">
@@ -111,7 +121,7 @@ const HeroSection = () => {
                   <VideoIcon /> Request a Demo
                 </Button>
               </div>
-              <div className="pt-2 md:pt-6">
+              {/* <div className="pt-2 md:pt-6">
                 <h3 className="text-lg text-pvBlack">Follow us on:</h3>
                 <div className="flex gap-x-4 mt-5">
                   {socialIcons.map((item) => (
@@ -122,7 +132,7 @@ const HeroSection = () => {
                     </Link>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="relative lg:w-1/2">
               <div className="flex flex-col md:flex-row items-end justify-between mb-6 px-4 md:px-9 relative">

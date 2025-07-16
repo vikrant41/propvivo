@@ -2,13 +2,16 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useState } from "react";
 import * as Yup from "yup";
 import {
+  CallBlueIcon,
   CallGreenIcon,
+  ClockBlueIcon,
   FaCall,
   FaEnvelope,
   FaPencil,
   FaToggle,
   FaUser,
   LocationIcon,
+  MailBlueIcon,
   MailGreenIcon,
   TimeGreenIcon,
 } from "../shared/Icons";
@@ -20,6 +23,23 @@ import ThankYouModal from "../CommonModals/ThankYouModal";
 import CenteredLoader from "../CommonComponents/CenterLoader";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useToast } from "../UI/ToastContext";
+
+const locations = {
+  usa: {
+    name: "United States",
+    address: "2018 156th Ave NE, Bellevue, WA 98007, United States.",
+    flag: "/img/usflag.png",
+    mapSrc:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2688.85212323911!2d-122.1348702079786!3d47.62900571215861!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54906da169af3cc9%3A0xfd27894e48cf2b93!2sPropVIVO!5e0!3m2!1sen!2sin!4v1733737652587!5m2!1sen!2sin",
+  },
+  india: {
+    name: "India",
+    address: "Office 612-614, Homeland City Tower, Vesu, Surat.",
+    flag: "/img/inflag.png",
+    mapSrc:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.246415461992!2d72.77462363751708!3d21.15289166411913!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04d8be5423ffb%3A0x1576414c0877c525!2sHomeland%20City!5e0!3m2!1sen!2sin!4v1752646490656!5m2!1sen!2sin",
+  },
+};
 
 const validationSchema = Yup.object({
   name: Yup.string()
@@ -55,6 +75,7 @@ const initialValues: any = {
 };
 
 const ContactSection = () => {
+  const [selected, setSelected] = useState<"usa" | "india">("usa");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Google ReCAPTCHA key
@@ -141,41 +162,19 @@ const ContactSection = () => {
                       className={`space-y-3 transition-all duration-500 block mxl:top-20 left-0 right-0 p-0`}
                     >
                       <li className="relative flex gap-2 ">
-                        <CallGreenIcon /> +1 (888) 392-3515
+                        <CallBlueIcon /> +1 (888) 392-3515
                       </li>
                       <li className="relative flex gap-2 ">
-                        <MailGreenIcon /> services@propvivo.com
+                        <MailBlueIcon /> services@propvivo.com
                       </li>
                       <li className="relative flex gap-2 ">
-                        <TimeGreenIcon /> 2018 156th Ave NE, Bellevue WA 98007
+                        <ClockBlueIcon /> Mon - Fri : 9 am - 5 pm, <br />
+                        Sat - Sun : Closed
                       </li>
                     </ul>
                   </div>
                   <div className="flex flex-col">
                     <SocialContactIcon />
-                  </div>
-                </div>
-                <div>
-                  <h5 className="font-medium">Our Office Address</h5>
-                  <div className="grid md:grid-cols-2 items-center gap-5 md:gap-10">
-                    <div>
-                      <div className="text-lg text-pvBlack mb-1">USA</div>
-                      <div className="flex items-start gap-1">
-                        <LocationIcon />
-                        <p className="flex-1">
-                          2018 156th Ave NE, Bellevue, WA 98007, United States.
-                        </p>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-lg text-pvBlack mb-1">India</div>
-                      <div className="flex items-start gap-1">
-                        <LocationIcon />
-                        <p className="flex-1">
-                          Office 612-614, Homeland City Tower, Vesu, Surat.
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -353,13 +352,48 @@ const ContactSection = () => {
                 />
               )}
             </div>
+            <div className="mt-14">
+              <h2 className="font-medium mb-7">Our Office Address</h2>
+              <div className="grid grid-cols-11 gap-8 items-stretch">
+                {/* Google Map */}
+                <iframe
+                  src={locations[selected].mapSrc}
+                  className="rounded-xl w-full h-full col-span-8"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                ></iframe>
+
+                {/* Location Selector */}
+                <div className="col-span-3 grid grid-rows-2 gap-4">
+                  {(["usa", "india"] as const).map((key) => (
+                    <div
+                      key={key}
+                      onClick={() => setSelected(key)}
+                      className={`cursor-pointer min-h-44 border rounded-lg py-6 px-4 transition-all duration-200 ${
+                        selected === key
+                          ? "border-btnDarkBlue bg-pvLightBlue"
+                          : "border-gray-o-60 hover:bg-pvLightBlue"
+                      }`}
+                    >
+                      <div className="font-outfit text-3xl text-pvBlack mb-1 flex items-center gap-2">
+                        <img
+                          src={locations[key].flag}
+                          alt={`${locations[key].name} Flag`}
+                          className="w-5 h-5 object-contain"
+                        />
+                        {locations[key].name}
+                      </div>
+                      <div className="flex items-start gap-2 text-sm">
+                        <p className="flex-1">{locations[key].address}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2688.85212323911!2d-122.1348702079786!3d47.62900571215861!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54906da169af3cc9%3A0xfd27894e48cf2b93!2sPropVIVO!5e0!3m2!1sen!2sin!4v1733737652587!5m2!1sen!2sin"
-          width="100%"
-          height="450"
-        ></iframe>
       </section>
     </>
   );

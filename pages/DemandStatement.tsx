@@ -304,7 +304,7 @@ function DemandStatement() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { name: "PropVivo", href: "/" },
+      { name: "propVIVO", href: "/" },
       { name: "Request Document" },
       { name: "Demand Request" },
     ]);
@@ -1158,7 +1158,7 @@ function DemandStatement() {
                 </div>
 
                 {/* Amount Charged Section */}
-                <div className="relative grid grid-cols-6">
+                <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Amount Charged
                   </label>
