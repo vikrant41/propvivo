@@ -4,7 +4,7 @@ import { useBreadcrumbs } from "../../contexts/BreadCrumbContext";
 
 interface BannerProps {
   backgroundImage: string;
-  title: string;
+  title?: string;
 }
 
 const TopBanner: React.FC<BannerProps> = ({ backgroundImage, title }) => {
