@@ -1,19 +1,25 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { ArrowBlueIcon } from "../../components/shared/Icons";
+import {
+  ArrowBlueIcon,
+  CalenderIcon,
+  ProfileIcon,
+} from "../../components/shared/Icons";
 import { GET_ALL_BLOGS } from "../../graphql/queries/GetAllBlogsQueries";
 import apiClient from "../../apollo/apiClient";
 import { convertUTCToLocalDate } from "../../Utils/Utils";
 import CenteredLoader from "../../components/CommonComponents/CenterLoader";
+import TopBanner from "../../components/CommonComponents/TopBanner";
 
 interface BlogProps {
   post: {
     blogId: string;
     title: string;
-    blogImg: string;
+    blogImg: string | null;
     description: string;
     content: string;
     userContext: {
+      createdByUserName: string;
       createdOn: string;
     };
   } | null;
@@ -22,12 +28,10 @@ interface BlogProps {
 const SingleBlog = ({ post }: BlogProps) => {
   const router = useRouter();
 
-  // If the page isn't generated yet, fallback to loading state
   if (router.isFallback) {
     return <CenteredLoader />;
   }
 
-  // If no post found
   if (!post) {
     return (
       <div className="container mx-auto py-10">
@@ -39,53 +43,70 @@ const SingleBlog = ({ post }: BlogProps) => {
         </button>
         <div className="text-center py-10">
           <h1 className="text-2xl font-bold mb-4">Blog Post Not Found</h1>
-          <p className="text-gray-600">The blog post you're looking for doesn't exist.</p>
+          <p className="text-gray-600">
+            The blog post you're looking for doesn't exist.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-10 singleContent">
-      <button
-        onClick={() => router.push("/blog")}
-        className="text-pvBlack mb-5 flex items-center gap-3"
-      >
-        <ArrowBlueIcon className="rotate-180" /> Back to Blogs
-      </button>
-      <div className="flex flex-col gap-y-2">
-        <div className="relative mb-5">
+    <>
+      <div className="relative">
+        <div>
           {post.blogImg ? (
-            <img
-              src={post.blogImg}
-              alt={post.title || "propVIVO Blog Image"}
-              className="rounded-3xl object-cover w-full max-h-96"
-            />
+            <TopBanner backgroundImage={`"${post.blogImg}"`} />
           ) : (
             <img
               src="https://placehold.jp/30/cccccc/ffffff/360x260.png?text=No+image+Found"
               className="rounded-3xl object-cover w-full max-h-96"
             />
           )}
+          <div className="absolute bottom-10 container left-0 right-0">
+            <h1 className="lg:text-4xl mb-4 text-white">{post.title}</h1>
+            <div className="flex items-center text-white gap-4">
+              <div className="flex items-center gap-2">
+                <ProfileIcon />
+                {post?.userContext?.createdByUserName}
+              </div>
+              <div className="flex items-center gap-2">
+                <CalenderIcon />
+                {convertUTCToLocalDate(post.userContext?.createdOn)}
+              </div>
+            </div>
+          </div>
         </div>
-        <h1 className="lg:text-4xl mb-4">{post.title}</h1>
-        <p className="text-blue-o-600">{convertUTCToLocalDate(post.userContext?.createdOn)}</p>
-
-        {post.description && (
-          <div
-            className="text-gray-600 mb-6"
-            dangerouslySetInnerHTML={{ __html: post.description }}
-          ></div>
-        )}
-
-        {post.content && (
-          <div
-            className="text-gray-700 mb-6"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          ></div>
-        )}
       </div>
-    </div>
+      <div className="container mx-auto py-10 singleContent">
+        <div className="flex flex-col gap-y-2">
+          <button
+            onClick={() => router.push("/blog")}
+            className="text-btnDarkBlue mb-5 flex items-center gap-3"
+          >
+            <ArrowBlueIcon className="rotate-180" /> Back to Blogs
+          </button>
+
+          <div className="max-w-4xl mx-auto">
+            <h1 className="lg:text-4xl mb-7">{post.title}</h1>
+
+            {post.description && (
+              <div
+                className="mb-6"
+                dangerouslySetInnerHTML={{ __html: post.description }}
+              ></div>
+            )}
+
+            {post.content && (
+              <div
+                className="text-gray-700 mb-6"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              ></div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -93,7 +114,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { singleblog } = context.params;
 
   try {
-    // Fetch all blogs to find the specific one
     const { data } = await apiClient.query({
       query: GET_ALL_BLOGS,
       variables: {
@@ -112,11 +132,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
 
     const blogs = data?.blogQueries?.getAllBlog?.data?.blogs || [];
-    const post = blogs.find((blog: any) => blog.blogId === singleblog);
+    const blog = blogs.find((blog: any) => blog.blogId === singleblog);
+
+    const post = blog
+      ? {
+          ...blog,
+          blogImg: blog.document?.uri || null, // ✅ Fix: extract blogImg
+        }
+      : null;
 
     return {
       props: {
-        post: post || null,
+        post,
       },
     };
   } catch (error) {
