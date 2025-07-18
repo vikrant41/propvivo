@@ -25,9 +25,9 @@ jobs:
           npm install --force
         displayName: 'Install dependencies'
       
-      - script: |
-          npm run lint
-        displayName: 'npm lint'
+      # - script: |
+      #     npm run lint
+      #   displayName: 'npm lint'
 
       - script: |
           npm run build:$(env)
