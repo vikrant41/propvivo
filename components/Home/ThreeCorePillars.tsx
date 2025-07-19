@@ -38,7 +38,7 @@ function ThreeCorePillars() {
               </h2>
               <div className="mx-auto mt-5 space-y-2">
                 <p>
-                  <strong>Everything we do is rooted in three core values: Trust, Transparency, and Excellence.</strong><br/> These pillars guide how we serve HOA communities—ensuring peace of mind, open communication, and consistently high-quality service. With decades of experience in association management, we turn these values into real-world results for Communities, Condominiums, and Homeowners's Associations across the U.S.
+                  <strong>Everything we do is rooted in three core values: Innovation, Transparency, and Reliability.</strong><br/> These pillars guide how we serve HOA communities—ensuring peace of mind, open communication, and consistently high-quality service. With decades of experience in association management, we turn these values into real-world results for Communities, Condominiums, and Homeowners's Associations across the U.S.
                 </p>
               </div>
             </div>

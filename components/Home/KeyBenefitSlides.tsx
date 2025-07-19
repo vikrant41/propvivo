@@ -5,6 +5,7 @@ import {
   KeyBenefitShape2,
   KeyBenefitShape3,
 } from "../shared/Icons";
+import { useRouter } from "next/router";
 
 type propsType = {
   imageSrc?: any;
@@ -156,6 +157,11 @@ const KeyBenefitSlides: React.FC<propsType> = ({
   description,
   features,
 }) => {
+
+  const router = useRouter();
+    const routeTo =
+      process.env.NEXT_PUBLIC_LOGIN_URL || "http://login.devpropvivo.co/login";
+
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -189,7 +195,13 @@ const KeyBenefitSlides: React.FC<propsType> = ({
             dangerouslySetInnerHTML={{ __html: description }}
           />
           <div className="mt-8">
-            <Button>Explore Platform</Button>
+            <Button
+              onClick={() =>
+                window.open(routeTo, "_blank")
+              }
+            >
+              Explore Platform
+            </Button>
           </div>
         </div>
         <div className="relative lg:col-span-4">

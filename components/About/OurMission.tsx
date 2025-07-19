@@ -9,6 +9,7 @@ import {
   TopLeftIcon2,
 } from "../shared/Icons";
 import { Button } from "../CommonComponents/Button";
+import { useRouter } from "next/router";
 
 const ourMissionData = [
   {
@@ -33,6 +34,11 @@ const ourMissionData = [
 ];
 
 const OurMission = () => {
+
+  const router = useRouter();
+    const routeTo =
+      process.env.NEXT_PUBLIC_LOGIN_URL || "http://login.devpropvivo.co/login";
+
   return (
     <>
       <section className="py-12 md:py-16 bg-pvLightBlue">
@@ -80,7 +86,7 @@ const OurMission = () => {
                   ))}
                 </div>
 
-                <Button>Join Us on Our Journey</Button>
+                <Button onClick={() => window.open(routeTo, "_blank")}>Join Us on Our Journey</Button>
               </div>
             </div>
           </div>

@@ -9,6 +9,8 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const routeTo =
+    process.env.NEXT_PUBLIC_LOGIN_URL || "http://login.devpropvivo.co/login";
   const dropdownRef = useRef(null);
   const loginUrl = process.env.NEXT_PUBLIC_LOGIN_URL;
 
@@ -70,7 +72,8 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const [openDocuments, setOpenDocuments] = useState(false);
+  const [openSolution, setOpenSolution] = useState(false);
+  const [openResources, setOpenResources] = useState(false);
   const [openSocials, setOpenSocials] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -92,7 +95,7 @@ const Navbar = () => {
       }`}
     >
       <div className="container">
-        <div className="flex justify-between items-center h-full">
+        <div className="flex justify-between items-center gap-x-20 h-full">
           <Link href="/" passHref>
             <a>
               <img src="/PropVIVO.png" className="propvivoLogo" />
@@ -100,13 +103,13 @@ const Navbar = () => {
           </Link>
 
           <div
-            className={`hidden lg:flex lg:flex-row items-center justify-end gap-x-20 text-white transition-all duration-500 ease-in-out transform origin-top menuTop ${
+            className={`hidden flex-1 lg:flex lg:flex-row items-center justify-between gap-x-20 text-white transition-all duration-500 ease-in-out transform origin-top menuTop ${
               isMenuOpen ? "menuOpen" : ""
             } lg:block fixed lg:static top-0 left-0 w-full h-screen lg:h-auto bg-accent lg:bg-transparent p-5 lg:p-0 z-40 lg:z-auto`}
             style={{ transitionProperty: "opacity, max-height, transform" }}
           >
             <ul
-              className={`flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-4 w-full lg:w-auto`}
+              className={`lg:flex-1 flex flex-col lg:flex-row lg:items-center lg:justify-center gap-4 lg:gap-8  w-full`}
             >
               <li className="cursor-pointer relative navbar_link font-outfit font-medium">
                 <Link href="/" passHref>
@@ -128,28 +131,145 @@ const Navbar = () => {
                   </a>
                 </Link>
               </li>
-              <li className="cursor-pointer relative navbar_link font-outfit font-medium">
-                <Link href="/technology" passHref>
-                  <a
-                    className={
-                      router.pathname === "/technology" ? "active" : ""
-                    }
-                    onClick={handleLinkClick}
+
+              <li className="relative group navbar_link font-outfit font-medium">
+                <div
+                  className="flex justify-between items-center gap-x-2 hasSubmenu cursor-pointer w-full"
+                  onClick={() => setOpenSolution(!openSolution)}
+                >
+                  Solution{" "}
+                  <span
+                    className={`transition-transform ${
+                      openSolution ? "rotate-270" : "rotate-90"
+                    }`}
                   >
-                    Technology
-                  </a>
-                </Link>
+                    <MenuArrow />
+                  </span>
+                </div>
+
+                <ul
+                  className={`relative lg:absolute left-0 lg:mt-3 w-full lg:w-52 bg-accent lg:shadow-lg rounded-md lg:border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 lg:invisible group-hover:visible lg:-translate-y-4 group-hover:translate-y-0 transition-all duration-200 lg:p-2 ${
+                    isMobile && openSolution
+                      ? "max-h-96 opacity-100 visible mt-4"
+                      : "max-h-0 opacity-0 invisible lg:group-hover:max-h-max lg:group-hover:visible lg:group-hover:opacity-100"
+                  }`}
+                >
+                  <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                    <Link href="/services">
+                      <a
+                        className={`block px-4 py-2 text-sm ${
+                          router.pathname === "/services"
+                            ? "bg-accent1 rounded-md"
+                            : ""
+                        }`}
+                        onClick={handleLinkClick}
+                      >
+                        Services
+                      </a>
+                    </Link>
+                  </li>
+                  <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                    <Link href="/technology">
+                      <a
+                        className={`block px-4 py-2 text-sm ${
+                          router.pathname === "/technology"
+                            ? "bg-accent1 rounded-md"
+                            : ""
+                        }`}
+                        onClick={handleLinkClick}
+                      >
+                        Technology
+                      </a>
+                    </Link>
+                  </li>
+                </ul>
               </li>
-              <li className="cursor-pointer relative navbar_link font-outfit font-medium">
-                <Link href="/services" passHref>
-                  <a
-                    className={router.pathname === "/services" ? "active" : ""}
-                    onClick={handleLinkClick}
+
+              <li className="relative group navbar_link font-outfit font-medium">
+                <div
+                  className="flex justify-between items-center gap-x-2 hasSubmenu cursor-pointer w-full"
+                  onClick={() => setOpenResources(!openResources)}
+                >
+                  Resources{" "}
+                  <span
+                    className={`transition-transform ${
+                      openResources ? "rotate-270" : "rotate-90"
+                    }`}
                   >
-                    Services
-                  </a>
-                </Link>
+                    <MenuArrow />
+                  </span>
+                </div>
+
+                <ul
+                  className={`relative lg:flex items-start gap-3 lg:absolute left-0 lg:mt-3 w-full lg:w-96 bg-accent lg:shadow-lg rounded-md lg:border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 lg:invisible group-hover:visible lg:-translate-y-4 group-hover:translate-y-0 transition-all duration-200 lg:p-2 ${
+                    isMobile && openResources
+                      ? "max-h-96 opacity-100 visible mt-4"
+                      : "max-h-0 opacity-0 invisible lg:group-hover:max-h-max lg:group-hover:visible lg:group-hover:opacity-100"
+                  }`}
+                >
+                  <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                    <Link href="/RequestProposal">
+                      <a
+                        className={`block p-2 text-sm ${
+                          router.pathname === "/RequestProposal"
+                            ? "bg-accent1 rounded-md"
+                            : ""
+                        }`}
+                        onClick={handleLinkClick}
+                      >
+                        Request for Proposal
+                      </a>
+                    </Link>
+                  </li>
+
+                  <div>
+                    <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                      <Link href="/ResaleCertificate">
+                        <a
+                          className={`block p-2 text-sm ${
+                            router.pathname === "/ResaleCertificate"
+                              ? "bg-accent1 rounded-md"
+                              : ""
+                          }`}
+                          onClick={handleLinkClick}
+                        >
+                          Resale Certificate
+                        </a>
+                      </Link>
+                    </li>
+                    <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                      <Link href="/DemandStatement">
+                        <a
+                          className={`block p-2 text-sm ${
+                            router.pathname === "/DemandStatement"
+                              ? "bg-accent1 rounded-md"
+                              : ""
+                          }`}
+                          onClick={handleLinkClick}
+                        >
+                          Demand Statement
+                        </a>
+                      </Link>
+                    </li>
+                    <li className="hover:bg-accent1 transition-all duration-300 rounded-md">
+                      <Link href="/CondoQuestionnaire">
+                        <a
+                          className={`block p-2 text-sm ${
+                            router.pathname === "/CondoQuestionnaire"
+                              ? "bg-accent1 rounded-md"
+                              : ""
+                          }`}
+                          onClick={handleLinkClick}
+                        >
+                          Condo Questionnaire
+                        </a>
+                      </Link>
+                    </li>
+                  </div>
+                </ul>
               </li>
+
+              {/* 
               <li className="cursor-pointer relative navbar_link font-outfit font-medium">
                 <Link href="/RequestProposal" passHref>
                   <a
@@ -164,7 +284,7 @@ const Navbar = () => {
               </li>
               <li className="relative group navbar_link font-outfit font-medium">
                 <div
-                  className="flex justify-between items-center gap-x-1 hasSubmenu cursor-pointer w-full"
+                  className="flex justify-between items-center gap-x-2 hasSubmenu cursor-pointer w-full"
                   onClick={() => setOpenDocuments(!openDocuments)}
                 >
                   Documents
@@ -227,10 +347,10 @@ const Navbar = () => {
                     </Link>
                   </li>
                 </ul>
-              </li>
+              </li> */}
               <li className="relative group navbar_link font-outfit font-medium">
                 <div
-                  className="flex justify-between items-center gap-x-1 hasSubmenu cursor-pointer w-full"
+                  className="flex justify-between items-center gap-x-2 hasSubmenu cursor-pointer w-full"
                   onClick={() => setOpenSocials(!openSocials)}
                 >
                   Socials{" "}
@@ -321,7 +441,7 @@ const Navbar = () => {
                     onClick={handleLinkClick}
                     target="_blank"
                   >
-                    <Button>Get Started</Button>
+                    <Button>Login</Button>
                   </a>
                 </Link>
               </li>

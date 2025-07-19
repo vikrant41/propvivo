@@ -64,7 +64,7 @@ const SingleBlog = ({ post }: BlogProps) => {
             />
           )}
           <div className="absolute bottom-10 container left-0 right-0">
-            <h1 className="lg:text-4xl mb-4 text-white">{post.title}</h1>
+            <h1 className="lg:text-4xl mb-4 text-white hidden md:block">{post.title}</h1>
             <div className="flex items-center text-white gap-4">
               <div className="flex items-center gap-2">
                 <ProfileIcon />
@@ -88,7 +88,7 @@ const SingleBlog = ({ post }: BlogProps) => {
           </button>
 
           <div className="max-w-4xl mx-auto">
-            <h1 className="lg:text-4xl mb-7">{post.title}</h1>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl mb-7">{post.title}</h1>
 
             {post.description && (
               <div
