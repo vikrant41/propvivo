@@ -144,7 +144,7 @@ const ContactSection = () => {
       <section className="relative">
         <div className="py-12 md:py-16 relative">
           <div className="container">
-            <div className="grid lg:grid-cols-2 items-end gap-y-8 lg:gap-x-14">
+            <div className="grid lg:grid-cols-2 items-center gap-y-8 lg:gap-x-14">
               <div className="relative space-y-7">
                 <div>
                   <h2>Contact Us</h2>
@@ -162,10 +162,10 @@ const ContactSection = () => {
                       className={`space-y-3 transition-all duration-500 block mxl:top-20 left-0 right-0 p-0`}
                     >
                       <li className="relative flex gap-2 ">
-                        <CallBlueIcon /> +1 (888) 392-3515
+                        <CallBlueIcon /> <a href="tel:+1 (888) 392-3515">+1 (888) 392-3515</a>
                       </li>
                       <li className="relative flex gap-2 ">
-                        <MailBlueIcon /> services@propvivo.com
+                        <MailBlueIcon /> <a href="mailto:services@propvivo.com">services@propvivo.com</a>
                       </li>
                       <li className="relative flex gap-2 ">
                         <ClockBlueIcon /> Mon - Fri : 9 am - 5 pm, <br />
@@ -354,7 +354,7 @@ const ContactSection = () => {
             </div>
             <div className="mt-14">
               <h2 className="font-medium mb-7">Our Office Address</h2>
-              <div className="grid grid-cols-11 gap-8 items-stretch">
+              <div className="grid grid-cols-1 mxl:grid-cols-11 gap-4 mxl:gap-8 items-stretch">
                 {/* Google Map */}
                 <iframe
                   src={locations[selected].mapSrc}
@@ -365,18 +365,18 @@ const ContactSection = () => {
                 ></iframe>
 
                 {/* Location Selector */}
-                <div className="col-span-3 grid grid-rows-2 gap-4">
+                <div className="col-span-8 mxl:col-span-3 grid grid-cols-1 md:grid-cols-2 mxl:grid-rows-2 gap-4">
                   {(["usa", "india"] as const).map((key) => (
                     <div
                       key={key}
                       onClick={() => setSelected(key)}
-                      className={`cursor-pointer min-h-44 border rounded-lg py-6 px-4 transition-all duration-200 ${
+                      className={`cursor-pointer mxl:min-h-44 border rounded-lg p-2 mxl:py-6 mxl:px-4 transition-all duration-200 ${
                         selected === key
                           ? "border-btnDarkBlue bg-pvLightBlue"
                           : "border-gray-o-60 hover:bg-pvLightBlue"
                       }`}
                     >
-                      <div className="font-outfit text-3xl text-pvBlack mb-1 flex items-center gap-2">
+                      <div className="font-outfit text-22 mxl:text-3xl text-pvBlack mb-1 flex items-center gap-2">
                         <img
                           src={locations[key].flag}
                           alt={`${locations[key].name} Flag`}

@@ -29,8 +29,8 @@ const Footer: React.FC = () => {
   return (
     <footer className="flex flex-col w-full  bg-accent">
       <div className="container">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-7 md:gap-5 justify-between py-6 md:py-12">
-          <div className="flex flex-col ml-5 max-md:ml-0 max-md:w-full">
+        <div className="grid md:grid-cols-2 lg:grid-cols-10 gap-7 md:gap-5 justify-between py-6 md:py-12">
+          <div className="flex flex-col ml-5 max-md:ml-0 max-md:w-full col-span-3">
             <div className="flex flex-col items-start w-full">
               <div>
                 <Link href="/" passHref>
@@ -40,12 +40,12 @@ const Footer: React.FC = () => {
                 </Link>
                 <div className="flex gap-x-8 text-sm mt-5">
                   <div className="relative after:absolute after:w-2 after:h-2 after:rounded-full after:bg-white/80 after:top-1/2 after:-translate-y-1/2 after:ml-3 text-lightGreen">
-                    Trust
+                    Innovation
                   </div>
                   <div className="relative after:absolute after:w-2 after:h-2 after:rounded-full after:bg-white/80 after:top-1/2 after:-translate-y-1/2 after:ml-3 text-pvOrange">
                     Transparency
                   </div>
-                  <div className="relative text-accent1">Excellence</div>
+                  <div className="relative text-accent1">Reliability</div>
                 </div>
               </div>
               <div className="mt-5 md:mt-10">
@@ -53,7 +53,7 @@ const Footer: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col max-md:w-full">
+          <div className="flex flex-col max-md:w-full col-span-2">
             <div className="flex flex-col grow items-start">
               <div className="text-2xl font-medium text-white font-outfit">
                 Menu
@@ -131,7 +131,7 @@ const Footer: React.FC = () => {
               </ul>
             </div>
           </div>
-          <div className="flex flex-col max-md:w-full">
+          <div className="flex flex-col max-md:w-full col-span-3">
             <div className="flex flex-col grow items-start">
               <div className="text-2xl font-medium text-white font-outfit">
                 Services
@@ -185,7 +185,7 @@ const Footer: React.FC = () => {
               </ul>
             </div>
           </div>
-          <div className="flex flex-col max-md:w-full">
+          <div className="flex flex-col max-md:w-full col-span-2">
             <div className="flex flex-col grow items-start">
               <div className="text-2xl font-medium text-white font-outfit">
                 Contact
@@ -198,11 +198,11 @@ const Footer: React.FC = () => {
                 className={`mt-6 space-y-3 transition-all duration-500 block mxl:top-20 left-0 right-0 p-0`}
               >
                 <li className="relative flex gap-2">
-                  <CallIcon /> <span className="flex-1 text-17 text-white/70">+1 (888) 392-3515</span>
+                  <CallIcon /> <a href="tel:+1 (888) 392-3515"><span className="flex-1 text-17 text-white/70">+1 (888) 392-3515</span></a>
                 </li>
                 <li className="relative flex gap-2">
                   <MailIcon />{" "}
-                  <span className="flex-1 text-17 text-white/70">services@propvivo.com</span>
+                  <a href="mailto:services@propvivo.com"><span className="flex-1 text-17 text-white/70">services@propvivo.com</span></a>
                 </li>
                 <li className="relative flex gap-2">
                   <ClockIcon />{" "}
@@ -214,14 +214,14 @@ const Footer: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="border-t border-white/20 py-4 md:py-5 gap-4 flex flex-col lg:flex-row justify-between">
+        <div className="border-t border-white/20 py-4 md:py-5 gap-4 text-center">
           <p className="text-white/70 mb-0">
             Copyright &#169; propVIVO 2025 | All Right Reserved
           </p>
-          <p className="text-white/70 mb-0">
+          {/* <p className="text-white/70 mb-0">
             Best viewed with IE 11, Firefox 76+, Safari 11+, Chrome 83+, Edge
             81+.
-          </p>
+          </p> */}
         </div>
       </div>
     </footer>

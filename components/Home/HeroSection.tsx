@@ -16,7 +16,8 @@ import Link from "next/link";
 
 const HeroSection = () => {
   const router = useRouter();
-
+  const routeTo =
+    process.env.NEXT_PUBLIC_LOGIN_URL || "http://login.devpropvivo.co/login";
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -51,12 +52,7 @@ const HeroSection = () => {
         <div className="">
           <div className="flex flex-col lg:flex-row gap-3">
             <div className="space-y-4 md:space-y-5 lg:w-1/2 px-8 xl:pr-0 xl:pl-0 padLeft">
-              {/* <SubHeading
-                text="SINCE 2013"
-                showRightLine={false}
-                isLeft={true}
-              /> */}
-              <div
+              {/* <div
                 className={`flex items-center justify-start gap-2.5`}
                 style={{ gap: "10px" }}
               >
@@ -67,7 +63,7 @@ const HeroSection = () => {
                 <div className="font-outfit text-base uppercase tracking-wide text-pvBlack">
                   SINCE 2013
                 </div>
-              </div>
+              </div> */}
               <h1 className="leading-tight space-x-3">
                 Revolutionizing <br />
                 <span className="text-accent1 relative lg:pl-0 lg:pr-2 inline-block">
@@ -86,13 +82,11 @@ const HeroSection = () => {
                 }
               >
                 <p>
-                  <strong>
-                    Streamline operations, ensure transparency, and elevate
-                    community living
-                  </strong>{" "}
-                  with our comprehensive HOA management platform designed to
-                  make community board members, efficient, and effective
-                  experience to build a great HOA community today.
+                  Streamline operations, reduce delinquencies, ensure
+                  compliance, and experience HOA management like never before.
+                  With a suite of powerful tools and intuitive features,
+                  simplify your day-to-day tasks, improve and deliver a seamless
+                  experience to your community.
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 md:gap-x-2 pt-3 pb-2">
@@ -114,10 +108,13 @@ const HeroSection = () => {
                 </div>
               </div>
               <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-4">
-                <Button onClick={() => router.push("/about")}>
+                <Button onClick={() => window.open(routeTo, "_blank")}>
                   Explore Platform
                 </Button>
-                <Button variant="secondary">
+                <Button
+                  variant="secondary"
+                  onClick={() => router.push("/contact")}
+                >
                   <VideoIcon /> Request a Demo
                 </Button>
               </div>
@@ -152,7 +149,10 @@ const HeroSection = () => {
                   <img src="./img/CoPilotImg.png" className="" />
                 </div>
               </div>
-              <img src="./img/DashboardView.png" className="w-full" />
+              <img
+                src="./img/DashboardView.png"
+                className="w-full md:w-11/12"
+              />
             </div>
           </div>
         </div>

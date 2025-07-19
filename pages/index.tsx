@@ -12,10 +12,11 @@ const IndexPage = () => {
     <>
      <HeroSection />
      {/* <CorePillars /> */}
-     <KeyBenefitMain />
+     
      {/* <RequestDoc /> */}
      <ThreeCorePillars />
      <FeatureOffer />
+     <KeyBenefitMain />
      <Testimonials />
      <OnboardingSteps />
      <CommunitySection />
