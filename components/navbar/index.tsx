@@ -10,6 +10,9 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const dropdownRef = useRef(null);
+  const loginUrl = process.env.NEXT_PUBLIC_LOGIN_URL;
+
+
 
   useEffect(() => {
     const body = document.body;
@@ -293,10 +296,10 @@ const Navbar = () => {
               className={`flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-7 text-white`}
             >
               <li className="cursor-pointer relative navbar_link font-outfit font-medium">
-                <Link href="http://login.devpropvivo.co/login" passHref>
+                <Link href={loginUrl} passHref>
                   <a
                     className={
-                      router.pathname === "http://login.devpropvivo.co/login"
+                      router.pathname === loginUrl
                         ? "active"
                         : "text-white"
                     }
@@ -308,10 +311,10 @@ const Navbar = () => {
                 </Link>
               </li>
               <li className="cursor-pointer relative font-outfit font-medium">
-                <Link href="http://login.devpropvivo.co/login" passHref>
+                <Link href={loginUrl} passHref>
                   <a
                     className={
-                      router.pathname === "http://login.devpropvivo.co/login"
+                      router.pathname === loginUrl
                         ? "active"
                         : ""
                     }
