@@ -1,7 +1,9 @@
 import React from "react";
 import { Button } from "../CommonComponents/Button";
+import { useRouter } from "next/router";
 
 const CommunitySection = () => {
+   const router = useRouter();
   return (
     <>
       <section className="py-9 md:py-22 md:pb-40 relative bg-pvLightBlue ">
@@ -17,9 +19,14 @@ const CommunitySection = () => {
               Ready to Transform Your Community? <br />
               Let's Get Started...
             </h2>
-            <p className="text-white text-lg" >Join 100+ of communities that have already transformed their management experience with propVIVO.</p>
+            <p className="text-white text-lg">
+              Join 100+ of communities that have already transformed their
+              management experience with propVIVO.
+            </p>
             <div className="flex justify-center mt-5">
-              <Button>Request for Proposal</Button>
+              <Button onClick={() => router.push("/contact")}>
+                Request for Proposal
+              </Button>
             </div>
           </div>
         </div>

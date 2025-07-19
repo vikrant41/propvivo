@@ -64,9 +64,9 @@ const Testimonials = () => {
     slidesToScroll: 1,
     responsive: [
       {
-        breakpoint: 768, 
+        breakpoint: 768,
         settings: {
-          slidesToShow: 1, 
+          slidesToShow: 1,
           slidesToScroll: 1,
         },
       },
@@ -92,6 +92,15 @@ const Testimonials = () => {
     },
     {
       id: 1,
+      star: 5,
+      description:
+        "Propvivo is a great HOA management company. They have a great digital solution for associations. The people are professional, honest, very knowledgeable about anything HOA. They are flexible and can tailor their solutions to the individual needs of each HOA.",
+      authorImg: "./img/authorImg3.png",
+      authorName: "Steven Bathiche",
+      authorDetails: "Board Member, Aspire Association",
+    },
+    {
+      id: 2,
       star: 4,
       description:
         "Had unresolved fees since takeover. I called and somebody answered. The guy Paul actually called back like he said he would and announced all late fees were taken care of as requested. Yeah!",
@@ -100,13 +109,20 @@ const Testimonials = () => {
       authorDetails: "Home Owner, SA Association",
     },
     {
-      id: 2,
+      id: 3,
       star: 5,
       description:
-        "Propvivo is a great HOA management company. They have a great digital solution for associations. The people are professional, honest, very knowledgeable about anything HOA. They are flexible and can tailor their solutions to the individual needs of each HOA.",
-      authorImg: "./img/authorImg3.png",
-      authorName: "Steven Bathiche",
-      authorDetails: "Board Member, Aspire Association",
+        "I'm President of Loomis Trail HOA, located in Northwest Washington.After 1 year of experience working with the propVIVO management team assigned to our HOA, we have improved HOA Communications. We have improved HOA Fiscal Transparency, and we have improved HOA Governing Documents. Today, I am giving propVIVO 5 Stars. Change is never easy. If you are willing to collaborate with a cutting-edge management team, to bring about positive change, then I recommend propVIVO.",
+      authorName: "Renee J.",
+      authorDetails: "President, Loomis Trail HOA",
+    },
+    {
+      id: 4,
+      star: 5,
+      description:
+        "Propvivo manages our building. Customer service is quick to respond to inquiries, and they are excellent about following up to ensure issues have been resolved. Tarun Sharma was a big help getting a service request in for me and then following up on the request.",
+      authorName: "Kristin F.",
+      authorDetails: "Seattle, WA",
     },
   ];
 
@@ -159,13 +175,26 @@ const Testimonials = () => {
                     </svg>
                   ))}
                 </div>
-                <p className="line-clamp-3 overflow-hidden">{props.description}</p>
+                <p className="line-clamp-3 overflow-hidden">
+                  {props.description}
+                </p>
                 <div className="flex items-center gap-4">
-                  <img
-                    src={props.authorImg}
-                    alt={props.authorName || "Author"}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
+                  {props.authorImg ? (
+                    <img
+                      src={props.authorImg}
+                      alt={props.authorName || "Author"}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gray-300 text-gray-800 flex items-center justify-center font-semibold text-lg">
+                      {props.authorName
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .substring(0, 2)
+                        .toUpperCase()}
+                    </div>
+                  )}
                   <div>
                     <div className="text-pvBlack font-medium font-outfit">
                       {props.authorName || "Anonymous"}

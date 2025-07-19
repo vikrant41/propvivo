@@ -47,7 +47,7 @@ const featureData = [
     icon: <FeatureIcon5 />,
     title: "Analytics & Reports",
     description:
-      "Streamlined board task tracking with automated workflows and deadlines.",
+      "Track board tasks effortlessly with real-time analytics, automated workflows, and deadline-driven insights.",
     featureImg: "./img/featureImage5.png",
   },
   {
@@ -55,7 +55,7 @@ const featureData = [
     icon: <FeatureIcon6 />,
     title: "Meeting Management",
     description:
-      "Real-time financial reporting with budget tracking and expense management.",
+      "Organize meetings, track agendas, and take minutes all in one platform.",
     featureImg: "./img/featureImage6.png",
   },
 ];
@@ -73,6 +73,7 @@ const FeatureOffer = () => {
             subtitle="FEATURES"
             title="Features We Offer"
             content="Empowering Property Management with Cutting-Edge Features that Simplify, Streamline, and Elevate Your Operations. Discover Smart Solutions Designed to Enhance Efficiency and Improve Community Living Experiences."
+            maxWidth="914px"
           />
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">

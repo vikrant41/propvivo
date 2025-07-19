@@ -50,7 +50,7 @@ const KeyBenefitMain = (props) => {
       description: `
       <p>Experience unmatched clarity in HOA management through our transparent, real-time platform. Monitor operations, financials, and communications with ease — promoting accountability and smarter decisions.</p>
       <ul class="list-disc pl-5 mt-2 space-y-2">
-        <li><strong>Empowers communities with complete visibility</strong></li>
+        <li>Empowers communities with complete visibility</li>
         <li>Eliminates blind spots for enhanced oversight</li>
         <li>User-friendly design powered by advanced technology</li>
       </ul>
@@ -64,7 +64,7 @@ const KeyBenefitMain = (props) => {
       description: `
       <p>Gain real-time visibility into every aspect of your community's management with our transparent platform. HOA boards and managers can effortlessly track operations, financials, and communications to ensure accountability and informed decisions. </p>
       <ul class="list-disc pl-5 mt-2 space-y-2">
-        <li><strong>Empowers Communities with Full Transparency </strong></li>
+        <li>Empowers Communities with Full Transparency</li>
         <li>Eliminates blind spots with comprehensive visibility.</li>
         <li>Intuitive and easy to use with advanced technology.</li>
       </ul>
@@ -78,7 +78,7 @@ const KeyBenefitMain = (props) => {
       description: `
       <p>Achieve clarity and reliability with our robust SLAs. Our platform ensures seamless service tracking for HOA operations, enhancing efficiency and accountability at every level. </p>
       <ul class="list-disc pl-5 mt-2 space-y-2">
-        <li><strong>Delivers Consistent and Measurable Results </strong></li>
+        <li>Delivers Consistent and Measurable Results </li>
         <li>Replaces ambiguity with clear service benchmarks. </li>
         <li>Designed for ease of use and precision. </li>
       </ul>

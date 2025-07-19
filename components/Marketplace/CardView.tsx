@@ -126,7 +126,8 @@ function CardView({ data }: Props) {
                     slidesPerView={1}
                     spaceBetween={30}
                     pagination={{
-                      dynamicBullets: true,
+                      // dynamicBullets: true,
+                      clickable: true,
                     }}
                     modules={[Pagination]}
                     className="cardsider"
