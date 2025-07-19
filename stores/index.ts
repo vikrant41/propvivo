@@ -9,8 +9,8 @@ import type { MiddlewareAPI, Middleware } from "@reduxjs/toolkit";
 
 export const logout = () => {
   const routeTo =
-    process.env.NEXT_PUBLIC_APP_LOGIN || "http://login.devpropvivo.co/login";
-  const domain = process.env.NEXT_PUBLIC_DOMAIN_URL || ".devpropvivo.co";
+    process.env.NEXT_PUBLIC_LOGIN_URL;
+  const domain = process.env.NEXT_PUBLIC_DOMAIN_URL ;
   Cookies.remove("authToken");
   Cookies.remove("subscriptionId");
   Cookies.remove("roleId");
@@ -55,8 +55,8 @@ export const logout = () => {
 
 export const rtkQueryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
-    const routeTo = process.env.NEXT_PUBLIC_APP_LOGIN || "http://login.devpropvivo.co/login";
-    const domain = process.env.NEXT_PUBLIC_DOMAIN_URL || ".devpropvivo.co";
+    const routeTo = process.env.NEXT_PUBLIC_LOGIN_URL ;
+    const domain = process.env.NEXT_PUBLIC_DOMAIN_URL ;
     if (isRejectedWithValue(action) && action.payload) {
       console.log("We got a rejected action!", action.payload.status);
     //   if (action.payload.status === 401) {
