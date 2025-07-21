@@ -24,7 +24,7 @@ const CommunitySection = () => {
               management experience with propVIVO.
             </p>
             <div className="flex justify-center mt-5">
-              <Button onClick={() => router.push("/contact")}>
+              <Button onClick={() => router.push("/RequestProposal")}>
                 Request for Proposal
               </Button>
             </div>

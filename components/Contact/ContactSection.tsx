@@ -365,7 +365,7 @@ const ContactSection = () => {
                 ></iframe>
 
                 {/* Location Selector */}
-                <div className="col-span-8 mxl:col-span-3 grid grid-cols-1 md:grid-cols-2 mxl:grid-rows-2 gap-4">
+                <div className="col-span-8 mxl:col-span-3 flex flex-col gap-4">
                   {(["usa", "india"] as const).map((key) => (
                     <div
                       key={key}
