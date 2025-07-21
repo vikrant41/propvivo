@@ -1,6 +1,6 @@
 # PropVivo Accounting with TypeScript Next.js
 
-This is a really simple project that shows the usage of Next.js with TypeScript.
+This is a really simple project that shows the usage of Next.js with TypeScript.ax
 
 ## run Json Server
 
