@@ -10,7 +10,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const routeTo =
-    process.env.NEXT_PUBLIC_LOGIN_URL || "http://login.devpropvivo.co/login";
+    process.env.NEXT_PUBLIC_LOGIN_URL;
   const dropdownRef = useRef(null);
   const loginUrl = process.env.NEXT_PUBLIC_LOGIN_URL;
 
@@ -415,21 +415,6 @@ const Navbar = () => {
             <ul
               className={`flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-7 text-white`}
             >
-              <li className="cursor-pointer relative navbar_link font-outfit font-medium">
-                <Link href={loginUrl} passHref>
-                  <a
-                    className={
-                      router.pathname === loginUrl
-                        ? "active"
-                        : "text-white"
-                    }
-                    onClick={handleLinkClick}
-                    target="_blank"
-                  >
-                    Login
-                  </a>
-                </Link>
-              </li>
               <li className="cursor-pointer relative font-outfit font-medium">
                 <Link href={loginUrl} passHref>
                   <a
