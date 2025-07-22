@@ -618,7 +618,7 @@ function DemandStatement() {
         <div className="max-w-3xl mx-auto my-14 px-5">
           <FormikProvider value={formik}>
             <Form autoComplete="off" className="">
-              <div className="w-full space-y-6">
+              <div className="w-full space-y-14">
                 <div className="relative grid grid-cols-1 md:grid-cols-6">
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Requestor Type <span className="text-red-500">*</span>
@@ -800,7 +800,7 @@ function DemandStatement() {
                       Requester Information{" "}
                       <span className="text-red-500">*</span>
                     </label>
-                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-14">
                       <div>
                         <div className="flex items-center border-b border-gray-o-60">
                           <Field
@@ -950,7 +950,7 @@ function DemandStatement() {
                     <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                       Buyer Information <span className="text-red-500">*</span>
                     </label>
-                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-14">
                       <div>
                         <div className="flex items-center border-b border-gray-o-60">
                           <Field
@@ -1065,7 +1065,7 @@ function DemandStatement() {
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Closing Date <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-14">
                     <div>
                       <div className="flex items-center border-b border-gray-o-60">
                         <Field
@@ -1133,7 +1133,7 @@ function DemandStatement() {
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                     Order Type <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5 text-pvBlack">
+                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-14 text-pvBlack">
                     {/* Dynamically render radio buttons based on the order types */}
                     {orderTypeList?.data?.orderTypes?.map((order) => (
                       <label
