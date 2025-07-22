@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
 
 export const CONTACT_US_REQUEST = gql`
-  mutation createContractUs($request: CreateContactUsRequestInput!) {
+  mutation createContactUs($request: CreateContactUsRequestInput!) {
     contactUsMutations {
-      createContractUs(request: $request) {
+      createContactUs(request: $request) {
         message
         statusCode
         success
