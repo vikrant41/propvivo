@@ -210,7 +210,7 @@ const ContactSection = () => {
                                 type="tel"
                                 id="phone"
                                 name="phone"
-                                placeholder="Contact Number"
+                                placeholder="Phone"
                                 className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                                 onChange={(e) => {
                                   const input = e.target.value.replace(
@@ -267,7 +267,7 @@ const ContactSection = () => {
                                 type="email"
                                 id="email"
                                 name="email"
-                                placeholder="Email ID"
+                                placeholder="Email Address"
                                 className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                               />
                             </div>
@@ -296,23 +296,23 @@ const ContactSection = () => {
                             />
                           </div>
 
-                          {/*<div className="relative">
+                          <div className="relative">
                             <div className="flex items-center border-b border-gray-o-60">
                               <FaPencil className="ml-1" />
                               <Field
                                 type="text"
                                 id="doc"
                                 name="doc"
-                                placeholder="Which documents you need?"
+                                placeholder="Drop a message here..."
                                 className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                               />
                             </div>
-                             <ErrorMessage
+                             {/* <ErrorMessage
                               name="doc"
                               component="div"
                               className="text-sm text-red-500 absolute"
-                            /> 
-                          </div>*/}
+                            />  */}
+                          </div>
                           <div className="pt-4">
                             <ReCAPTCHA
                               sitekey={captchaSiteKey}

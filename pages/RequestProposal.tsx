@@ -144,9 +144,9 @@ const RequestProposal = () => {
         <FormikProvider value={formik}>
           <Form autoComplete="off" className="">
             <div className="w-full space-y-6">
-              <div className="text-pvBlack text-3xl font-bold">
+              {/* <div className="text-pvBlack text-3xl font-bold">
                 REQUEST FOR PROPOSAL
-              </div>
+              </div> */}
               <div className="relative grid grid-cols-1 md:grid-cols-6">
                 <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                   Proposal Request Form<span className="text-red-500">*</span>
@@ -385,7 +385,7 @@ const RequestProposal = () => {
                   Submit
                 </Button>
                 <button
-                  className="!text-accent2 hover:!text-white border !border-associationLightgray !bg-white hover:!bg-pvBlack !shadow-none transition-all duration-300 justify-center btn"
+                  className="px-8 py-1 rounded-full text-accent2 hover:text-white border border-associationLightgray bg-white hover:bg-accent1 shadow-none transition-all duration-300 justify-center font-outfit"
                   type="button"
                   onClick={handleReset}
                 >

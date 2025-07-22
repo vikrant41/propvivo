@@ -18,7 +18,7 @@ const IndexPage = () => {
      <FeatureOffer />
      <KeyBenefitMain />
      <Testimonials />
-     <OnboardingSteps />
+     {/* <OnboardingSteps /> */}
      <CommunitySection />
      <Newsletter />
     </>
