@@ -37,7 +37,7 @@ const OurMission = () => {
 
   const router = useRouter();
     const routeTo =
-      process.env.NEXT_PUBLIC_LOGIN_URL || "http://login.devpropvivo.co/login";
+      process.env.NEXT_PUBLIC_LOGIN_URL;
 
   return (
     <>

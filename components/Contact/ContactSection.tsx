@@ -51,17 +51,15 @@ const validationSchema = Yup.object({
   phone: Yup.string()
     .min(10, "Contact number length should be 10")
     .required("Contact number is required"),
-  reason: Yup.string()
-    .required("Reason for contact is required")
-    .matches(/^(?!.*\s{2,})[^\s][\s\S]*[^\s]$/, "White space not allowed"),
-  doc: Yup.string()
-    .trim()
-    .min(3, "Please specify the document or description.")
-    .required("Document description is required.")
-    .matches(
-      /^(?!\s*$).+$/,
-      "Document description cannot be empty or just spaces."
-    ),
+  reason: Yup.string().required("Reason for contact is required"),
+  // doc: Yup.string()
+  //   .trim()
+  //   .min(3, "Please specify the document or description.")
+  //   .required("Document description is required.")
+  //   .matches(
+  //     /^(?!\s*$).+$/,
+  //     "Document description cannot be empty or just spaces."
+  //   ),
   // recaptcha: Yup.string().required("Please verify that you are not a robot"),
 });
 
@@ -70,7 +68,6 @@ const initialValues: any = {
   email: "",
   phone: "",
   reason: "",
-  doc: "",
   recaptcha: "",
 };
 
@@ -103,7 +100,7 @@ const ContactSection = () => {
     resetForm();
 
     const payLoad = {
-      contactReason: values?.reason,
+      contactReason: values?.reason.trim(),
       email: values?.email,
       message: values?.doc,
       name: values?.name,
@@ -213,7 +210,7 @@ const ContactSection = () => {
                                 type="tel"
                                 id="phone"
                                 name="phone"
-                                placeholder="Contact Number"
+                                placeholder="Phone"
                                 className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                                 onChange={(e) => {
                                   const input = e.target.value.replace(
@@ -270,7 +267,7 @@ const ContactSection = () => {
                                 type="email"
                                 id="email"
                                 name="email"
-                                placeholder="Email ID"
+                                placeholder="Email Address"
                                 className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                               />
                             </div>
@@ -306,15 +303,15 @@ const ContactSection = () => {
                                 type="text"
                                 id="doc"
                                 name="doc"
-                                placeholder="Which documents you need?"
+                                placeholder="Drop a message here..."
                                 className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                               />
                             </div>
-                            <ErrorMessage
+                             {/* <ErrorMessage
                               name="doc"
                               component="div"
                               className="text-sm text-red-500 absolute"
-                            />
+                            />  */}
                           </div>
                           <div className="pt-4">
                             <ReCAPTCHA
@@ -358,14 +355,14 @@ const ContactSection = () => {
                 {/* Google Map */}
                 <iframe
                   src={locations[selected].mapSrc}
-                  className="rounded-xl w-full h-full col-span-8"
+                  className="rounded-xl w-full h-full col-span-8 min-h-96"
                   style={{ border: 0 }}
                   allowFullScreen
                   loading="lazy"
                 ></iframe>
 
                 {/* Location Selector */}
-                <div className="col-span-8 mxl:col-span-3 grid grid-cols-1 md:grid-cols-2 mxl:grid-rows-2 gap-4">
+                {/* <div className="col-span-8 mxl:col-span-3 flex flex-col gap-4">
                   {(["usa", "india"] as const).map((key) => (
                     <div
                       key={key}
@@ -389,7 +386,23 @@ const ContactSection = () => {
                       </div>
                     </div>
                   ))}
-                </div>
+                </div> */}
+                <div className="col-span-8 mxl:col-span-3 flex flex-col gap-4">
+  <div className="mxl:min-h-44 border rounded-lg p-2 mxl:py-6 mxl:px-4 border-btnDarkBlue bg-pvLightBlue">
+    <div className="font-outfit text-22 mxl:text-3xl text-pvBlack mb-1 flex items-center gap-2">
+      <img
+        src={locations.usa.flag}
+        alt="United States Flag"
+        className="w-5 h-5 object-contain"
+      />
+      {locations.usa.name}
+    </div>
+    <div className="flex items-start gap-2 text-sm">
+      <p className="flex-1">{locations.usa.address}</p>
+    </div>
+  </div>
+</div>
+
               </div>
             </div>
           </div>

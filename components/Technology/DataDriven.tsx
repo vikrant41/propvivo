@@ -81,8 +81,14 @@ const DataDriven = (props) => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-x-4 pt-5">
-                <Button>Download Brochure</Button>
-                <Button variant="secondary" onClick={() => router.push("/contact")}>
+                {/* <Button>Download Brochure</Button> */}
+                <Button onClick={() => router.push("/RequestProposal")}>
+                  Request for Proposal
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => router.push("/contact")}
+                >
                   <VideoIcon /> Request a Demo
                 </Button>
               </div>
