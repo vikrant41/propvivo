@@ -143,7 +143,7 @@ const RequestProposal = () => {
       <div className="max-w-3xl mx-auto my-14 px-5">
         <FormikProvider value={formik}>
           <Form autoComplete="off" className="">
-            <div className="w-full space-y-6">
+            <div className="w-full space-y-14">
               {/* <div className="text-pvBlack text-3xl font-bold">
                 REQUEST FOR PROPOSAL
               </div> */}
@@ -270,7 +270,7 @@ const RequestProposal = () => {
                 <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                   Association Details <span className="text-red-500">*</span>
                 </label>
-                <div className="col-span-4 space-y-4">
+                <div className="col-span-4 space-y-14">
                   <div>
                     <div className="flex items-center border-b border-gray-o-60">
                       <Field
@@ -287,7 +287,7 @@ const RequestProposal = () => {
                     />
                   </div>
 
-                  <div className="col-span-4 space-y-4">
+                  <div className="col-span-4 space-y-14">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div>
                         <div className="flex items-center border-b border-gray-o-60">
@@ -323,7 +323,7 @@ const RequestProposal = () => {
                     </div>
 
                     {/* ✅ City, State, Zip - Full Row with Equal Widths */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-14">
                       <div className="w-full">
                         <div className="flex items-center border-b border-gray-o-60">
                           <Field
