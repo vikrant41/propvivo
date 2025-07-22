@@ -92,10 +92,10 @@ const Footer: React.FC = () => {
                   </Link>
                 </li>
                 <li className="cursor-pointer relative">
-                  <Link href="/services" passHref>
+                  <Link href="/technology" passHref>
                     <a
                       className={
-                        router.pathname === "/services"
+                        router.pathname === "/technology"
                           ? "active text-lightGreen"
                           : "transition-all duration-300"
                       }
@@ -105,15 +105,15 @@ const Footer: React.FC = () => {
                   </Link>
                 </li>
                 <li className="cursor-pointer relative">
-                  <Link href="/resources" passHref>
+                  <Link href="/blog" passHref>
                     <a
                       className={
-                        router.pathname === "/resources"
+                        router.pathname === "/blog"
                           ? "active text-lightGreen"
                           : "transition-all duration-300"
                       }
                     >
-                      Blog & Resources
+                      Blog
                     </a>
                   </Link>
                 </li>
@@ -144,10 +144,10 @@ const Footer: React.FC = () => {
                 className={`mt-6 space-y-2 transition-all duration-500 block mxl:top-20 left-0 right-0 p-0 footerMenu`}
               >
                 <li className="cursor-pointer relative">
-                  <Link href="/about" passHref>
+                  <Link href="/services" passHref>
                     <a
                       className={
-                        router.pathname === "/about"
+                        router.pathname === "/services"
                           ? "active text-lightGreen"
                           : "transition-all duration-300"
                       }
@@ -157,10 +157,10 @@ const Footer: React.FC = () => {
                   </Link>
                 </li>
                 <li className="cursor-pointer relative">
-                  <Link href="/services" passHref>
+                  <Link href="/services#tab2" passHref>
                     <a
                       className={
-                        router.pathname === "/services"
+                        router.pathname === "/services#tab2"
                           ? "active text-lightGreen"
                           : "transition-all duration-300"
                       }
@@ -170,10 +170,10 @@ const Footer: React.FC = () => {
                   </Link>
                 </li>
                 <li className="cursor-pointer relative">
-                  <Link href="/industries" passHref>
+                  <Link href="/services#tab3" passHref>
                     <a
                       className={
-                        router.pathname === "/industries"
+                        router.pathname === "/services#tab3"
                           ? "active text-lightGreen"
                           : "transition-all duration-300"
                       }
