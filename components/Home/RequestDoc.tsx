@@ -88,7 +88,7 @@ const RequestDoc = () => {
       });
 
       if (
-        response?.data?.contactUsMutations?.createContractUs?.statusCode === 200
+        response?.data?.contactUsMutations?.createContactUs?.statusCode === 200
       ) {
         setIsModalOpen(true);
       } else {

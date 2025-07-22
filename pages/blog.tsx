@@ -166,12 +166,12 @@ const Blog = () => {
                         <img
                           src={post.document?.uri}
                           alt={post.title || "Blog Image"}
-                          className="rounded-3xl object-cover w-full"
+                          className="rounded-3xl object-cover w-full md:h-60"
                         />
                       ) : (
                         <img
                           src="https://placehold.jp/30/cccccc/ffffff/360x260.png?text=No+image+Found"
-                          className="rounded-3xl object-cover w-full"
+                          className="rounded-3xl object-cover w-full md:h-60"
                         />
                       )}
                       <p className="text-pvBlack bg-white rounded-md px-2 py-1 absolute top-3 left-3">
