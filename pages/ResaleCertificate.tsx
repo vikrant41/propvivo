@@ -837,7 +837,7 @@ function ResaleCertificate() {
                     {/* Show the message if no unitData, but do not hide any fields */}
                     {isUnitDataEmpty && (
                       <div className="text-red-500 text-center my-8">
-                        No units found for the selected property.
+                        No units found for the selected property. 
                       </div>
                     )}
                   </div>
