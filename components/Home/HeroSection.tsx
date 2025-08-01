@@ -69,7 +69,7 @@ const HeroSection = () => {
               </div> */}
               <h1 className="leading-tight space-x-3">
                 Transparent 
-                <span className="text-accent1 relative lg:ml-3 inline-block">
+                <span className="text-accent1 relative mx-2 lg:ml-3 inline-block">
                   <span className="relative z-10">HOA{" "}</span>
                   <YellowBorderIcon className="absolute w-24 lg:w-full lg:min-w-40 -top-5 lg:-top-2 -left-2 lg:-left-3 z-0" />{" "}
                 </span><br />
@@ -85,13 +85,13 @@ const HeroSection = () => {
                 }
               >
                 <p>
-                 We deliver HOA management that’s transparent, responsive, and tailored to your community’s needs. We streamline operations, reduce delinquencies, automate compliance, and enhance communication all from one intuitive platform. 
+                 {`We deliver HOA management that’s transparent, responsive, and tailored to your community’s needs. We streamline operations, reduce delinquencies, automate compliance, and enhance communication all from one intuitive platform. Whatever your community needs, we help you manage smarter and serve better.`}
                 </p>
               </div>
               <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-4 pt-2 md:pt-8">
-                <Button onClick={() => window.open(routeTo, "_blank")}>
-                  Request for Proposal
-                </Button>
+                <Button onClick={() => router.push("/RequestProposal")}>
+                Request for Proposal
+              </Button>
                 {/* <Button
                   variant="secondary"
                   onClick={() => router.push("/contact")}

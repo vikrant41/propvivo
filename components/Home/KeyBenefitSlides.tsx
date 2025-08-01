@@ -212,7 +212,7 @@ const KeyBenefitSlides: React.FC<propsType> = ({
             <img
               loading="lazy"
               src={imageSrc?.src}
-              className="rounded-2xl z-10 relative"
+              className="rounded-2xl z-10 relative shadow-slideShadow"
               alt={title}
             />
           </div>

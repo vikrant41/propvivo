@@ -41,7 +41,7 @@ const financialSections = [
     icon: <FinancialManagementIcon5 />,
     title: "Auditing / Tax Returns",
     description:
-      "We streamline audits and tax filings with expert preparation and seamless submission for timely Board review.",
+      "We streamline audits and tax filings with expert preparation and seamless submissions for timely Board review.",
   },
   {
     icon: <FinancialManagementIcon6 />,
