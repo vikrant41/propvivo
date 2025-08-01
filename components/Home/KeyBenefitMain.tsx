@@ -48,11 +48,12 @@ const KeyBenefitMain = (props) => {
       icon: <TechnologyTransparencyIcon />,
       title: "Technology Transparency",
       description: `
-      <p>Experience unmatched clarity in HOA management through our transparent, real-time platform. Monitor operations, financials, and communications with ease — promoting accountability and smarter decisions.</p>
+      <p>Experience unmatched clarity in HOA management with our platform that delivers real-time tracking of operations, financials, and communications.</p>
+      <p>This transparency builds trust and empowers boards and homeowners to make informed decisions quickly. </p>
       <ul class="list-disc pl-5 mt-2 space-y-2">
-        <li>Empowers communities with complete visibility</li>
-        <li>Eliminates blind spots for enhanced oversight</li>
-        <li>User-friendly design powered by advanced technology</li>
+        <li>Full visibility into community activities.</li>
+        <li>Enhance trust through accessible data.</li>
+        <li>Modern interface designed for simplicity.</li>
       </ul>
     `,
     },
@@ -62,11 +63,11 @@ const KeyBenefitMain = (props) => {
       icon: <DataDrivenIcon />,
       title: "Data-Driven Insights",
       description: `
-      <p>Gain real-time visibility into every aspect of your community's management with our transparent platform. HOA boards and managers can effortlessly track operations, financials, and communications to ensure accountability and informed decisions. </p>
+      <p>Turn complex data into actionable intelligence with our analytics tools. Gain deep insights into community trends, financial health, and resident engagement to proactively improve operations and plan strategically.</p>
       <ul class="list-disc pl-5 mt-2 space-y-2">
-        <li>Empowers Communities with Full Transparency</li>
-        <li>Eliminates blind spots with comprehensive visibility.</li>
-        <li>Intuitive and easy to use with advanced technology.</li>
+        <li>Analytics that drive smarter decision-making.</li>
+        <li>Monitor key performance indicators easily.</li>
+        <li>Data visualization designed for busy managers.</li>
       </ul>
     `,
     },
@@ -76,11 +77,11 @@ const KeyBenefitMain = (props) => {
       icon: <SLAsIcon />,
       title: "Service Level Agreements (SLAs)",
       description: `
-      <p>Achieve clarity and reliability with our robust SLAs. Our platform ensures seamless service tracking for HOA operations, enhancing efficiency and accountability at every level. </p>
+      <p>Ensure consistent quality and accountability with clearly defined SLAs that track service requests and turnaround times. Our platform helps enforce standards, reducing delays and boosting resident satisfaction.</p>
       <ul class="list-disc pl-5 mt-2 space-y-2">
-        <li>Delivers Consistent and Measurable Results </li>
-        <li>Replaces ambiguity with clear service benchmarks. </li>
-        <li>Designed for ease of use and precision. </li>
+        <li>Clear benchmarks for service delivery.</li>
+        <li>Automated tracking and reporting of requests.</li>
+        <li>Improve responsiveness and operational efficiency.</li>
       </ul>
     `,
     },

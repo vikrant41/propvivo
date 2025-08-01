@@ -4,11 +4,14 @@ import { Button } from "../CommonComponents/Button";
 import {
   HoaIcon,
   MoneyIcon,
+  NoFeesIcon,
+  ReliableSupportIcon,
   StaredIcon,
   StarIcon,
   TopLeftIcon1,
   TopLeftIcon2,
   TopLeftIcon3,
+  TrustCommunitiesIcon,
   VideoIcon,
   YellowBorderIcon,
 } from "../shared/Icons";
@@ -50,7 +53,7 @@ const HeroSection = () => {
     <section className="py-9 lg:py-16 bg-pvLightBlue">
       <div className="relative">
         <div className="">
-          <div className="flex flex-col lg:flex-row gap-3">
+          <div className="flex flex-col-reverse lg:flex-row gap-6 lg:gap-3">
             <div className="space-y-4 md:space-y-5 lg:w-1/2 px-8 xl:pr-0 xl:pl-0 padLeft">
               {/* <div
                 className={`flex items-center justify-start gap-2.5`}
@@ -65,11 +68,11 @@ const HeroSection = () => {
                 </div>
               </div> */}
               <h1 className="leading-tight space-x-3">
-                Revolutionizing <br />
-                <span className="text-accent1 relative lg:pl-0 lg:pr-2 inline-block">
-                  <YellowBorderIcon className="absolute w-24 lg:w-full -top-5 lg:-top-2 -left-2 lg:-left-3 " />{" "}
-                  HOA{" "}
-                </span>{" "}
+                Transparent 
+                <span className="text-accent1 relative lg:ml-3 inline-block">
+                  <span className="relative z-10">HOA{" "}</span>
+                  <YellowBorderIcon className="absolute w-24 lg:w-full lg:min-w-40 -top-5 lg:-top-2 -left-2 lg:-left-3 z-0" />{" "}
+                </span><br />
                 Management
               </h1>
               <div
@@ -82,42 +85,35 @@ const HeroSection = () => {
                 }
               >
                 <p>
-                  Streamline operations, reduce delinquencies, ensure
-                  compliance, and experience HOA management like never before.
-                  With a suite of powerful tools and intuitive features,
-                  simplify your day-to-day tasks, improve and deliver a seamless
-                  experience to your community.
+                 We deliver HOA management that’s transparent, responsive, and tailored to your community’s needs. We streamline operations, reduce delinquencies, automate compliance, and enhance communication all from one intuitive platform. 
                 </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 md:gap-x-2 pt-3 pb-2">
-                <div className="flex items-center gap-x-2 text-pvBlack">
-                  <HoaIcon />
-                  Trusted by 100+ HOAs Since 2013
-                </div>
-                <div className="flex items-center gap-x-2 text-pvBlack">
-                  <StarIcon />
-                  Trusted with a 4.8 Rating
-                </div>
-                {/* <div className="flex items-center gap-x-2 text-pvBlack">
-                  <StaredIcon />
-                  Get Started in 24 Hours
-                </div> */}
-                <div className="flex items-center gap-x-2 text-pvBlack">
-                  <MoneyIcon />
-                  No Setup Fees, Cancel Anytime.
-                </div>
-              </div>
-              <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-4">
+              <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-4 pt-2 md:pt-8">
                 <Button onClick={() => window.open(routeTo, "_blank")}>
-                  Explore Platform
+                  Request for Proposal
                 </Button>
-                <Button
+                {/* <Button
                   variant="secondary"
                   onClick={() => router.push("/contact")}
                 >
                   <VideoIcon /> Request a Demo
-                </Button>
+                </Button> */}
               </div>
+              <div className="flex flex-col md:flex-row justify-between gap-2 pt-4 md:pt-8 pb-2 font-outfit font-medium text-base">
+                <div className="flex items-center gap-x-4 text-associationGray leading-tight text-base">
+                  <TrustCommunitiesIcon className="flex-shrink-0" />
+                  Trusted Communities
+                </div>
+                <div className="flex items-center gap-x-4 text-associationGray leading-tight text-base">
+                  <NoFeesIcon className="flex-shrink-0" />
+                  No Setup Fees, Cancel Anytime
+                </div>
+                <div className="flex items-center gap-x-4 text-associationGray leading-tight text-base">
+                  <ReliableSupportIcon className="flex-shrink-0" />
+                  Reliable Support
+                </div>
+              </div>
+              
               {/* <div className="pt-2 md:pt-6">
                 <h3 className="text-lg text-pvBlack">Follow us on:</h3>
                 <div className="flex gap-x-4 mt-5">
@@ -151,7 +147,7 @@ const HeroSection = () => {
               </div>
               <img
                 src="./img/DashboardView.png"
-                className="w-full md:w-11/12"
+                // className="w-full md:w-11/12"
               />
             </div>
           </div>

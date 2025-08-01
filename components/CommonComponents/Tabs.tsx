@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 
 type TabItem = {
   id: string;
   label: string;
+  icon: React.ReactNode;
+  activeIcon: React.ReactNode;
+  activeBgColor: string;
   content: React.ReactNode;
 };
 
@@ -13,58 +15,57 @@ type TabsProps = {
 };
 
 const Tabs: React.FC<TabsProps> = ({ tabs, defaultActiveId }) => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>(defaultActiveId || tabs[0]?.id);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 1024);
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const [activeTab, setActiveTab] = useState<string>(
+    defaultActiveId || tabs[0]?.id
+  );
 
   useEffect(() => {
     const hash = window.location.hash?.replace("#", "");
-    if (hash && tabs.some(tab => tab.id === hash)) {
+    if (hash && tabs.some((tab) => tab.id === hash)) {
       setActiveTab(hash);
     }
   }, [tabs]);
 
   return (
-    <div className="flex flex-col lg:flex-row items-start gap-9">
-      <div
-        className="flex flex-col p-4 bg-pvLightBlue rounded-2xl"
-        style={{ width: isMobile ? "100%" : "360px" }}
-      >
-        <h5 className="px-5 pb-1">Our Services</h5>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={`px-5 py-3 text-17 font-karla text-left rounded-md transition-all duration-200 hover:bg-accent1 hover:text-white ${
-              activeTab === tab.id ? "bg-accent1 text-white" : "text-pvBlack"
-            }`}
-            onClick={() => {
-              setActiveTab(tab.id);
-              window.history.replaceState(null, "", `#${tab.id}`);
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+    <div className="">
+      {/* Tabs Row */}
+      <div className="container relative mb-7 md:mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-5">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  window.history.replaceState(null, "", `#${tab.id}`);
+                }}
+                className={`flex flex-col items-center gap-2 px-1 py-4 md:py-6 rounded-md font-outfit font-medium font-base transition-all duration-300 shadow-keyShadow
+                ${
+                  isActive
+                    ? `${tab.activeBgColor} text-white `
+                    : "bg-white text-pvBlack hover:bg-pvLightBlue"
+                }`}
+              >
+                <span className="text-lg">
+                  {isActive ? tab.activeIcon : tab.icon}
+                </span>
+                <span className="">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex-1">
-        {tabs.map(
-          (tab) =>
-            activeTab === tab.id && (
-              <div key={tab.id} className="space-y-6 tabData fadeIn">
-                {tab.content}
-              </div>
-            )
-        )}
-      </div>
+      {/* Content */}
+      {tabs.map(
+        (tab) =>
+          activeTab === tab.id && (
+            <div key={tab.id} className="fadeIn">
+              {tab.content}
+            </div>
+          )
+      )}
     </div>
   );
 };

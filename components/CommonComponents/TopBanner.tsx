@@ -16,8 +16,8 @@ const TopBanner: React.FC<BannerProps> = ({ backgroundImage, title }) => {
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className="text-center relative z-10">
-        <h1 className="text-4xl md:text-6xl text-white">{title}</h1>
-        <nav className="">
+        <h1 className="text-4xl md:text-6xl text-white mb-0">{title}</h1>
+        {/* <nav className="">
           {breadcrumbs.map((breadcrumb, index) => (
             <span key={index} className="text-white">
               {breadcrumb.href ? (
@@ -30,7 +30,7 @@ const TopBanner: React.FC<BannerProps> = ({ backgroundImage, title }) => {
               {index < breadcrumbs.length - 1 && <span className="mx-2">{">"}</span>}
             </span>
           ))}
-        </nav>
+        </nav> */}
       </div>
     </div>
   );

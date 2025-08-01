@@ -7,7 +7,7 @@ const valuesData = [
     bgColor: "#FFF1EE",
     icon: <OurValuesIcon1 />,
     title: "Customer-Centricity",
-    description: "We put your needs first, delivering seamless experiences that consistently exceed expectations.achievements highlight our commitment to excellence:",
+    description: "Putting your needs first with seamless experiences that exceed expectations.",
   },
   {
     id: 1,
@@ -15,7 +15,7 @@ const valuesData = [
     icon: <OurValuesIcon2 />,
     title: "Innovation",
     description:
-      "Harnessing cutting-edge technology, we craft solutions that address today’s challenges with forward-thinking approaches.",
+      "Using forward-thinking technology to solve today's challenges.",
   },
   {
     id: 2,
@@ -44,7 +44,7 @@ const Ourvalues = () => {
           className="absolute top-0 left-0 right-0 w-full h-full"
         />
         <div className="container relative">
-          <h2 className="leading-snug mb-10 md:mb-16 pb-4 text-center">Our Values, Our Assurance</h2>
+          <h2 className="leading-snug mb-10 md:mb-16 pb-4 text-center">Our Values</h2>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-15">
             {valuesData.map((data, index) => (

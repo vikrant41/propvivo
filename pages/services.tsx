@@ -12,7 +12,7 @@ const services = () => {
 
   return (
     <>
-      <TopBanner backgroundImage="./img/Banner.jpg" title="Services" />
+      <TopBanner backgroundImage="./img/aboutBanner.jpg" title="Services" />
       <OurServices />
     </>
   );

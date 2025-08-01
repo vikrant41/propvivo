@@ -38,16 +38,16 @@ function ThreeCorePillars() {
               </h2>
               <div className="mx-auto mt-5 space-y-2">
                 <p>
-                  <strong>Everything we do is rooted in three core values: Innovation, Transparency, and Reliability.</strong><br/> These pillars guide how we serve HOA communities—ensuring peace of mind, open communication, and consistently high-quality service. With decades of experience in association management, we turn these values into real-world results for Communities, Condominiums, and Homeowners's Associations across the U.S.
+                  <strong>Our commitment begins with three core pillars: Innovation, Transparency, and Reliability.</strong><br /> These pillars guide how we serve HOA communities ensuring peace of mind, open communication, and consistently high-quality service. With decades of experience in association management, we turn these values into real-world results for Communities, Condominiums, and Homeowners Associations across the U.S.
                 </p>
               </div>
             </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {featureData.map((feature, index) => (
-              <div key={index} className="bg-white rounded-lg p-6 border border-gray-o-60 flex flex-col justify-center items-center gap-2 text-center">
+              <div key={index} className="bg-white rounded-lg p-6 shadow-testimonialShadow flex flex-col justify-center items-center gap-2 text-center">
                   {feature.icon}
-                  <h5 className="mb-0">{feature.title}</h5>
+                  <h5 className="mb-0 font-medium">{feature.title}</h5>
 
                 <div>{feature.description}</div>
               </div>
