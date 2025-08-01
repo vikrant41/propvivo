@@ -92,15 +92,15 @@ const Footer: React.FC = () => {
                   </Link>
                 </li>
                 <li className="cursor-pointer relative">
-                  <Link href="/technology" passHref>
+                  <Link href="/ResaleCertificate" passHref>
                     <a
                       className={
-                        router.pathname === "/technology"
+                        router.pathname === "/ResaleCertificate"
                           ? "active text-lightGreen"
                           : "transition-all duration-300"
                       }
                     >
-                      Technology
+                      Documents
                     </a>
                   </Link>
                 </li>
@@ -124,7 +124,7 @@ const Footer: React.FC = () => {
                         router.pathname === "/contact" ? "!text-maroon" : ""
                       }
                     >
-                      Contact
+                      Contact Us
                     </a>
                   </Link>
                 </li>
@@ -152,7 +152,7 @@ const Footer: React.FC = () => {
                           : "transition-all duration-300"
                       }
                     >
-                      Full Service HOA Management
+                      Full-Service Management
                     </a>
                   </Link>
                 </li>
@@ -165,7 +165,7 @@ const Footer: React.FC = () => {
                           : "transition-all duration-300"
                       }
                     >
-                      Financial Only HOA Management
+                      Financial Management
                     </a>
                   </Link>
                 </li>
@@ -178,7 +178,33 @@ const Footer: React.FC = () => {
                           : "transition-all duration-300"
                       }
                     >
-                      Software Solution For Self- Managed HOA
+                      Software Solution 
+                    </a>
+                  </Link>
+                </li>
+                <li className="cursor-pointer relative">
+                  <Link href="/services#tab4" passHref>
+                    <a
+                      className={
+                        router.pathname === "/services#tab4"
+                          ? "active text-lightGreen"
+                          : "transition-all duration-300"
+                      }
+                    >
+                      Compliance & Legal
+                    </a>
+                  </Link>
+                </li>
+                <li className="cursor-pointer relative">
+                  <Link href="/services#tab5" passHref>
+                    <a
+                      className={
+                        router.pathname === "/services#tab5"
+                          ? "active text-lightGreen"
+                          : "transition-all duration-300"
+                      }
+                    >
+                      Vendor Coordination
                     </a>
                   </Link>
                 </li>

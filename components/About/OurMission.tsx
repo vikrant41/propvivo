@@ -8,8 +8,6 @@ import {
   TopLeftIcon1,
   TopLeftIcon2,
 } from "../shared/Icons";
-import { Button } from "../CommonComponents/Button";
-import { useRouter } from "next/router";
 
 const ourMissionData = [
   {
@@ -22,7 +20,7 @@ const ourMissionData = [
     id: 1,
     icon: <MissionIcon2 />,
     title: "Data-Driven Insights",
-    description: "Leveraging actionable insights to enhance visibility and simplify community operations",
+    description: "Leveraging actionable insights to enhance visibility and simplify community operations.",
   },
   {
     id: 2,
@@ -35,10 +33,6 @@ const ourMissionData = [
 
 const OurMission = () => {
 
-  const router = useRouter();
-    const routeTo =
-      process.env.NEXT_PUBLIC_LOGIN_URL;
-
   return (
     <>
       <section className="py-12 md:py-16 bg-pvLightBlue">
@@ -48,8 +42,8 @@ const OurMission = () => {
               <div className="relative md:col-span-3">
                 <PillarShape1 className="absolute -top-9 -left-6 md:-left-9" />
                 <PillarShape3 className="absolute -right-2 md:-right-5 -bottom-5" />
-                <div className="border-8 border-white shadow-imageshadow relative">
-                  <img src="./img/OurMission1.jpg" className="w-full h-full" />
+                <div className="relative">
+                  <img src="./img/OurMission1.png" className="w-full h-full" />
                 </div>
               </div>
               <div className="md:col-span-4">
@@ -61,12 +55,7 @@ const OurMission = () => {
                   </div>
                 </div>
                 <p>
-                  At propVIVO, our mission is to modernize HOA management
-                  through intelligent automation, real-time transparency, and
-                  tailored digital solutions. We empower communities with a
-                  platform that simplifies operations, enhances accountability,
-                  and delivers smarter, faster results for boards and homeowners
-                  alike.
+                  At propVIVO, our mission is to bring HOA management into the modern age with smart automation, clear real-time transparency, and tailored digital solutions. Our platform makes managing operations easier, increases accountability, delivers faster and smarter results for both boards and homeowners.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-4 my-7">
@@ -86,7 +75,7 @@ const OurMission = () => {
                   ))}
                 </div>
 
-                <Button onClick={() => window.open(routeTo, "_blank")}>Join Us on Our Journey</Button>
+                {/* <Button onClick={() => window.open(routeTo, "_blank")}>Join Us on Our Journey</Button> */}
               </div>
             </div>
           </div>

@@ -139,19 +139,19 @@ const RequestProposal = () => {
 
   return (
     <>
-      <TopBanner backgroundImage="./img/Banner.jpg" title="Request for Proposal" />
-      <div className="max-w-3xl mx-auto my-14 px-5">
+      <TopBanner backgroundImage="./img/aboutBanner.jpg" title="Request for Proposal" />
+      <div className="max-w-3xl mx-auto py-9 lg:py-14 px-5">
         <FormikProvider value={formik}>
           <Form autoComplete="off" className="">
-            <div className="w-full space-y-14">
+            <div className="w-full space-y-11">
               {/* <div className="text-pvBlack text-3xl font-bold">
                 REQUEST FOR PROPOSAL
               </div> */}
               <div className="relative grid grid-cols-1 md:grid-cols-6">
-                <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
+                <label className="text-pvBlack text-base font-medium font-outfit col-span-2 mb-3 md:mb-0">
                   Proposal Request Form<span className="text-red-500">*</span>
                 </label>
-                <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-y-5 md:gap-y-10 gap-x-5">
                   <div>
                     <div className="flex items-center border-b border-gray-o-60">
                       <Field
@@ -267,10 +267,10 @@ const RequestProposal = () => {
               </div>
 
               <div className="relative grid grid-cols-1 md:grid-cols-6">
-                <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
+                <label className="text-pvBlack text-base font-medium font-outfit col-span-2 mb-3 md:mb-0">
                   Association Details <span className="text-red-500">*</span>
                 </label>
-                <div className="col-span-4 space-y-14">
+                <div className="col-span-4 space-y-5 md:space-y-10">
                   <div>
                     <div className="flex items-center border-b border-gray-o-60">
                       <Field
@@ -287,7 +287,7 @@ const RequestProposal = () => {
                     />
                   </div>
 
-                  <div className="col-span-4 space-y-14">
+                  <div className="col-span-4 space-y-5 md:space-y-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div>
                         <div className="flex items-center border-b border-gray-o-60">
@@ -323,7 +323,7 @@ const RequestProposal = () => {
                     </div>
 
                     {/* ✅ City, State, Zip - Full Row with Equal Widths */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-14">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-y-5 md:gap-y-12 gap-x-5">
                       <div className="w-full">
                         <div className="flex items-center border-b border-gray-o-60">
                           <Field
@@ -356,7 +356,7 @@ const RequestProposal = () => {
                         />
                       </div>
 
-                      <div className="w-full">
+                      <div className="w-full mb-3 md:mb-0">
                         <div className="flex items-center border-b border-gray-o-60">
                           <Field
                             type="text"
@@ -378,14 +378,14 @@ const RequestProposal = () => {
               </div>
               {/* <ReCAPTCHA sitekey={captcha_siteKey} /> */}
             </div>
-            <div className="relative grid grid-cols-1 md:grid-cols-6 mt-10">
+            <div className="relative grid grid-cols-1 md:grid-cols-6 mt-7 md:mt-10">
               <div className="col-span-2"></div>
-              <div className="col-span-4 flex flex-col sm:flex-row gap-2">
+              <div className="col-span-4 flex flex-col sm:flex-row gap-3">
                 <Button type="submit" className="" onClick={handleProceedToPay}>
                   Submit
                 </Button>
                 <button
-                  className="px-8 py-1 rounded-full text-accent2 hover:text-white border border-associationLightgray bg-white hover:bg-accent1 shadow-none transition-all duration-300 justify-center font-outfit"
+                  className="px-8 py-2 rounded-full text-accent2 hover:text-white border border-associationLightgray bg-white hover:bg-accent1 shadow-none transition-all duration-300 justify-center font-outfit"
                   type="button"
                   onClick={handleReset}
                 >

@@ -651,16 +651,16 @@ function ResaleCertificate() {
   return (
     <>
       <TopBanner
-        backgroundImage="./img/Banner.jpg"
+        backgroundImage="./img/aboutBanner.jpg"
         title="Resale Certificate"
       />
       {!isPayment ? (
-        <div className="max-w-3xl mx-auto my-14 px-5">
+        <div className="max-w-3xl mx-auto py-9 lg:py-14 px-5">
           <FormikProvider value={formik}>
             <Form autoComplete="off" className="">
-              <div className="w-full space-y-14">
+              <div className="w-full space-y-7 md:space-y-11">
                 <div className="relative grid grid-cols-1 md:grid-cols-6">
-                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
+                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2 mb-3 md:mb-0">
                     Requestor Type <span className="text-red-500">*</span>
                   </label>
                   <div className="col-span-2">
@@ -696,11 +696,11 @@ function ResaleCertificate() {
                 </div>
 
                 <div className="relative grid grid-cols-1 md:grid-cols-6">
-                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
+                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2 mb-3 md:mb-0">
                     Association Information{" "}
                     <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 space-y-4">
+                  <div className="col-span-4 space-y-5 md:space-y-10">
                     <SearchTextBox
                       name={"associationName"}
                       placeholder={"Association Name"}
@@ -849,7 +849,7 @@ function ResaleCertificate() {
                       Requester Information{" "}
                       <span className="text-red-500">*</span>
                     </label>
-                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-14">
+                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-y-5 md:gap-y-10 gap-x-5">
                       <div>
                         <div className="flex items-center border-b border-gray-o-60">
                           <Field
@@ -1010,7 +1010,7 @@ function ResaleCertificate() {
                     <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
                       Buyer Information <span className="text-red-500">*</span>
                     </label>
-                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-14">
+                    <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-y-5 md:gap-y-10 gap-x-5">
                       <div>
                         <div className="flex items-center border-b border-gray-o-60">
                           <Field
@@ -1156,7 +1156,7 @@ function ResaleCertificate() {
                 </div> */}
 
                 <div className="relative grid grid-cols-1 md:grid-cols-6">
-                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
+                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2 mb-3 md:mb-0">
                     Attachments
                   </label>
                   <div className="col-span-4">
@@ -1203,7 +1203,7 @@ function ResaleCertificate() {
                   <label className="text-pvBlack text-base font-medium font-outfit col-span-2 mb-3 md:mb-0">
                     Order Type <span className="text-red-500">*</span>
                   </label>
-                  <div className="col-span-4 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-14 text-pvBlack">
+                  <div className="col-span-4 flex flex-col md:flex-row justify-between gap-3 text-pvBlack">
                     {/* Dynamically render radio buttons based on the order types */}
                     {orderTypeList?.data?.orderTypes?.map((order) => (
                       <label
@@ -1228,7 +1228,7 @@ function ResaleCertificate() {
                 </div>
 
                 <div className="relative grid grid-cols-1 md:grid-cols-6">
-                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2">
+                  <label className="text-pvBlack text-base font-medium font-outfit col-span-2 mb-3 md:mb-0">
                     Amount Charged
                   </label>
                   <div className="col-span-2 space-y-5 text-pvBlack">
@@ -1285,9 +1285,9 @@ function ResaleCertificate() {
                   </div>
                 </div>
               </div>
-              <div className="relative grid grid-cols-1 md:grid-cols-6 mt-10">
+              <div className="relative grid grid-cols-1 md:grid-cols-6 mt-7 md:mt-10">
                 <div className="col-span-2"></div>
-                <div className="col-span-4 flex flex-col sm:flex-row gap-2">
+                <div className="col-span-4 flex flex-col sm:flex-row gap-3">
                   <Button
                     type="submit"
                     className=""

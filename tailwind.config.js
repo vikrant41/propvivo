@@ -6,22 +6,25 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}",
     "./app/**/*.{js,jsx,ts,tsx}",
   ],
-  plugins: [require('@tailwindcss/line-clamp')],
+  plugins: [require("@tailwindcss/line-clamp")],
   theme: {
     extend: {
       screens: {
-        'xl': '1200px',
+        xl: "1200px",
       },
       maxWidth: {
-        '970': '970px',
-        '570': '570px',
-        '1290': '1290px',
+        970: "970px",
+        570: "570px",
+        1290: "1290px",
       },
       width: {
-        '75': '75px',
+        75: "75px",
+      },
+      minWidth: {
+        800: "800px",
       },
       gridTemplateColumns: {
-        '54-42': '54% 42%',
+        "54-42": "54% 42%",
       },
       container: {
         center: true,
@@ -39,6 +42,7 @@ module.exports = {
         "7xl": "60px",
         "6xl": "50px",
         48: "48px",
+        45: "45px",
         "5xl": "40px",
         "4xl": "36px",
         32: "32px",
@@ -51,6 +55,9 @@ module.exports = {
       borderRadius: {
         lg: "10px",
       },
+       backgroundImage: {
+        'text-gradient': 'linear-gradient(90deg, #4790CD 0%, #7448D5 80.8%, #A200DD 100%)',
+      },
       colors: {
         pvBlack: "#1B1B1B",
         accent: "#21263C",
@@ -61,14 +68,14 @@ module.exports = {
         pvLightBlue: "#F6F9FF",
         btnDarkBlue: "#4790CD",
         associationBlack: "#1B1B1B",
-        associationGreen : "#98CA3C",
+        associationGreen: "#98CA3C",
         associationLightGreen: "#F8FFEA",
-        associationGray : "#7A7D9C",
-        associationLightBlue : "#F6F9FF",
+        associationGray: "#7A7D9C",
+        associationLightBlue: "#F6F9FF",
         associationLightgray: "#DADADA",
-        borderBg:"#F3FAFF",
+        borderBg: "#F3FAFF",
         borderColor: "#D5D7ED",
-        gryTextColor:"#7A7D9C",
+        gryTextColor: "#7A7D9C",
         dropdownText: "#404a5f",
         dropdownHover: "#E9F5FF",
         popupBg: "#F9F9F9",
@@ -78,7 +85,12 @@ module.exports = {
         mediumShadeOfGreen: "#1E9932",
         whitePink: "#FFF1F1",
         pvRed: "#ED5757",
+        pvDarkRed: "#EF3246",
         pvYellow: "#fec022",
+        pvDarkYellow: "#FFB800",
+        pvOrange: "#FF9156",
+        pvGreen: "#21BA27",
+        pvPurple: "#6B21A8",
         "gray-o": {
           600: "#CCCCCC",
           500: "#4E4F50",
@@ -111,7 +123,7 @@ module.exports = {
         "5xl": "50px",
       },
       gap: {
-        '15': '3.75rem',
+        15: "3.75rem",
       },
       boxShadow: {
         blueShadow: "0px 4px 10px 0px #4790CD66",
@@ -121,6 +133,8 @@ module.exports = {
         testimonialShadow: "0px 0px 30px 0px #0000000F",
         newsletterShadow: "0px 4px 10px 0px #0F67EA66",
         imgShadow: "0px 0px 100px 0px #00000014",
+        keyShadow: "0px 0px 4px 0px #00000040",
+        timelineShadow: "0px 0px 6px 0px #00000040",
       },
       backdropBlur: {
         "2.5xl": "50px",

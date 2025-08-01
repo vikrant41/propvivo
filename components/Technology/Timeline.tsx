@@ -1,63 +1,32 @@
 import React from "react";
-import {
-  KeyFeature1,
-  KeyFeature2,
-  KeyFeature3,
-  KeyFeature4,
-} from "../shared/Icons";
 
-const Timeline = () => {
+const Timeline = ({ data }) => {
   return (
     <>
-      <div className="timeline relative z-10 overflow-y-hidden">
+      <div className="timeline relative z-10 overflow-y-hidden mt-12 py-2">
         <ul>
-          <li>
-            <div className="content">
-              <KeyFeature1 className="absolute left-0 md:left-auto md:-right-7 top-0 w-8 md:w-max h-8 md:h-max" />
-              <h4 className="mb-2">Delinquency Management</h4>
-              <p>
-                Our delinquency management system efficiently tracks and
-                resolves overdue payments, maintaining financial stability and
-                positive homeowner relationships
-              </p>
-            </div>
-          </li>
+          {data?.map((item, index) => (
+            <li key={index}>
+              <div className="content shadow-keyShadow p-4 md:py-5 md:px-6 bg-white rounded-lg space-y-3">
+                <div className={`absolute left-0 -top-2 md:top-0 ml-2 md:-ml-2 z-20 pointPosition`}>
+                  <div className="pulse w-10 h-10 rounded-full bg-white shadow-timelineShadow flex items-center justify-center group transition-all duration-300 scale-75 md:scale-100">
+                    <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center" style={{ background: item.titleColor }}>
+                      <div className="w-3 h-3 rounded-full bg-white" />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {item.icon}
+                  <h5 className="mb-0">{item.year}</h5>
+                </div>
 
-          <li>
-            <div className="content">
-              <KeyFeature2 className="absolute left-0 md:-left-7 top-0 w-8 md:w-max h-8 md:h-max" />
-              <h4 className="mb-2">Compliance Tracking & Reporting</h4>
-              <p>
-                We ensure consistent compliance tracking & reporting, keeping
-                your HOA board informed and proactive with detailed reports on
-                community rules
-              </p>
-            </div>
-          </li>
-
-          <li>
-            <div className="content">
-              <KeyFeature3 className="absolute left-0 md:left-auto md:-right-7 top-0 w-8 md:w-max h-8 md:h-max" />
-              <h4 className="mb-2">SLA Integration</h4>
-              <p>
-                Our platform supports SLA integration, ensuring service
-                providers meet standards for maintenance, landscaping, and
-                repairs
-              </p>
-            </div>
-          </li>
-
-          <li>
-            <div className="content">
-              <KeyFeature4 className="absolute left-0 md:-left-7 top-0 w-8 md:w-max h-8 md:h-max" />
-              <h4 className="mb-2">Customizable Reports</h4>
-              <p>
-                With our customizable reports, your HOA can generate tailored
-                insights, from financial summaries to service performance
-                metrics
-              </p>
-            </div>
-          </li>
+                <h5 className={`mb-2`} style={{ color: item.titleColor }}>
+                  {item.title}
+                </h5>
+                <p>{item.description}</p>
+              </div>
+            </li>
+          ))}
         </ul>
       </div>
     </>

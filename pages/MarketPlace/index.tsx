@@ -68,7 +68,7 @@ const MarketPlace = () => {
 
   return (
     <>
-      <TopBanner backgroundImage="./img/Banner.jpg" title="Marketplace" />
+      <TopBanner backgroundImage="./img/aboutBanner.jpg" title="Marketplace" />
       <div className="py-9 md:py-16 relative bg-associationLightBlue">
         <img
           src="./img/mapShape.png"

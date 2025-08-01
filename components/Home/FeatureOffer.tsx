@@ -15,49 +15,50 @@ const featureData = [
     icon: <FeatureIcon1 />,
     title: "Document Management",
     description:
-      "Centralized document storage with secure access control and version tracking.",
+      "Centralized document storage with secure access controls, version history, and easy retrieval.",
     featureImg: "./img/featureImage1.png",
   },
   {
     id: 1,
-    icon: <FeatureIcon2 />,
-    title: "Task Management",
-    description:
-      "Streamlined board task tracking with automated workflows and deadlines.",
-    featureImg: "./img/featureImage2.png",
-  },
-  {
-    id: 2,
     icon: <FeatureIcon3 />,
     title: "Financial Dashboard",
     description:
-      "Real-time financial reporting with budget tracking and expense management.",
+      "Get real-time insights into budgets, expenses, and financial health all in one place.",
     featureImg: "./img/featureImage3.png",
+  },
+  {
+    id: 2,
+    icon: <FeatureIcon6 />,
+    title: "Meeting Management",
+    description:
+      "Plan and run meetings with built-in agenda tools, minutes capture, and follow-up tracking.",
+    featureImg: "./img/featureImage6.png",
   },
   {
     id: 3,
     icon: <FeatureIcon4 />,
     title: "Communication Hub",
     description:
-      "Integrated call and email tracking with response time analytics.",
+      "Seamlessly manage calls, direct messages and emails with integrated tracking and response time analytics.",
     featureImg: "./img/featureImage4.png",
   },
   {
     id: 4,
+    icon: <FeatureIcon2 />,
+    title: "Task Management",
+    description:
+      "Track board tasks efficiently with intuitive workflows, reminders, and deadline alerts.",
+    featureImg: "./img/featureImage2.png",
+  },  
+  {
+    id: 5,
     icon: <FeatureIcon5 />,
     title: "Analytics & Reports",
     description:
-      "Track board tasks effortlessly with real-time analytics, automated workflows, and deadline-driven insights.",
+      "Gain actionable insights with real-time dashboards, performance metrics, and custom reports.",
     featureImg: "./img/featureImage5.png",
   },
-  {
-    id: 5,
-    icon: <FeatureIcon6 />,
-    title: "Meeting Management",
-    description:
-      "Organize meetings, track agendas, and take minutes all in one platform.",
-    featureImg: "./img/featureImage6.png",
-  },
+  
 ];
 
 const FeatureOffer = () => {
@@ -70,9 +71,9 @@ const FeatureOffer = () => {
         /> */}
         <div className="container relative">
           <SectionTitle
-            subtitle="FEATURES"
-            title="Features We Offer"
-            content="Empowering Property Management with Cutting-Edge Features that Simplify, Streamline, and Elevate Your Operations. Discover Smart Solutions Designed to Enhance Efficiency and Improve Community Living Experiences."
+            subtitle="Unique Offerings"
+            title="Elevate Your Management Experience"
+            content="Empowering property management with cutting-edge tools that simplify, streamline, and elevate operations. Discover smart solutions designed to enhance efficiency and enrich the community living experience"
             maxWidth="914px"
           />
 
@@ -82,7 +83,7 @@ const FeatureOffer = () => {
                 <div>
                   <div className="flex items-center gap-x-3 pb-5">
                     {feature.icon}
-                    <h5 className="mb-0">{feature.title}</h5>
+                    <h5 className="mb-0 font-medium">{feature.title}</h5>
                   </div>
                   <div>{feature.description}</div>
                 </div>

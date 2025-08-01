@@ -53,7 +53,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button className={buttonClasses} ref={ref} type="button" {...props}>
-        <span className="flex gap-2 font-normal">{children}</span>
+        <span className="flex items-center gap-2 font-normal">{children}</span>
         {variant === "default" && (
           <ArrowIcon className="group-hover:translate-x-1 transition-all duration-300" />
         )}

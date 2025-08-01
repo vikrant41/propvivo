@@ -254,7 +254,7 @@ function MarketPlaceDetailView() {
     <>
     <style>{swipCss}</style>
       <TopBanner
-        backgroundImage="../img/Banner.jpg"
+        backgroundImage="../img/aboutBanner.jpg"
         title="Marketplace"
       />
       <div className="py-9 md:py-16 relative bg-associationLightBlue">
