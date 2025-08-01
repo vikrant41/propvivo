@@ -13,7 +13,7 @@ const vendorManagementServices = [
     icon: <VendorCoordinationIcon2 />,
     title: "Contract Negotiation",
     description:
-      "Negotiate contracts to secure favourable terms while ensuring compliance with community requirements.",
+      "Negotiate contracts to secure favorable terms while ensuring compliance with community requirements.",
   },
   {
     icon: <VendorCoordinationIcon3 />,

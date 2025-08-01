@@ -129,9 +129,9 @@ const testimonialsData = [
   {
     id: 1,
     star: 5,
-    title: "Propvivo is a great HOA management company.",
+    title: "propVIVO is a great HOA management company.",
     description:
-      "Propvivo is a great HOA management company. They have a great digital solution for associations. The people are professional, honest, very knowledgeable about anything HOA. They are flexible and can tailor their solutions to the individual needs of each HOA.",
+      "propVIVO is a great HOA management company. They have a great digital solution for associations. The people are professional, honest, very knowledgeable about anything HOA. They are flexible and can tailor their solutions to the individual needs of each HOA.",
     subTitle: "",
     authorName: "Steven Bathiche",
     authorDetails: "Board Member, Aspire Association",

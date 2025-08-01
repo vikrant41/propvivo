@@ -25,7 +25,7 @@ const platformFeatures = [
     icon: <SoftwareSolutioHOAIcon4 />,
     title: "Amenity Management",
     description:
-      "Residents can book, track, and manage amenity reservations with ease and clarity and full transparency.",
+      "Residents can book, track, and manage amenity reservations with ease, clarity and full transparency.",
   },
   {
     icon: <SoftwareSolutioHOAIcon5 />,

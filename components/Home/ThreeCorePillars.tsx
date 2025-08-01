@@ -22,7 +22,7 @@ const featureData = [
     icon: <PillarReliabilityIcon />,
     title: "Reliability",
     description:
-      "Dependable tech with 99.9% uptime and dedicated support, always when you need it.",
+      "Dependable tech with 99.9% uptime and dedicated support, always there when you need it.",
   },
 ];
 
