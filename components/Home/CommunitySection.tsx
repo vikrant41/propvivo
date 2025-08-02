@@ -37,7 +37,7 @@ const CommunitySection = () => {
               Ready to Transform Your Community?
             </h3>
             <p className="text-lg">
-              Discover how propVIVO is helping communities simplify, modernize, and take control of their management.
+              Join the growing number of communities choosing a better way to manage with propVIVO.
             </p>
             <div className="mt-5">
               <Button onClick={() => router.push("/RequestProposal")}>

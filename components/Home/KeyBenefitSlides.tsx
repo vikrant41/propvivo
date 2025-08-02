@@ -196,11 +196,9 @@ const KeyBenefitSlides: React.FC<propsType> = ({
           />
           <div className="mt-8">
             <Button
-              onClick={() =>
-                window.open(routeTo, "_blank")
-              }
+              onClick={() => router.push("/contact")}
             >
-              Explore Platform
+              Connect to Explore
             </Button>
           </div>
         </div>

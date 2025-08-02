@@ -78,12 +78,11 @@ const MarketPlace = () => {
           <div className="container">
             <SectionTitle
               subtitle="Market Place"
-              title="What’s New in Store"
+              title="Explore What’s New"
               content={
                 <>
-                  Find great deals on products you need <br />
-                  Click on any ad to get full details and connect with sellers
-                  directly. Don’t miss out!
+                  Discover great deals from sellers. <br />
+                  Click any post to view full details and connect with sellers directly. Don’t miss out!  
                 </>
               }
             />

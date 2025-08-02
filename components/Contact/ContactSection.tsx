@@ -141,8 +141,8 @@ const ContactSection = () => {
       <section className="relative">
         <div className="py-12 md:py-16 relative">
           <div className="container">
-            <div className="grid lg:grid-cols-2 items-center gap-y-8 lg:gap-x-14">
-              <div className="relative space-y-7">
+            <div className="grid lg:grid-cols-2 gap-y-8 lg:gap-x-14">
+              <div className="relative space-y-7 md:space-y-11">
                 <div>
                   <h2>Contact Us</h2>
                   <p>
