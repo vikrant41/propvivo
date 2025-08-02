@@ -79,7 +79,7 @@ const router = useRouter();
                   ))}
                 </div>
 
-                <Button onClick={() => window.open(routeTo, "_blank")}>Join Us on Our Journey</Button>
+                <Button onClick={() => router.push("/RequestProposal")}>Join Us on Our Journey</Button>
               </div>
             </div>
           </div>

@@ -242,7 +242,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="border-t border-white/20 py-4 md:py-5 gap-4 text-center">
           <p className="text-white/70 mb-0">
-            Copyright &#169; propVIVO 2025 | All Right Reserved
+            Copyright &#169; propVIVO 2025 | All Rights Reserved
           </p>
           {/* <p className="text-white/70 mb-0">
             Best viewed with IE 11, Firefox 76+, Safari 11+, Chrome 83+, Edge
