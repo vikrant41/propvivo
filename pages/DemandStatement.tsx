@@ -134,7 +134,7 @@ function DemandStatement() {
   const [condoResponse, setCondoResponse] = useState(null);
   const [storePropertyId, setStorePropertyId] = useState("");
   const [selectedOrderType, setSelectedOrderType] = useState("Normal");
-
+  console.log("paymentData", paymentData);
   // Google ReCAPTCHA key
   const captcha_siteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
 
@@ -269,6 +269,8 @@ function DemandStatement() {
           ? paymentData?.effectiveDate
           : null,
         transactionDesc: paymentData?.transactionDesc,
+        paymentMethodLabel: paymentData?.paymentMethodLabel,
+        paymentMethodLast4: paymentData?.paymentMethodLast4,
         transactionId: paymentData?.transactionId,
         transactionStatus: paymentData?.transactionStatus,
         transactionDate: paymentData?.transactionDate,
@@ -613,7 +615,10 @@ function DemandStatement() {
 
   return (
     <>
-      <TopBanner backgroundImage="./img/aboutBanner.jpg" title="Demand Statement" />
+      <TopBanner
+        backgroundImage="./img/aboutBanner.jpg"
+        title="Demand Statement"
+      />
       {!isPayment ? (
         <div className="max-w-3xl mx-auto py-9 lg:py-14 px-5">
           <FormikProvider value={formik}>
