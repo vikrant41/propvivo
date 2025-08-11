@@ -1229,7 +1229,7 @@ function DemandStatement() {
                     className=""
                     onClick={handleProceedToPay}
                   >
-                    Submit
+                    Proceed to pay
                   </Button>
                   <button
                     className="!text-accent2 hover:!text-white border !border-associationLightgray !bg-white hover:!bg-pvBlack !shadow-none transition-all duration-300 justify-center btn"
