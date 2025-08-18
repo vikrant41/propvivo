@@ -229,7 +229,7 @@ function DemandStatement() {
       closingDate: formik?.values?.closingDate
         ? formatDate(formik?.values?.closingDate)
         : null,
-      demandRequestorType: formik?.values?.requestorType || "Escrow",
+      requestorType: formik?.values?.requestorType || "Escrow",
       escrowNumber: formik?.values?.escrowNumber,
       legalEntityCode: formik?.values?.association.code || "",
       legalEntityId: formik?.values?.association.id || "",
