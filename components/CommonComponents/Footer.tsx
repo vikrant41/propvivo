@@ -182,7 +182,7 @@ const Footer: React.FC = () => {
                     </a>
                   </Link>
                 </li>
-                <li className="cursor-pointer relative">
+                {/* <li className="cursor-pointer relative">
                   <Link href="/services#tab4" passHref>
                     <a
                       className={
@@ -207,7 +207,7 @@ const Footer: React.FC = () => {
                       Vendor Coordination
                     </a>
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>

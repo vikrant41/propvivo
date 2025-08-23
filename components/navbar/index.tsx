@@ -176,7 +176,7 @@ const Navbar = () => {
                 </div>
 
                 <ul
-                  className={`relative lg:absolute left-0  w-full lg:w-52 bg-accent lg:shadow-lg rounded-md lg:border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 lg:invisible group-hover:visible lg:-translate-y-4 group-hover:translate-y-0 transition-all duration-200 lg:p-2 space-y-3 ${
+                  className={`relative lg:absolute left-0  w-full lg:w-52 bg-accent lg:shadow-lg rounded-md lg:border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 lg:invisible group-hover:visible lg:-translate-y-4 group-hover:translate-y-0 transition-all duration-150 lg:p-2 space-y-3 ${
                     isMobile && openResources
                       ? "max-h-96 opacity-100 visible mt-4"
                       : "max-h-0 opacity-0 invisible lg:group-hover:max-h-max lg:group-hover:visible lg:group-hover:opacity-100"

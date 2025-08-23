@@ -11,6 +11,7 @@ import { store } from "../stores";
 import { ApolloProvider } from "@apollo/client";
 import apiClient from "../apollo/apiClient";
 import { ToastProvider } from "../components/UI/ToastContext";
+import CookieBanner from "../components/CookieBanner";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -20,6 +21,7 @@ function MyApp({ Component, pageProps }) {
           <Layout>
             <BreadcrumbProvider>
               <Component {...pageProps} />
+              <CookieBanner />
             </BreadcrumbProvider>
           </Layout>
         </ToastProvider>

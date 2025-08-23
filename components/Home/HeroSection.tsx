@@ -77,7 +77,7 @@ const HeroSection = () => {
                 Management
               </h1>
               <div
-                className="padLeft"
+                className="xl:pr-14"
                 style={
                   {
                     // maxWidth: !isMobile ? "540px" : "auto",
@@ -86,7 +86,7 @@ const HeroSection = () => {
                 }
               >
                 <p>
-                 {`We deliver HOA management that’s transparent, responsive, and tailored to your community’s needs. We streamline operations, reduce delinquencies, automate compliance, and enhance communication all from one intuitive platform. Whatever your community needs, we help you manage smarter and serve better.`}
+                 {`We deliver Community Association management that’s transparent, responsive, and tailored to your community’s needs. We streamline operations, reduce delinquencies, automate compliance, and enhance communication all from one intuitive platform. Whatever your community needs, we help you manage smarter and serve better.`}
                 </p>
               </div>
               <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-4 pt-2 md:pt-8">
