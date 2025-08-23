@@ -113,9 +113,10 @@ const KeyBenefitMain = (props) => {
           <div className="flex flex-col items-center justify-center">
             <div className="text-center mb-9 md:mb-12">
               <SubHeading text="WHY PROPVIVO" />
-              <h4 className="leading-snug pt-2 mb-1">
-                Your Modern, Transparent, and Reliable HOA Partner
-              </h4>
+              <h2 className="leading-snug pt-2 mb-1 mx-auto" style={{maxWidth: "800px"}}>
+                Your Modern, Transparent, and 
+                Reliable HOA Partner
+              </h2>
               <div className="mx-auto mt-5 space-y-2">
                 <p>
                   Partner with a leader that combines expertise with advanced

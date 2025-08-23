@@ -5,11 +5,13 @@ import {
   CallBlueIcon,
   CallGreenIcon,
   ClockBlueIcon,
+  DirectionWhiteIcon,
   FaCall,
   FaEnvelope,
   FaPencil,
   FaToggle,
   FaUser,
+  LocationBlueIcon,
   LocationIcon,
   MailBlueIcon,
   MailGreenIcon,
@@ -23,6 +25,7 @@ import ThankYouModal from "../CommonModals/ThankYouModal";
 import CenteredLoader from "../CommonComponents/CenterLoader";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useToast } from "../UI/ToastContext";
+import { useRouter } from "next/router";
 
 const locations = {
   usa: {
@@ -74,6 +77,8 @@ const initialValues: any = {
 const ContactSection = () => {
   const [selected, setSelected] = useState<"usa" | "india">("usa");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const router = useRouter();
 
   // Google ReCAPTCHA key
   const captchaSiteKey = process.env.NEXT_PUBLIC_G_CAPTCHA_KEY;
@@ -158,11 +163,15 @@ const ContactSection = () => {
                     <ul
                       className={`space-y-3 transition-all duration-500 block mxl:top-20 left-0 right-0 p-0`}
                     >
-                      <li className="relative flex gap-2 ">
-                        <CallBlueIcon /> <a href="tel:+1 (888) 392-3515">+1 (888) 392-3515</a>
+                      <li className="relative flex items-center gap-2 ">
+                        <CallBlueIcon />{" "}
+                        <a href="tel:+1 (888) 392-3515">+1 (888) 392-3515</a>
                       </li>
-                      <li className="relative flex gap-2 ">
-                        <MailBlueIcon /> <a href="mailto:services@propvivo.com">services@propvivo.com</a>
+                      <li className="relative flex items-center gap-2 ">
+                        <MailBlueIcon />{" "}
+                        <a href="mailto:services@propvivo.com">
+                          services@propvivo.com
+                        </a>
                       </li>
                       <li className="relative flex gap-2 ">
                         <ClockBlueIcon /> Mon - Fri : 9 am - 5 pm, <br />
@@ -307,7 +316,7 @@ const ContactSection = () => {
                                 className="w-full bg-transparent pl-3 py-3 outline-none text-17 placeholder:text-accent2 text-pvBlack"
                               />
                             </div>
-                             {/* <ErrorMessage
+                            {/* <ErrorMessage
                               name="doc"
                               component="div"
                               className="text-sm text-red-500 absolute"
@@ -388,21 +397,59 @@ const ContactSection = () => {
                   ))}
                 </div> */}
                 <div className="col-span-8 mxl:col-span-3 flex flex-col gap-4">
-  <div className="mxl:min-h-44 border rounded-lg p-2 mxl:py-6 mxl:px-4 border-btnDarkBlue bg-pvLightBlue">
-    <div className="font-outfit text-22 mxl:text-3xl text-pvBlack mb-1 flex items-center gap-2">
-      <img
-        src={locations.usa.flag}
-        alt="United States Flag"
-        className="w-5 h-5 object-contain"
-      />
-      {locations.usa.name}
-    </div>
-    <div className="flex items-start gap-2 text-sm">
-      <p className="flex-1">{locations.usa.address}</p>
-    </div>
-  </div>
-</div>
+                  <div className="h-full border rounded-lg p-5 border-ctLightDarkGray bg-ctLightGray">
+                    <div className="font-outfit text-2xl text-pvBlack mb-1 flex items-center gap-2">
+                      <img
+                        src={locations.usa.flag}
+                        alt="United States Flag"
+                        className="w-8 h-8 object-contain"
+                      />
+                      {locations.usa.name}
+                    </div>
+                    <ul
+                      className={`mt-5 space-y-5 pl-2 pr-4 transition-all duration-500 block mxl:top-20 left-0 right-0 p-0 mb-5`}
+                    >
+                      <li className="relative flex gap-3">
+                        <LocationBlueIcon className="shrink-0 relative top-1" />
+                        <div className="flex-1">
+                          <div className="text-pvBlack font-outfit">
+                            Office Address
+                          </div>
+                          {locations.usa.address}
+                        </div>
+                      </li>
+                      <li className="relative flex items-center gap-3">
+                        <CallBlueIcon className="shrink-0" />{" "}
+                        <a
+                          href="tel:+1 (888) 392-3515"
+                          className="text-pvBlack font-outfit leading-none"
+                        >
+                          +1 (888) 392-3515
+                        </a>
+                      </li>
+                      <li className="relative flex items-center gap-3">
+                        <MailBlueIcon className="shrink-0 relative top-1" />{" "}
+                        <a
+                          href="mailto:services@propvivo.com"
+                          className="text-pvBlack font-outfit leading-none"
+                        >
+                          services@propvivo.com
+                        </a>
+                      </li>
+                    </ul>
 
+                    <div className="flex justify-center mt-6">
+                      <a
+                        href="https://maps.app.goo.gl/JpMKmT6zwcjT1MjU9"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group font-outfit w-full btn"
+                      >
+                        <DirectionWhiteIcon /> Get Directions
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

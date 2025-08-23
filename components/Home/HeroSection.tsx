@@ -5,6 +5,7 @@ import {
   HoaIcon,
   MoneyIcon,
   NoFeesIcon,
+  OperationsIcon,
   ReliableSupportIcon,
   StaredIcon,
   StarIcon,
@@ -105,12 +106,12 @@ const HeroSection = () => {
                   Trusted Communities
                 </div>
                 <div className="flex items-center gap-x-4 text-associationGray leading-tight text-base">
-                  <NoFeesIcon className="flex-shrink-0" />
-                  No Setup Fees, Cancel Anytime
+                  <OperationsIcon className="flex-shrink-0" />
+                  Transparent Operations
                 </div>
                 <div className="flex items-center gap-x-4 text-associationGray leading-tight text-base">
                   <ReliableSupportIcon className="flex-shrink-0" />
-                  Reliable Support
+                  24/7 Customer Support
                 </div>
               </div>
               

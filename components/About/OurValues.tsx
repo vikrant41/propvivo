@@ -46,7 +46,7 @@ const Ourvalues = () => {
         <div className="container relative">
           <h2 className="leading-snug mb-10 md:mb-16 pb-4 text-center">Our Values</h2>
 
-          <div className="grid md:grid-cols-2 gap-10 md:gap-15">
+          <div className="grid md:grid-cols-2 gap-10 md:gap-x-15 md:gap-y-20">
             {valuesData.map((data, index) => (
               <div key={index} className="bg-white rounded-2xl pt-9 pb-6 px-6 md:p-9 relative" style={{ backgroundColor: data.bgColor }}>
                 <div className="absolute right-7 md:right-20 -top-10 border-8 border-white rounded-xl scale-75 md:scale-100">

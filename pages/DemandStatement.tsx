@@ -616,7 +616,7 @@ function DemandStatement() {
   return (
     <>
       <TopBanner
-        backgroundImage="./img/aboutBanner.jpg"
+        backgroundImage="./img/documentsBanner.jpg"
         title="Demand Statement"
       />
       {!isPayment ? (

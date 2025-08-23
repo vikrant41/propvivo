@@ -139,7 +139,7 @@ const RequestProposal = () => {
 
   return (
     <>
-      <TopBanner backgroundImage="./img/aboutBanner.jpg" title="Request for Proposal" />
+      <TopBanner backgroundImage="./img/proposalBanner.jpg" title="Request for Proposal" />
       <div className="max-w-3xl mx-auto py-9 lg:py-14 px-5">
         <FormikProvider value={formik}>
           <Form autoComplete="off" className="">

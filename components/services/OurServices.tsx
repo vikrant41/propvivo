@@ -33,22 +33,22 @@ const OurServices = () => {
       activeIcon: <ServiceTabHoverIcon3 />,
       activeBgColor: "bg-pvDarkYellow",
     },
-    {
-      id: "tab4",
-      label: "Compliance & Legal",
-      content: <ComplianceLegalServices />,
-      icon: <ServiceTabIcon4 />,
-      activeIcon: <ServiceTabHoverIcon4 />,
-      activeBgColor: "bg-pvDarkRed",
-    },
-    {
-      id: "tab5",
-      label: "Vendor Coordination",
-      content: <VendorContractorCoordination />,
-      icon: <ServiceTabIcon5 />,
-      activeIcon: <ServiceTabHoverIcon5 />,
-      activeBgColor: "bg-pvPurple",
-    },
+    // {
+    //   id: "tab4",
+    //   label: "Compliance & Legal",
+    //   content: <ComplianceLegalServices />,
+    //   icon: <ServiceTabIcon4 />,
+    //   activeIcon: <ServiceTabHoverIcon4 />,
+    //   activeBgColor: "bg-pvDarkRed",
+    // },
+    // {
+    //   id: "tab5",
+    //   label: "Vendor Coordination",
+    //   content: <VendorContractorCoordination />,
+    //   icon: <ServiceTabIcon5 />,
+    //   activeIcon: <ServiceTabHoverIcon5 />,
+    //   activeBgColor: "bg-pvPurple",
+    // },
   ];
 
   return (

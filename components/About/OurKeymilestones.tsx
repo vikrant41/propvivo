@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import SectionTitle from "../CommonComponents/SectionTitle";
 
 const keyMilestoneData = [
   {
@@ -13,7 +14,7 @@ const keyMilestoneData = [
     title: "Faster Service",
     percentage: "50%",
     description:
-      "<strong>Faster</strong> service request resolutions. Enhancing community satisfaction.",
+      "<strong>Faster</strong> service request resolutions by enhancing community satisfaction.",
   },
   {
     id: 2,
@@ -42,7 +43,13 @@ const OurKeymilestones = () => {
       <section className="py-12 md:py-16">
         <div className="container relative">
           <div className="">
-            <div
+            <SectionTitle
+            subtitle="MILESTONES"
+            title="Our Key Milestones"
+            content="Celebrating a journey of innovation and impact, we take pride in the progress we’ve made to transform HOA management. These achievements highlight our commitment to excellence"
+            maxWidth="975px"
+          />
+            {/* <div
               className="flex flex-col items-center justify-center text-center mx-auto"
               style={{ maxWidth: isMobile ? "100%" : "975px" }}
             >
@@ -57,7 +64,7 @@ const OurKeymilestones = () => {
                 the progress we’ve made to transform HOA management. These
                 achievements highlight our commitment to excellence
               </p>
-            </div>
+            </div> */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8 mt-8">
               {keyMilestoneData.map((data, index) => {
                 const bgClasses = [

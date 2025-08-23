@@ -1,9 +1,16 @@
 import React from "react";
 import ServiceBtns from "./ServiceBtns";
 import {
+  ComplianceLegalIcon1,
+  ComplianceLegalIcon2,
+  ComplianceLegalIcon3,
+  ComplianceLegalIcon4,
+  ComplianceLegalIcon5,
+  ComplianceLegalIcon6,
   FullServiceIcon1,
   FullServiceIcon10,
   FullServiceIcon11,
+  FullServiceIcon12,
   FullServiceIcon2,
   FullServiceIcon3,
   FullServiceIcon4,
@@ -30,7 +37,7 @@ const operationsSupportList = [
     icon: <FullServiceIcon2 />,
     title: "Emergency Support",
     description:
-      "With 24/7 call center service, we’re ready to handle emergencies. Homeowners can easily submit requests via our portal.",
+      "With 24/7 call center service, we're ready to handle emergencies. Homeowners can easily submit requests via our portal.",
   },
   {
     icon: <FullServiceIcon3 />,
@@ -45,6 +52,12 @@ const operationsSupportList = [
       "Homeowners can report violations online, providing full transparency for the Board.",
   },
   {
+    icon: <FullServiceIcon12 />,
+    title: "Meeting Coordination",
+    description:
+      "Manage meetings with RSVP, attendance, agendas, minutes, and proxies ensuring smooth Board support through the portal.",
+  },
+  {
     icon: <FullServiceIcon5 />,
     title: "Violation Letters",
     description:
@@ -53,12 +66,7 @@ const operationsSupportList = [
 ];
 
 const financialFeatures = [
-  {
-    icon: <FullServiceIcon6 />,
-    title: "Real-Time Insights",
-    description:
-      "Access real-time financial information for every aspect of association management.",
-  },
+
   {
     icon: <FullServiceIcon7 />,
     title: "Budgeting and Forecasting",
@@ -83,11 +91,57 @@ const financialFeatures = [
     description:
       "Work with reputable attorneys to collect overdue assessment fees, ensuring compliance and financial stability.",
   },
+    {
+    icon: <FullServiceIcon6 />,
+    title: "Risk & Investment Services",
+    description:
+      "Secure insurance quotes with guidance, track claims through the portal, and assist the Board with investment of funds.",
+  },
   {
     icon: <FullServiceIcon11 />,
     title: "Tax and Audit Services",
     description:
       "Prepare tax returns, process federal income tax payments, and provide audit reports.",
+  },
+];
+
+const complianceFeatures = [
+
+  {
+    icon: <ComplianceLegalIcon1 />,
+    title: "Record Management",
+    description:
+      "Maintain financial, correspondence, and governance records for the Association.",
+  },
+  {
+    icon: <ComplianceLegalIcon2 />,
+    title: "Case Tracking",
+    description:
+      "Homeowner correspondence is tracked through our Case Management System for easy access.",
+  },
+  {
+    icon: <ComplianceLegalIcon3 />,
+    title: "Homeowner & Renter Data",
+    description:
+      "Ownership and renter details are reviewed and validated monthly to ensure records remain accurate.",
+  },
+  {
+    icon: <ComplianceLegalIcon4 />,
+    title: "Document Requests",
+    description:
+      "Provide requested documents within 24 hours via USPS or as instructed by the Board",
+  },
+    {
+    icon: <ComplianceLegalIcon5 />,
+    title: "Project Oversight",
+    description:
+      "We provide project management services, monitor milestones, budgets, inspections, and share status reports with the Board.",
+  },
+  {
+    icon: <ComplianceLegalIcon6 />,
+    title: "Legal Support",
+    description:
+      "Compile and provide required documents if the Association is involved in legal action.",
   },
 ];
 
@@ -100,7 +154,7 @@ const FullServiceHOAmanagement = () => {
             <div className="space-y-6">
               <h2 className="lg:text-45">Full Service Management</h2>
               <p>
-                From planning to execution, we provide dedicated support to meet the operational needs of your association. Our comprehensive services can be tailored to your association’s unique requirements, ensuring effective management at every step.
+                For associations that require Financial Expertise without full-service management, our Financial Only Management provides dedicated support for managing financial operations and assisting the Board in maintaining financial discipline.
               </p>
             </div>
             <div className="relative">
@@ -122,23 +176,20 @@ const FullServiceHOAmanagement = () => {
               Administrative Management
             </h3>
             <p className="lg:text-xl">
-              Streamline your operations with our comprehensive administrative
-              solutions
+              Streamline your operations with our comprehensive administrative solutions
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center -mx-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 justify-center gap-4 md:gap-8 mb-5 md:mb-11">
             {operationsSupportList.map((feature, index) => (
-              <div className="md:basis-1/2 mxl:basis-1/3 px-4 mb-4 md:mb-8" key={index}>
-                <div className="h-full flex flex-col p-4 md:p-5 rounded-lg shadow-keyShadow text-center bg-white">
+              <div className="p-4 md:p-5 rounded-lg shadow-keyShadow text-center bg-white" key={index}>
                   <div className="mb-5 flex justify-center">{feature.icon}</div>
                   <div>
                     <h5 className="mb-2">{feature.title}</h5>
-                    <div className="text-17 text-accent2">
+                    <div className="text-base text-accent2">
                       {feature.description}
                     </div>
                   </div>
-                </div>
               </div>
             ))}
           </div>
@@ -164,7 +215,7 @@ const FullServiceHOAmanagement = () => {
                 <div className="mb-5 flex justify-center">{feature.icon}</div>
                 <div className="">
                   <h5 className="mb-2">{feature.title}</h5>
-                  <div className="text-17 text-accent2">
+                  <div className="text-base text-accent2">
                     {feature.description}
                   </div>
                 </div>
@@ -174,6 +225,36 @@ const FullServiceHOAmanagement = () => {
           <ServiceBtns />
         </div>
       </section>
+
+      <section className="py-12 md:py-16">
+        <div className="container relative">
+          <div className="text-center mb-7">
+            <h3 className="leading-snug lg:text-4xl">Records & Compliance Management</h3>
+            <p className="lg:text-xl">
+              Accurate records and oversight to support governance and property management
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 justify-center gap-4 md:gap-8 mb-5 md:mb-11">
+            {complianceFeatures.map((feature, index) => (
+              <div
+                className="p-4 md:p-5 rounded-lg shadow-keyShadow text-center bg-white"
+                key={index}
+              >
+                <div className="mb-5 flex justify-center">{feature.icon}</div>
+                <div className="">
+                  <h5 className="mb-2">{feature.title}</h5>
+                  <div className="text-base text-accent2">
+                    {feature.description}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <ServiceBtns />
+        </div>
+      </section>
+
     </>
   );
 };

@@ -641,7 +641,7 @@ function CondoQuestionnaire() {
   return (
     <>
       <TopBanner
-        backgroundImage="./img/aboutBanner.jpg"
+        backgroundImage="./img/documentsBanner.jpg"
         title="Condo Questionnaire"
       />
       {!isPayment ? (

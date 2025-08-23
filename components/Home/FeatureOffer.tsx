@@ -12,14 +12,6 @@ import {
 const featureData = [
   {
     id: 0,
-    icon: <FeatureIcon1 />,
-    title: "Document Management",
-    description:
-      "Centralized document storage with secure access controls, version history, and easy retrieval.",
-    featureImg: "./img/featureImage1.png",
-  },
-  {
-    id: 1,
     icon: <FeatureIcon3 />,
     title: "Financial Dashboard",
     description:
@@ -27,7 +19,7 @@ const featureData = [
     featureImg: "./img/featureImage3.png",
   },
   {
-    id: 2,
+    id: 1,
     icon: <FeatureIcon6 />,
     title: "Meeting Management",
     description:
@@ -35,30 +27,38 @@ const featureData = [
     featureImg: "./img/featureImage6.png",
   },
   {
+    id: 2,
+    icon: <FeatureIcon1 />,
+    title: "Document Management",
+    description:
+      "Centralized document storage with secure access controls, version history, and easy retrieval.",
+    featureImg: "./img/featureImage1.png",
+  },
+
+  {
     id: 3,
     icon: <FeatureIcon4 />,
-    title: "Communication Hub",
+    title: "Violation Management",
     description:
-      "Seamlessly manage calls, direct messages and emails with integrated tracking and response time analytics.",
+      "Simplify violation handling with digital notices, reminders, and transparent tracking for fair enforcement.",
     featureImg: "./img/featureImage4.png",
   },
   {
     id: 4,
+    icon: <FeatureIcon5 />,
+    title: "ARC Management",
+    description:
+      "Simplify architectural requests with digital submissions, approvals, and tracking for faster decisions.",
+    featureImg: "./img/featureImage5.png",
+  },
+  {
+    id: 5,
     icon: <FeatureIcon2 />,
     title: "Task Management",
     description:
       "Track board tasks efficiently with intuitive workflows, reminders, and deadline alerts.",
     featureImg: "./img/featureImage2.png",
-  },  
-  {
-    id: 5,
-    icon: <FeatureIcon5 />,
-    title: "Analytics & Reports",
-    description:
-      "Gain actionable insights with real-time dashboards, performance metrics, and custom reports.",
-    featureImg: "./img/featureImage5.png",
   },
-  
 ];
 
 const FeatureOffer = () => {
@@ -71,7 +71,7 @@ const FeatureOffer = () => {
         /> */}
         <div className="container relative">
           <SectionTitle
-            subtitle="Unique Offerings"
+            subtitle="KEY FEATURES WE OFFER"
             title="Elevate Your Management Experience"
             content="Empowering property management with cutting-edge tools that simplify, streamline, and elevate operations. Discover smart solutions designed to enhance efficiency and enrich the community living experience"
             maxWidth="914px"
@@ -79,7 +79,10 @@ const FeatureOffer = () => {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {featureData.map((feature, index) => (
-              <div key={index} className="bg-white rounded-lg p-6 flex flex-col justify-between gap-5">
+              <div
+                key={index}
+                className="bg-white rounded-lg p-6 flex flex-col justify-between gap-5"
+              >
                 <div>
                   <div className="flex items-center gap-x-3 pb-5">
                     {feature.icon}
