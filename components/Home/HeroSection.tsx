@@ -102,15 +102,15 @@ const HeroSection = () => {
               </div>
               <div className="flex flex-col md:flex-row justify-between gap-2 pt-4 md:pt-8 pb-2 font-outfit font-medium text-base">
                 <div className="flex items-center gap-x-4 text-associationGray leading-tight text-base">
-                  <TrustCommunitiesIcon className="flex-shrink-0" />
+                  <div className="w-11 md:w-14 h-11 md:h-14 bg-white rounded-lg md:rounded-3xl flex justify-center items-center shrink-0"><TrustCommunitiesIcon /></div>
                   Trusted Communities
                 </div>
                 <div className="flex items-center gap-x-4 text-associationGray leading-tight text-base">
-                  <OperationsIcon className="flex-shrink-0" />
+                  <div className="w-11 md:w-14 h-11 md:h-14 bg-white rounded-lg md:rounded-3xl flex justify-center items-center shrink-0"><OperationsIcon /></div>
                   Transparent Operations
                 </div>
                 <div className="flex items-center gap-x-4 text-associationGray leading-tight text-base">
-                  <ReliableSupportIcon className="flex-shrink-0" />
+                  <div className="w-11 md:w-14 h-11 md:h-14 bg-white rounded-lg md:rounded-3xl flex justify-center items-center shrink-0"><ReliableSupportIcon /></div>
                   24/7 Customer Support
                 </div>
               </div>
