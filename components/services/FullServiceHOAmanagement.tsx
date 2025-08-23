@@ -169,7 +169,7 @@ const FullServiceHOAmanagement = () => {
         </div>
       </section>
 
-      <section className="py-12 md:pt-16 md:pb-10">
+      <section className="py-12 md:py-16">
         <div className="container relative">
           <div className="text-center mb-7">
             <h3 className="leading-snug lg:text-4xl">
@@ -180,7 +180,7 @@ const FullServiceHOAmanagement = () => {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 justify-center gap-4 md:gap-8 mb-5 md:mb-11">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 justify-center gap-4 md:gap-8">
             {operationsSupportList.map((feature, index) => (
               <div className="p-4 md:p-5 rounded-lg shadow-keyShadow text-center bg-white" key={index}>
                   <div className="mb-5 flex justify-center">{feature.icon}</div>
@@ -206,7 +206,7 @@ const FullServiceHOAmanagement = () => {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 justify-center gap-4 md:gap-8 mb-5 md:mb-11">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 justify-center gap-4 md:gap-8">
             {financialFeatures.map((feature, index) => (
               <div
                 className="p-4 md:p-5 rounded-lg shadow-keyShadow text-center bg-white"
@@ -222,7 +222,7 @@ const FullServiceHOAmanagement = () => {
               </div>
             ))}
           </div>
-          <ServiceBtns />
+
         </div>
       </section>
 
