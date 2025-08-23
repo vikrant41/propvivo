@@ -91,6 +91,8 @@ module.exports = {
         pvOrange: "#FF9156",
         pvGreen: "#21BA27",
         pvPurple: "#6B21A8",
+        ctLightGray: "#F6F6F6",
+        ctLightDarkGray: "#E7E7E7",
         "gray-o": {
           600: "#CCCCCC",
           500: "#4E4F50",

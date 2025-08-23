@@ -651,7 +651,7 @@ function ResaleCertificate() {
   return (
     <>
       <TopBanner
-        backgroundImage="./img/aboutBanner.jpg"
+        backgroundImage="./img/documentsBanner.jpg"
         title="Resale Certificate"
       />
       {!isPayment ? (

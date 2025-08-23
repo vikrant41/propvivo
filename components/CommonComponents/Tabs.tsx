@@ -30,7 +30,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, defaultActiveId }) => {
     <div className="">
       {/* Tabs Row */}
       <div className="container relative mb-7 md:mb-16">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 mx-auto" style={{maxWidth: "1000px"}}>
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (

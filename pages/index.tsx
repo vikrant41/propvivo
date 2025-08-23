@@ -4,6 +4,7 @@ import HeroSection from "../components/Home/HeroSection";
 import KeyBenefitMain from "../components/Home/KeyBenefitMain";
 import Newsletter from "../components/Home/Newsletter";
 import OnboardingSteps from "../components/Home/OnboardingSteps";
+import OurhmServices from "../components/Home/OurhmServices";
 import Testimonials from "../components/Home/Testimonials";
 import ThreeCorePillars from "../components/Home/ThreeCorePillars";
 
@@ -14,7 +15,8 @@ const IndexPage = () => {
      {/* <CorePillars /> */}
      {/* <RequestDoc /> */}
      <ThreeCorePillars />
-     <FeatureOffer />
+     <OurhmServices />
+     {/* <FeatureOffer /> */}
      <KeyBenefitMain />
      <Testimonials />
      {/* <OnboardingSteps /> */}

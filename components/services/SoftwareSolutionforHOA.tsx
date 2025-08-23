@@ -51,7 +51,7 @@ const SoftwareSolutionforHOA = () => {
             <div className="space-y-6">
               <h2 className="lg:text-45">Software Solution for HOA</h2>
               <p>
-                Not every association requires full-service management. For those who prefer a hands-on approach, our Self-Manage Platform is the perfect solution. Designed to empower HOAs with user-friendly tools, it simplifies Community Management while maintaining control in the hands of the Board and Homeowners. 
+                Not every association requires full-service management. For those who prefer a hands-on approach, our Self-Manage Platform is the perfect solution. Designed to empower HOAs with user-friendly tools, it simplifies Community Management while maintaining control in the hands of the Board and Homeowners.
               </p>
             </div>
             <div className="relative">
@@ -80,13 +80,13 @@ const SoftwareSolutionforHOA = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 justify-center gap-4 md:gap-8 mb-5 md:mb-11">
             {platformFeatures.map((feature, index) => (
               <div
-                className="p-4 md:py-5 md:px-2 rounded-lg shadow-keyShadow text-center bg-white"
+                className="p-4 md:py-5 md:px-4 rounded-lg shadow-keyShadow text-center bg-white"
                 key={index}
               >
                 <div className="mb-5 flex justify-center">{feature.icon}</div>
                 <div className="">
                   <h5 className="mb-2">{feature.title}</h5>
-                  <div className="text-17 text-accent2">
+                  <div className="text-base text-accent2">
                     {feature.description}
                   </div>
                 </div>

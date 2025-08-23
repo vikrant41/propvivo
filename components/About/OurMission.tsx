@@ -59,18 +59,18 @@ const router = useRouter();
                   </div>
                 </div>
                 <p>
-                  At propVIVO, our mission is to bring HOA management into the modern age with smart automation, clear real-time transparency, and tailored digital solutions. Our platform makes managing operations easier, increases accountability, delivers faster and smarter results for both boards and homeowners.
+                  At propVIVO, our mission is to bring HOA management into the modern age with smart automation, real-time transparency, and a tailored digital platform and services. We help make operations easier to manage, increase accountability, and deliver faster, smarter results for both boards and homeowners.
                 </p>
 
-                <div className="grid md:grid-cols-2 gap-4 my-7">
+                <div className="grid md:grid-cols-2 gap-4 mt-3">
                   {ourMissionData.map((data, index) => (
                     <div
                       key={index}
-                      className={`bg-white rounded-xl p-6 ${
+                      className={`bg-white rounded-xl p-4 ${
                         index > 1 ? "md:col-span-2" : ""
                       }`}
                     >
-                      <div className="flex items-center gap-x-3 mb-4">
+                      <div className="flex items-center gap-x-3 mb-2">
                         {data.icon}
                         <h6 className="mb-0">{data.title}</h6>
                       </div>
@@ -79,7 +79,7 @@ const router = useRouter();
                   ))}
                 </div>
 
-                <Button onClick={() => router.push("/RequestProposal")}>Join Us on Our Journey</Button>
+                {/* <Button onClick={() => router.push("/RequestProposal")}>Join Us on Our Journey</Button> */}
               </div>
             </div>
           </div>

@@ -12,7 +12,7 @@ const contact = () => {
 
   return (
     <>
-      <TopBanner backgroundImage="./img/aboutBanner.jpg" title="Contact Us" />
+      <TopBanner backgroundImage="./img/contactBanner.jpg" title="Contact Us" />
       <ContactSection />
     </>
   );

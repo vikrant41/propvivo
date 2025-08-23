@@ -15,14 +15,14 @@ const featureData = [
     icon: <PillarTransparencyIcon />,
     title: "Transparency",
     description:
-      "Transparent communication and workflows keep everyone informed and aligned.",
+      "Clear communication and streamlined workflows that keep everyone informed and aligned. ",
   },
   {
     id: 2,
     icon: <PillarReliabilityIcon />,
     title: "Reliability",
     description:
-      "Dependable tech with 99.9% uptime and dedicated support, always there when you need it.",
+      "Dependable technology with 99.9% uptime and dedicated support always there when you need it.",
   },
 ];
 
@@ -43,7 +43,7 @@ function ThreeCorePillars() {
               </div>
             </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {featureData.map((feature, index) => (
               <div key={index} className="bg-white rounded-lg p-6 shadow-testimonialShadow flex flex-col justify-center items-center gap-2 text-center">
                   {feature.icon}
