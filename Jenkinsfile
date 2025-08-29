@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   tools {
-    nodejs 'node 18'  // Required on Jenkins build node
+    nodejs 'node 18'
   }
 
   environment {
@@ -39,8 +39,6 @@ pipeline {
             ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST << 'ENDSSH'
               # Update packages
               sudo apt-get update -y
-
-              # Install curl, rsync, and build tools
               sudo apt-get install -y curl rsync build-essential
 
               # Install NVM if not present
@@ -48,9 +46,10 @@ pipeline {
               if [ ! -d "$NVM_DIR" ]; then
                 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
               fi
+
               export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-              [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+              [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+              [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
               # Install Node.js
               nvm install $NODE_VERSION
@@ -70,15 +69,13 @@ pipeline {
             echo "🚀 Running app setup and starting with PM2 on VM..."
             ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST << 'ENDSSH'
               export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
               nvm use $NODE_VERSION
 
               cd $APP_DIR
 
-              # Install app dependencies
               npm install
 
-              # Start or restart app with PM2
               if pm2 describe next-app > /dev/null; then
                 pm2 restart next-app
               else
