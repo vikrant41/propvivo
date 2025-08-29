@@ -32,29 +32,28 @@ pipeline {
 
     stage('Provision & Deploy VM') {
       environment {
-        // Node version can be set as an environment variable specific to this stage
         NODE_VERSION = '20.19.4'
       }
       steps {
         sshagent (credentials: ['deploy-key']) {
           sh """
-            echo "🔧 Connecting to VM and installing system dependencies..."
-            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} <<'ENDSSH'
+            # Connect to the VM, install dependencies, and setup Node.js/PM2
+            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} "bash -s" <<'ENDSSH'
               set -e
 
-              # Update packages
+              echo "🔧 Connecting to VM and installing system dependencies..."
               sudo apt-get update -y
               sudo apt-get install -y curl rsync build-essential
 
               # Install NVM if not present
-              export NVM_DIR="$HOME/.nvm"
-              if [ ! -d "$NVM_DIR" ]; then
+              export NVM_DIR="\$HOME/.nvm"
+              if [ ! -d "\$NVM_DIR" ]; then
                 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
               fi
 
-              export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-              [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+              export NVM_DIR="\$HOME/.nvm"
+              [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
+              [ -s "\$NVM_DIR/bash_completion" ] && . "\$NVM_DIR/bash_completion"
 
               # Install Node.js
               nvm install ${NODE_VERSION}
@@ -71,12 +70,13 @@ pipeline {
             echo "📦 Copying project files to VM using rsync..."
             rsync -avz --exclude=node_modules --exclude=.next -e "ssh -o StrictHostKeyChecking=no" . ${VM_USER}@${VM_HOST}:${APP_DIR}
 
-            echo "🚀 Running app setup and starting with PM2 on VM..."
-            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} <<'ENDSSH'
+            # Connect to the VM and run the application
+            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} "bash -s" <<'ENDSSH'
               set -e
 
-              export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+              echo "🚀 Running app setup and starting with PM2 on VM..."
+              export NVM_DIR="\$HOME/.nvm"
+              [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
 
               nvm use ${NODE_VERSION}
 
