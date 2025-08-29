@@ -36,24 +36,33 @@ pipeline {
         sshagent (credentials: ['deploy-key']) {
           sh """
             echo '🔧 Connecting to VM and installing system dependencies...'
-            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} <<ENDSSH
+            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} <<'ENDSSH'
               set -e
+
+              # Update & install packages
               sudo apt-get update -y
               sudo apt-get install -y curl rsync build-essential
 
+              # Install NVM and Node if not already installed
               export NVM_DIR="\$HOME/.nvm"
               if [ ! -d "\$NVM_DIR" ]; then
                 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
               fi
+
+              # Load NVM
+              export NVM_DIR="\$HOME/.nvm"
               [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
               [ -s "\$NVM_DIR/bash_completion" ] && . "\$NVM_DIR/bash_completion"
 
+              # Install and use correct Node version
               nvm install ${NODE_VERSION}
               nvm alias default ${NODE_VERSION}
               nvm use ${NODE_VERSION}
 
+              # Install PM2 globally
               npm install -g pm2
 
+              # Create app directory
               mkdir -p ${APP_DIR}
             ENDSSH
 
@@ -61,8 +70,9 @@ pipeline {
             rsync -avz --exclude=node_modules --exclude=.next -e "ssh -o StrictHostKeyChecking=no" ./ ${VM_USER}@${VM_HOST}:${APP_DIR}
 
             echo '🚀 Running app setup and starting with PM2 on VM...'
-            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} <<ENDSSH
+            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} <<'ENDSSH'
               set -e
+
               export NVM_DIR="\$HOME/.nvm"
               [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
               nvm use ${NODE_VERSION}
