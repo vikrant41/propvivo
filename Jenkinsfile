@@ -32,7 +32,7 @@ pipeline {
 
     stage('Deploy to VM') {
       steps {
-        sshagent (credentials: ['your-ssh-credentials-id']) {
+        sshagent (credentials: ['deploy-key']) {
           sh """
             ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST 'mkdir -p $APP_DIR'
             scp -r * $VM_USER@$VM_HOST:$APP_DIR
