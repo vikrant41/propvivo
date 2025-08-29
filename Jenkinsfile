@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  tools {
+        nodejs 'node 18'   // must match the name you set in Jenkins
+    }
+
   environment {
     VM_USER = 'ubuntu'
     VM_HOST = '135.18.142.255'
