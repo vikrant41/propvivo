@@ -19,9 +19,14 @@ pipeline {
       }
     }
 
-    stage('Install Dependencies & Build') {
+    stage('Install Dependencies') {
       steps {
         sh 'npm install'
+      }
+    }
+
+    stage('Build') {
+      steps {
         sh 'npm run build'
       }
     }
@@ -29,64 +34,62 @@ pipeline {
     stage('Provision & Deploy VM') {
       steps {
         sshagent (credentials: ['deploy-key']) {
-          
-          // Provision and install dependencies with Node + PM2
           sh '''
-echo "🔧 Provisioning VM and setting up Node environment..."
-ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST <<'ENDSSH'
-set -e
+            echo "🔧 Connecting to VM and installing system dependencies..."
+            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST <<'ENDSSH'
+              set -e
 
-# Update and install required packages
-sudo apt-get update -y
-sudo apt-get install -y curl rsync build-essential
+              # Update packages
+              sudo apt-get update -y
+              sudo apt-get install -y curl rsync build-essential
 
-# Install NVM if missing
-export NVM_DIR="$HOME/.nvm"
-if [ ! -d "$NVM_DIR" ]; then
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-fi
+              # Install NVM if not present
+              export NVM_DIR="$HOME/.nvm"
+              if [ ! -d "$NVM_DIR" ]; then
+                curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+              fi
 
-# Load nvm into this shell
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+              [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
-# Install, alias, and use Node
-nvm install $NODE_VERSION
-nvm alias default $NODE_VERSION
-nvm use $NODE_VERSION
+              # Install Node.js
+              nvm install $NODE_VERSION
+              nvm alias default $NODE_VERSION
+              nvm use $NODE_VERSION
 
-# Install PM2 globally
-npm install -g pm2
+              # Install PM2 globally
+              npm install -g pm2
 
-# Prepare app directory
-mkdir -p $APP_DIR
-ENDSSH
+              # Ensure app directory exists
+              mkdir -p $APP_DIR
+            ENDSSH
 
-echo "📦 Syncing project files to VM..."
-rsync -avz --exclude=node_modules --exclude=.next -e "ssh -o StrictHostKeyChecking=no" ./ $VM_USER@$VM_HOST:$APP_DIR
+            echo "📦 Copying project files to VM using rsync..."
+            rsync -avz --exclude=node_modules --exclude=.next -e "ssh -o StrictHostKeyChecking=no" . $VM_USER@$VM_HOST:$APP_DIR
 
-echo "🚀 Deploying application and starting via PM2..."
-ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST <<'ENDSSH'
-set -e
+            echo "🚀 Running app setup and starting with PM2 on VM..."
+            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST <<'ENDSSH'
+              set -e
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-# Ensure correct Node version
-nvm use $NODE_VERSION
+              nvm use $NODE_VERSION
 
-cd $APP_DIR
-npm install
+              cd $APP_DIR
 
-if pm2 describe next-app > /dev/null 2>&1; then
-  pm2 restart next-app
-else
-  pm2 start npm --name "next-app" -- run start
-fi
+              npm install
 
-pm2 save
-ENDSSH
-'''
+              if pm2 describe next-app > /dev/null 2>&1; then
+                pm2 restart next-app
+              else
+                pm2 start npm --name "next-app" -- run start
+              fi
+
+              pm2 save
+            ENDSSH
+          '''
         }
       }
     }
