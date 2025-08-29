@@ -68,7 +68,7 @@ pipeline {
 ENDSSH
             
             echo "📦 Copying project files to VM using rsync..."
-            rsync -avz --exclude=node_modules --exclude=.next -e "ssh -o StrictHostKeyChecking=no" . ${VM_USER}@${VM_HOST}:${APP_DIR}
+            rsync -avz --exclude=node_modules -e "ssh -o StrictHostKeyChecking=no" . ${VM_USER}@${VM_HOST}:${APP_DIR}
 
             # Connect to the VM and run the application
             ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} "bash -s" <<'ENDSSH'
