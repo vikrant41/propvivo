@@ -2,14 +2,13 @@ pipeline {
   agent any
 
   tools {
-    nodejs 'node 18'
+    nodejs 'node_20'
   }
 
   environment {
     VM_USER = 'ubuntu'
     VM_HOST = '35.172.191.199'
     APP_DIR = '/home/ubuntu/next-app'
-    NODE_VERSION = '20.19.4'
   }
 
   stages {
@@ -32,11 +31,15 @@ pipeline {
     }
 
     stage('Provision & Deploy VM') {
+      environment {
+        // Node version can be set as an environment variable specific to this stage
+        NODE_VERSION = '20.19.4'
+      }
       steps {
         sshagent (credentials: ['deploy-key']) {
-          sh '''
+          sh """
             echo "🔧 Connecting to VM and installing system dependencies..."
-            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST <<'ENDSSH'
+            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} <<'ENDSSH'
               set -e
 
               # Update packages
@@ -54,30 +57,30 @@ pipeline {
               [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
               # Install Node.js
-              nvm install $NODE_VERSION
-              nvm alias default $NODE_VERSION
-              nvm use $NODE_VERSION
+              nvm install ${NODE_VERSION}
+              nvm alias default ${NODE_VERSION}
+              nvm use ${NODE_VERSION}
 
               # Install PM2 globally
               npm install -g pm2
 
               # Ensure app directory exists
-              mkdir -p $APP_DIR
+              mkdir -p ${APP_DIR}
             ENDSSH
 
             echo "📦 Copying project files to VM using rsync..."
-            rsync -avz --exclude=node_modules --exclude=.next -e "ssh -o StrictHostKeyChecking=no" . $VM_USER@$VM_HOST:$APP_DIR
+            rsync -avz --exclude=node_modules --exclude=.next -e "ssh -o StrictHostKeyChecking=no" . ${VM_USER}@${VM_HOST}:${APP_DIR}
 
             echo "🚀 Running app setup and starting with PM2 on VM..."
-            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST <<'ENDSSH'
+            ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} <<'ENDSSH'
               set -e
 
               export NVM_DIR="$HOME/.nvm"
               [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-              nvm use $NODE_VERSION
+              nvm use ${NODE_VERSION}
 
-              cd $APP_DIR
+              cd ${APP_DIR}
 
               npm install
 
@@ -89,7 +92,7 @@ pipeline {
 
               pm2 save
             ENDSSH
-          '''
+          """
         }
       }
     }
