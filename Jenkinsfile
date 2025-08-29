@@ -1,0 +1,41 @@
+pipeline {
+  agent any
+
+  environment {
+    VM_USER = 'ubuntu'
+    VM_HOST = '135.18.142.255'
+    APP_DIR = '/home/ubuntu/next-app'
+  }
+
+  stages {
+    stage('Clone Repo') {
+      steps {
+        git 'https://github.com/vikrant41/propvivo.git'
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        sh 'npm install'
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sh 'npm run build'
+      }
+    }
+
+    stage('Deploy to VM') {
+      steps {
+        sshagent (credentials: ['your-ssh-credentials-id']) {
+          sh """
+            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST 'mkdir -p $APP_DIR'
+            scp -r * $VM_USER@$VM_HOST:$APP_DIR
+            ssh $VM_USER@$VM_HOST 'cd $APP_DIR && npm install && pm2 restart next-app || pm2 start npm --name "next-app" -- run start'
+          """
+        }
+      }
+    }
+  }
+}
