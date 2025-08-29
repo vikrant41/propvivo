@@ -7,7 +7,7 @@ pipeline {
 
   environment {
     VM_USER = 'ubuntu'
-    VM_HOST = '135.18.142.255'
+    VM_HOST = '35.172.191.199'
     APP_DIR = '/home/ubuntu/next-app'
     NODE_VERSION = 'v20.19.4'
     NVM_DIR = '/home/ubuntu/.nvm'
