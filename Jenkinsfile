@@ -37,61 +37,45 @@ pipeline {
       steps {
         sshagent (credentials: ['deploy-key']) {
           sh """
-            # Connect to the VM, install dependencies, and setup Node.js/PM2
             ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} "bash -s" <<'ENDSSH'
               set -e
-
-              echo "🔧 Connecting to VM and installing system dependencies..."
               sudo apt-get update -y
               sudo apt-get install -y curl rsync build-essential
 
-              # Install NVM if not present
               export NVM_DIR="\$HOME/.nvm"
               if [ ! -d "\$NVM_DIR" ]; then
                 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
               fi
 
-              export NVM_DIR="\$HOME/.nvm"
               [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
-              [ -s "\$NVM_DIR/bash_completion" ] && . "\$NVM_DIR/bash_completion"
-
-              # Install Node.js
               nvm install ${NODE_VERSION}
               nvm alias default ${NODE_VERSION}
               nvm use ${NODE_VERSION}
-
-              # Install PM2 globally
               npm install -g pm2
-
-              # Ensure app directory exists
               mkdir -p ${APP_DIR}
-ENDSSH
-            
-            echo "📦 Copying project files to VM using rsync..."
-            rsync -avz --exclude=node_modules -e "ssh -o StrictHostKeyChecking=no" . ${VM_USER}@${VM_HOST}:${APP_DIR}
+            ENDSSH
 
-            # Connect to the VM and run the application
+            echo "📦 Rsync project files..."
+            rsync -avz --exclude=node_modules --exclude='.git' --exclude='.env*' --exclude='.next' -e "ssh -o StrictHostKeyChecking=no" . ${VM_USER}@${VM_HOST}:${APP_DIR}
+
             ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} "bash -s" <<'ENDSSH'
               set -e
-
-              echo "🚀 Running app setup and starting with PM2 on VM..."
               export NVM_DIR="\$HOME/.nvm"
               [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
-
               nvm use ${NODE_VERSION}
 
               cd ${APP_DIR}
-
               npm install
+              npm run build
 
               if pm2 describe next-app > /dev/null 2>&1; then
                 pm2 restart next-app
               else
-                pm2 start npm --name "next-app" -- run start
+                PORT=3000 HOST=0.0.0.0 pm2 start npm --name "next-app" -- run start
               fi
 
               pm2 save
-ENDSSH
+            ENDSSH
           """
         }
       }
