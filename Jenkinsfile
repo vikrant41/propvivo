@@ -38,44 +38,56 @@ pipeline {
         sshagent (credentials: ['deploy-key']) {
           sh """
             ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} "bash -s" <<'ENDSSH'
-              set -e
-              sudo apt-get update -y
-              sudo apt-get install -y curl rsync build-essential
+set -e
 
-              export NVM_DIR="\$HOME/.nvm"
-              if [ ! -d "\$NVM_DIR" ]; then
-                curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-              fi
+echo "🔧 Connecting to VM and installing system dependencies..."
+sudo apt-get update -y
+sudo apt-get install -y curl rsync build-essential
 
-              [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
-              nvm install ${NODE_VERSION}
-              nvm alias default ${NODE_VERSION}
-              nvm use ${NODE_VERSION}
-              npm install -g pm2
-              mkdir -p ${APP_DIR}
-            ENDSSH
+# Install NVM if not present
+export NVM_DIR="\$HOME/.nvm"
+if [ ! -d "\$NVM_DIR" ]; then
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+fi
 
-            echo "📦 Rsync project files..."
-            rsync -avz --exclude=node_modules --exclude='.git' --exclude='.env*' --exclude='.next' -e "ssh -o StrictHostKeyChecking=no" . ${VM_USER}@${VM_HOST}:${APP_DIR}
+[ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
+[ -s "\$NVM_DIR/bash_completion" ] && . "\$NVM_DIR/bash_completion"
 
+nvm install ${NODE_VERSION}
+nvm alias default ${NODE_VERSION}
+nvm use ${NODE_VERSION}
+
+npm install -g pm2
+
+mkdir -p ${APP_DIR}
+ENDSSH
+          """
+
+          echo "📦 Copying project files to VM using rsync..."
+          sh """
+            rsync -avz --exclude=node_modules -e "ssh -o StrictHostKeyChecking=no" . ${VM_USER}@${VM_HOST}:${APP_DIR}
+          """
+
+          sh """
             ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOST} "bash -s" <<'ENDSSH'
-              set -e
-              export NVM_DIR="\$HOME/.nvm"
-              [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
-              nvm use ${NODE_VERSION}
+set -e
 
-              cd ${APP_DIR}
-              npm install
-              npm run build
+export NVM_DIR="\$HOME/.nvm"
+[ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
+nvm use ${NODE_VERSION}
 
-              if pm2 describe next-app > /dev/null 2>&1; then
-                pm2 restart next-app
-              else
-                PORT=3000 HOST=0.0.0.0 pm2 start npm --name "next-app" -- run start
-              fi
+cd ${APP_DIR}
 
-              pm2 save
-            ENDSSH
+npm install
+
+if pm2 describe next-app > /dev/null 2>&1; then
+  pm2 restart next-app
+else
+  PORT=3000 HOST=0.0.0.0 pm2 start npm --name "next-app" -- run start
+fi
+
+pm2 save
+ENDSSH
           """
         }
       }
