@@ -65,8 +65,8 @@ pipeline {
 
               # Ensure app directory exists
               mkdir -p ${APP_DIR}
-            ENDSSH
-
+ENDSSH
+            
             echo "📦 Copying project files to VM using rsync..."
             rsync -avz --exclude=node_modules --exclude=.next -e "ssh -o StrictHostKeyChecking=no" . ${VM_USER}@${VM_HOST}:${APP_DIR}
 
@@ -91,7 +91,7 @@ pipeline {
               fi
 
               pm2 save
-            ENDSSH
+ENDSSH
           """
         }
       }
