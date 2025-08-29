@@ -2,15 +2,14 @@ pipeline {
   agent any
 
   tools {
-    nodejs 'node 18' // Jenkins will use this on the Jenkins node, not on the remote VM
+    nodejs 'node 18'  // Required on Jenkins build node
   }
 
   environment {
     VM_USER = 'ubuntu'
     VM_HOST = '35.172.191.199'
     APP_DIR = '/home/ubuntu/next-app'
-    NODE_VERSION = 'v20.19.4'
-    NVM_DIR = '/home/ubuntu/.nvm'
+    NODE_VERSION = '20.19.4'
   }
 
   stages {
@@ -20,61 +19,75 @@ pipeline {
       }
     }
 
-    stage('Install Dependencies (Jenkins Node)') {
+    stage('Install Dependencies') {
       steps {
         sh 'npm install'
       }
     }
 
-    stage('Build (Jenkins Node)') {
+    stage('Build') {
       steps {
         sh 'npm run build'
       }
     }
 
-    stage('Deploy and Setup on VM') {
+    stage('Provision & Deploy VM') {
       steps {
         sshagent (credentials: ['deploy-key']) {
-          sh """
-            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST << 'EOF'
-              # Install NVM if not already installed
+          sh '''
+            echo "🔧 Connecting to VM and installing system dependencies..."
+            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST << 'ENDSSH'
+              # Update packages
+              sudo apt-get update -y
+
+              # Install curl, rsync, and build tools
+              sudo apt-get install -y curl rsync build-essential
+
+              # Install NVM if not present
+              export NVM_DIR="$HOME/.nvm"
               if [ ! -d "$NVM_DIR" ]; then
                 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
               fi
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-              # Load NVM into current shell
-              export NVM_DIR="$NVM_DIR"
-              [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
-
-              # Install and use Node.js version
+              # Install Node.js
               nvm install $NODE_VERSION
-              nvm use $NODE_VERSION
               nvm alias default $NODE_VERSION
+              nvm use $NODE_VERSION
 
-              # Install pm2 globally
+              # Install PM2 globally
               npm install -g pm2
 
-              # Create app directory
+              # Ensure app directory exists
               mkdir -p $APP_DIR
-            EOF
+            ENDSSH
 
-            # Copy source files to the VM
-            scp -r * $VM_USER@$VM_HOST:$APP_DIR
+            echo "📦 Copying project files to VM using rsync..."
+            rsync -avz --exclude=node_modules --exclude=.next -e "ssh -o StrictHostKeyChecking=no" . $VM_USER@$VM_HOST:$APP_DIR
 
-            # Run setup commands on the remote VM
-            ssh $VM_USER@$VM_HOST << 'EOF'
-              export NVM_DIR="$NVM_DIR"
-              [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+            echo "🚀 Running app setup and starting with PM2 on VM..."
+            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_HOST << 'ENDSSH'
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
               nvm use $NODE_VERSION
 
               cd $APP_DIR
 
+              # Install app dependencies
               npm install
-              npm run build
 
-              pm2 restart next-app || pm2 start npm --name "next-app" -- run start
-            EOF
-          """
+              # Start or restart app with PM2
+              if pm2 describe next-app > /dev/null; then
+                pm2 restart next-app
+              else
+                pm2 start npm --name "next-app" -- run start
+              fi
+
+              pm2 save
+            ENDSSH
+          '''
         }
       }
     }
