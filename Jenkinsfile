@@ -7,7 +7,7 @@ pipeline {
 
   environment {
     VM_USER = 'ubuntu'
-    VM_HOST = '35.172.191.199'
+    VM_HOST = '3.82.22.211'
     APP_DIR = '/home/ubuntu/next-app'
   }
 
